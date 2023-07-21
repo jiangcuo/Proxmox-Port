@@ -4,6 +4,10 @@ I plan to port Proxmox VE and Proxmox Backup Server to any architecture.
 
 By now, arm64 is finished. https://github.com/jiangcuo/Proxmox-Arm64
 
+# Progress
+
+* pve6 base on debian sid -> done
+
 # Current difficulties
 
 Proxmox VE 7 and Proxmox Backup Server use rust.
@@ -13,7 +17,11 @@ Some crates and pkg don't work on riscv and loongarch64 yet,cause I can't build 
 such as:
 
 - Ring: 
-https://github.com/briansmith/ring/pull/1436
+  - https://github.com/briansmith/ring/pull/1436 //riscv
+  
+  - https://github.com/zhaixiaojuan/ring.git   //loong64
+
+  - https://github.com/briansmith/webpki/issues/253 
 
 - Criu: 
 https://github.com/checkpoint-restore/criu/issues/1702

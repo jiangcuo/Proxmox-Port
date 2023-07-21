@@ -34,7 +34,7 @@
      my $usbbus;
 -    if ($q35 || $arch eq 'aarch64') {
 -	$usbbus = 'ehci';
-+    if ($q35 || $arch eq 'aarch64' || $arch eq 'riscv64' || $arch eq 'loongarch64') {
++    if ($q35 || $arch ne 'x86_64') {
 +	$usbbus = 'qemu-xhci';
      } else {
  	$usbbus = 'uhci';
@@ -233,7 +233,7 @@ diff -ur a/PVE/QemuServer/CPUConfig.pm b/PVE/QemuServer/CPUConfig.pm
      my $cputype = $kvm ? "kvm64" : "qemu64";
      if ($arch eq 'aarch64') {
 -	$cputype = 'cortex-a57';
-+        $cputype = 'cortex-a57';
++        $cputype = 'host';
 +    } elsif ($arch eq 'riscv64') {
 +        $cputype = 'rv64';
 +    } elsif ($arch eq 'loongarch64'){
@@ -278,7 +278,7 @@ diff -ur a/PVE/QemuServer/USB.pm b/PVE/QemuServer/USB.pm
 -        push @$devices, '-device', "usb-ehci,id=ehci$pciaddr";
 +    if ($arch ne 'x86_64') {
 +        $pciaddr = print_pci_addr('qemu-xhci', $bridges, $arch, $machine);
-+        push @$devices, '-device', "qemu-xhci,id=qemu-xchi";
++        push @$devices, '-device', "qemu-xhci,id=qemu-xhci";
      } elsif (!$is_q35) {
          $pciaddr = print_pci_addr("piix3", $bridges, $arch, $machine);
          push @$devices, '-device', "piix3-usb-uhci,id=uhci$pciaddr.0x2";
