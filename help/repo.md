@@ -1,6 +1,6 @@
 # Proxmox-Port  Repo List
 
-### Repo Mirros
+### Mirrors
 
 ```bash
 cloudflare: https://global.mirrors.apqa.cn/
