@@ -64,4 +64,9 @@ pve8
    deb https:global.mirrors.apqa.cn/proxmox/debian/devel bookworm port
    ```
 
+### Kernel Repo
 
+   ```bash
+   deb https:global.mirrors.apqa.cn/proxmox/debian/kernel sid port
+   ```
+kernel build form https://github.com/jiangcuo/pve-port-kernel and may not compatible all machine
