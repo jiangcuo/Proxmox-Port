@@ -4,9 +4,95 @@ I plan to port Proxmox VE and Proxmox Backup Server to any architecture.
 
 By now, arm64 is finished. https://github.com/jiangcuo/Proxmox-Arm64
 
-# Progress
+## 1. Source
+The Proxmox-Port code is located in the following repositories.
 
-* pve6 base on debian sid -> done
+- [zfsonlinux](https://github.com/jiangcuo/zfsonlinux)
+- [pve-qemu](https://github.com/jiangcuo/pve-qemu)
+- [pve-lxc-syscalld](https://github.com/jiangcuo/pve-lxc-syscalld)
+- [pve-lxcfs](https://github.com/jiangcuo/pve-lxcfs)
+- [pve-installer](https://github.com/jiangcuo/pve-installer)
+- [pve-edk2-firmware](https://github.com/jiangcuo/pve-edk2-firmware)
+- [proxmox-mini-journalreader](https://github.com/jiangcuo/proxmox-mini-journalreader)
+- [proxmox-backup](https://github.com/jiangcuo/proxmox-backup)
+- [proxmox-backup-restore-image](https://github.com/jiangcuo/proxmox-backup-restore-image)
+- [proxmox-backup-qemu](https://github.com/jiangcuo/proxmox-backup-qemu)
+- [pve-manager](https://github.com/jiangcuo/pve-manager)
+- [qemu-server](https://github.com/jiangcuo/qemu-server)
+
+
+Master branch is mirror, checkout branch to arm64 / riscv64 / loongarch64 .You can view and build package.
+
+
+## 2. Progress
+
+* pve6 base on debian sid(loongarch64) -> done
+* pve8 base on debian12(arm64) -> done
+
+## 3. Support 
+
+mail: jiangcuo@bingsin.com
+
+issue: https://github.com/jiangcuo/Proxmox-Arm64/issues
+
+discord: https://discord.gg/ZdbD2gDcnP
+
+
+## 4. Tested platform:
+- Rockpi  (arm64) 
+- Raspberry Pi  (arm64)
+- Amlogic TV box  (arm64)
+- Kunpeng  (arm64)
+- FT  (arm64)
+- Ampere   (arm64)
+- Apple  (arm64,vm only,no kvm support)
+- 3A5000 (loongarch64)
+- VisionFive2 (riscv64,loongarch64)
+
+
+## 5. Features
+
+- ramfb support.
+- add more pice on vm,so we can hotplug and use more nets disks.(not perfect)
+- set gic-version=host.
+- tpm
+
+##  6. Version
+
+### pve
+- public version 
+  - 8.0.3 (arm64)
+
+- testing version 
+  - 8.0.6 (arm64)
+  - 6.4 (loongarch64,riscv64)
+
+### pbs
+- public version = 2.3.1-1 (arm64)
+- testing version = 2.3.1-1 (arm64)
+
+##  7. Changelog
+
+[Changelog](changlog.md)
+
+##  8. Installtion
+
+If you are using arm64 server that supports EFI,you can install proxmox-ve with iso.
+
+https://mirrors.apqa.cn/proxmox/isos/
+
+If you are using u-boot device or failed with iso, you can install proxmox-ve from repo.
+
+Head to the wiki page to learn more.
+
+## 9. Passthrough
+Hardware passthrough looks good
+
+![ ](https://raw.githubusercontent.com/jiangcuo/Proxmox-Arm64/main/images/pasthrough.png)
+
+##  10. More ?
+
+https://github.com/jiangcuo/Proxmox-Arm64/wiki
 
 # Current difficulties
 
