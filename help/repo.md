@@ -28,6 +28,16 @@ pve8
    ```bash
    deb https://global.mirrors.apqa.cn/proxmox/debian/pve bookworm port
    ```
+If you want to use test repo:
+
+   ```bash
+   deb https://global.mirrors.apqa.cn/proxmox/debian/pve bookworm pvetest
+   ```
+ceph-reef
+   ```bash
+   deb https://global.mirrors.apqa.cn/proxmox/debian/pve bookworm ceph-reef
+   ```
+
 
 loong64  sid only
 
