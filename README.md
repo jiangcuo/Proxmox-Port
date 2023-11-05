@@ -33,11 +33,15 @@ Master branch is mirror, checkout branch to arm64 / riscv64 / loongarch64 .You c
 
 ## 3. Support 
 
-mail: jiangcuo@bingsin.com
+Mail: jiangcuo@bingsin.com
 
-issue: https://github.com/jiangcuo/Proxmox-Arm64/issues
+Issue: https://github.com/jiangcuo/Proxmox-Arm64/issues
 
-discord: https://discord.gg/ZdbD2gDcnP
+Discord: https://discord.gg/ZdbD2gDcnP
+
+Help Page: [help.md](help/helpindex.md)
+
+Arm64 wiki: https://github.com/jiangcuo/Proxmox-Arm64/wiki
 
 
 ## 4. Tested platform:
