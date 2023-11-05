@@ -19,6 +19,8 @@ The Proxmox-Port code is located in the following repositories.
 - [proxmox-backup-qemu](https://github.com/jiangcuo/proxmox-backup-qemu)
 - [pve-manager](https://github.com/jiangcuo/pve-manager)
 - [qemu-server](https://github.com/jiangcuo/qemu-server)
+- [pve-port-kernel](https://github.com/jiangcuo/pve-port-kernel)
+
 
 
 Master branch is mirror, checkout branch to arm64 / riscv64 / loongarch64 .You can view and build package.
