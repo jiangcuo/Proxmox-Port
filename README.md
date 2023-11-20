@@ -81,7 +81,7 @@ Arm64 wiki: https://github.com/jiangcuo/Proxmox-Arm64/wiki
 
 [Changelog](changlog.md)
 
-##  8. Installtion
+##  8. Installation
 
 If you are using arm64 server that supports EFI,you can install proxmox-ve with iso.
 
