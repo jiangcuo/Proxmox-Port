@@ -20,6 +20,10 @@ The Proxmox-Port code is located in the following repositories.
 - [pve-manager](https://github.com/jiangcuo/pve-manager)
 - [qemu-server](https://github.com/jiangcuo/qemu-server)
 - [pve-port-kernel](https://github.com/jiangcuo/pve-port-kernel)
+- [pve-common](https://github.com/jiangcuo/pve-common)
+- [pve-qemu](https://github.com/jiangcuo/pve-qemu)
+- [pve-container](https://github.com/jiangcuo/pve-container)
+- [lxcfs](https://github.com/jiangcuo/lxcfs.git)
 
 
 
