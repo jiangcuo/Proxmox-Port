@@ -7,6 +7,7 @@ Golbal: https://global.mirrors.apqa.cn (Cloudflare)
 Korea: https://mirrors.apqa.cn (Cloudflare)
 Hong Kong: https://hk.mirrors.apqa.cn (direct)
 China: https://mirrors.lierfang.com (direct)
+Germany: https://de.mirrors.apqa.cn (direct)
 ```
 
 ### key 
