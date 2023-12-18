@@ -2,7 +2,7 @@
 
 I plan to port Proxmox VE and Proxmox Backup Server to any architecture.
 
-By now, arm64 is finished. https://github.com/jiangcuo/Proxmox-Arm64
+By now, arm64/loongarch64 is finished. 
 
 ## 1. Source
 The Proxmox-Port code is located in the following repositories.
@@ -24,28 +24,25 @@ The Proxmox-Port code is located in the following repositories.
 - [pve-qemu](https://github.com/jiangcuo/pve-qemu)
 - [pve-container](https://github.com/jiangcuo/pve-container)
 - [lxcfs](https://github.com/jiangcuo/lxcfs.git)
-
+- more...
 
 
 Master branch is mirror, checkout branch to arm64 / riscv64 / loongarch64 .You can view and build package.
 
-
 ## 2. Progress
 
-* pve6 base on debian sid(loongarch64) -> done
+* pve6 base on debian sid(loongarch64/riscv64) -> done
 * pve8 base on debian12(arm64) -> done
 
 ## 3. Support 
 
 Mail: jiangcuo@bingsin.com
 
-Issue: https://github.com/jiangcuo/Proxmox-Arm64/issues
+Issue: https://github.com/jiangcuo/Proxmox-Port/issues
 
 Discord: https://discord.gg/ZdbD2gDcnP
 
-Help Page: [help.md](help/helpindex.md)
-
-Arm64 wiki: https://github.com/jiangcuo/Proxmox-Arm64/wiki
+Wiki: https://github.com/jiangcuo/Proxmox-Port/wiki
 
 
 ## 4. Tested platform:
