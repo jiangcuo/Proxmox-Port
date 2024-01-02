@@ -67,16 +67,37 @@ Wiki: https://github.com/jiangcuo/Proxmox-Port/wiki
 ##  6. Version
 
 ### pve
-- public version 
-  - 8.0.3 (arm64)
-
-- testing version 
-  - 8.0.6 (arm64)
-  - 6.4 (loongarch64,riscv64)
+- 8.1.3 (arm64)
+- 8.1.3 (loongarch64
+- 8.1.3 (riscv64)
 
 ### pbs
-- public version = 2.3.1-1 (arm64)
-- testing version = 2.3.1-1 (arm64)
+- 3.1.2 (arm64)
+- 3.1.2 (loongarch64)
+
+### screen shot 
+arm64 
+
+<img width="800" alt="image" src="https://github.com/jiangcuo/Proxmox-Port/assets/49061187/0628e750-e0ff-4b74-a90e-865aac4df8fa">
+
+riscv64
+
+<img width="800" alt="image" src="https://github.com/jiangcuo/Proxmox-Port/assets/49061187/841799fc-85c0-4227-ab12-e999ee66ffd3">
+
+
+
+loongarch64 
+
+<img width="800" alt="image" src="https://github.com/jiangcuo/Proxmox-Port/assets/49061187/1d01de5a-455c-46d4-9ff1-12ba199a5e66">
+
+
+
+
+
+
+
+
+
 
 ##  7. Changelog
 
@@ -99,27 +120,12 @@ Hardware passthrough looks good
 
 ##  10. More ?
 
-https://github.com/jiangcuo/Proxmox-Arm64/wiki
+https://github.com/jiangcuo/Proxmox-Port/wiki
 
-# Current difficulties
+##  11. Next 
+1. Bring together the code for Arm64 Loongarch64 Riscv64 so that it can be built at the same time
+2. Optimize the code on Port-WebUI to be compatible with x86.This allows for compatibility with multiple architectures on the same set of  APIs
 
-Proxmox VE 7 and Proxmox Backup Server use rust.
-
-Some crates and pkg don't work on riscv and loongarch64 yet,cause I can't build pve7.
-
-such as:
-
-- Ring: 
-  - https://github.com/briansmith/ring/pull/1436 //riscv
-  
-  - https://github.com/zhaixiaojuan/ring.git   //loong64
-
-  - https://github.com/briansmith/webpki/issues/253 
-
-- Criu: 
-https://github.com/checkpoint-restore/criu/issues/1702
-
-I will test the pve6 first.
 
 # Interesting thing
 
