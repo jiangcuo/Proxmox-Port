@@ -2,7 +2,7 @@
 
 I plan to port Proxmox VE and Proxmox Backup Server to any architecture.
 
-By now, arm64/loongarch64 is finished. 
+By now, arm64/riscv64/loongarch64 is finished. 
 
 ## 1. Source
 The Proxmox-Port code is located in the following repositories.
@@ -31,7 +31,7 @@ Master branch is mirror, checkout branch to arm64 / riscv64 / loongarch64 .You c
 
 ## 2. Progress
 
-* pve6 base on debian sid(loongarch64/riscv64) -> done
+* pve8 base on debian sid(loongarch64/riscv64) -> done
 * pve8 base on debian12(arm64) -> done
 
 ## 3. Support 
@@ -53,8 +53,8 @@ Wiki: https://github.com/jiangcuo/Proxmox-Port/wiki
 - FT  (arm64)
 - Ampere   (arm64)
 - Apple  (arm64,vm only,no kvm support)
-- 3A5000 (loongarch64)
-- VisionFive2 (riscv64,loongarch64)
+- 3A5000/3A6000/3C5000 (loongarch64)
+- VisionFive2 (riscv64)
 
 
 ## 5. Features
@@ -68,12 +68,12 @@ Wiki: https://github.com/jiangcuo/Proxmox-Port/wiki
 
 ### pve
 - 8.1.3 (arm64)
-- 8.1.3 (loongarch64
+- 8.1.3 (loongarch64)
 - 8.1.3 (riscv64)
 
 ### pbs
 - 3.1.2 (arm64)
-- 3.1.2 (loongarch64)
+- 3.1.2 (loongarch64 with 4k kernel)
 
 ### screen shot 
 arm64 
