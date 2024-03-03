@@ -139,3 +139,7 @@ Thanks to Proxmox adding support for Arm, now I just need to change code
 and easy support other architectures.
 
 I sincerely hope that Proxmox can make their products support any platform which has kvm supported !
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jiangcuo/Proxmox-Arm64,jiangcuo/Proxmox-Port&type=Date)](https://star-history.com/#jiangcuo/Proxmox-Arm64&jiangcuo/Proxmox-Port&Date)
