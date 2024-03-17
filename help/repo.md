@@ -15,7 +15,7 @@ Germany: https://de.mirrors.apqa.cn (direct)
     https://mirrors.apqa.cn/proxmox/debian/pveport.gpg
     
    ```bash
-   curl https://mirrors.apqa.cn/proxmox/debian/pveport.gpg -o /etc/apt/trusted.gpg.d/pveport.gpg
+   curl -L https://mirrors.apqa.cn/proxmox/debian/pveport.gpg -o /etc/apt/trusted.gpg.d/pveport.gpg
 ```
 
 ### pve repo
