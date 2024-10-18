@@ -1,0 +1,24 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index b26da505..fc8ca388 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -3374,7 +3383,8 @@ sub query_supported_cpu_flags {
+ 	    '-chardev', "socket,id=qmp,path=/var/run/qemu-server/$fakevmid.qmp,server=on,wait=off",
+ 	    '-mon', 'chardev=qmp,mode=control',
+ 	    '-pidfile', $pidfile,
+-	    '-S', '-daemonize'
++	    '-S', '-daemonize',
++		'-cpu', 'max'
+ 	];
+ 
+ 	if (!$kvm) {
+
+@@ -3389,7 +3399,7 @@ sub query_supported_cpu_flags {
+ 		$fakevmid,
+ 		'query-cpu-model-expansion',
+ 		type => 'full',
+-		model => { name => 'host' }
++		model => { name => 'max' }
+ 	    );
+ 
+ 	    my $props = $cmd_result->{model}->{props};

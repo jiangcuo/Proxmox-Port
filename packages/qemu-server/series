@@ -1,0 +1,17 @@
+patches/001-fix-arm64-build.patch
+patches/002-fix-arm64-pcie.patch
+patches/003-add-aarch64-edk2-in-depends.patch
+patches/005-fix-arm64-cpu-cputype.patch
+patches/006-add-qemu-xhci.patch
+patches/007-use-virt-machine-type.patch
+patches/008-add-ramfb-support.patch
+patches/009-add-tmp-support.patch
+patches/010-add-secboot.patch
+patches/011-remote-other-ostype.patch
+patches/012-fix-pbs-file-brower-issue.patch
+patches/013-remove-other-scsihw.patch
+patches/014-use-scsi2-for-cdrom.patch
+patches/015-remove-vmgenid-in-arm64.patch
+patches/016-fix-arm64-virtgl-error.patch
+patches/017-remove-cpu-flags-detect-message.patch
+patches/changelog/004-add-changelog.patch

@@ -1,0 +1,13 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index b26da505..fc8ca388 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -3679,7 +3689,7 @@ sub config_to_command {
+ 	push @$cmd, $fixups->@*;
+     }
+ 
+-    if ($conf->{vmgenid}) {
++    if ($conf->{vmgenid} && $arch eq 'x86_64') {
+ 	push @$devices, '-device', 'vmgenid,guid='.$conf->{vmgenid};
+     }
+ 

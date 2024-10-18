@@ -1,0 +1,55 @@
+diff --git a/debian/changelog b/debian/changelog
+index ddb70dc8..ba7366c4 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -121,6 +121,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Fri, 19 Apr 2024 16:09:18 +0200
+ 
++qemu-server (8.1.1+port2) bookworm; urgency=medium
++
++  * fix query_supported_cpu_flags on aarch64
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Wed, 27 Mar 2024 09:26:45 +0800
++
++qemu-server (8.1.1+port1) bookworm; urgency=medium
++
++  * update to 8.1.1
++
++  * remove qemu cpu flags check
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Fri, 22 Mar 2024 21:11:29 +0800
++
+ qemu-server (8.1.1) bookworm; urgency=medium
+ 
+   * config: pending network: avoid undef-warning on old/new comparison
+@@ -173,6 +187,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Fri, 08 Mar 2024 15:00:25 +0100
+ 
++qemu-server (8.0.10+pve1) bookworm; urgency=medium
++
++  * add pve-edk2-firmware-aarch64 depends
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Sun, 03 Dec 2023 01:46:23 -0500
++
+ qemu-server (8.0.10) bookworm; urgency=medium
+ 
+   * sdn: pass vmid and hostname to allow requesting a new mapping
+@@ -191,6 +211,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Tue, 21 Nov 2023 15:40:27 +0100
+ 
++qemu-server (8.0.8-1) bookworm; urgency=medium
++
++  * remove some scshw
++
++  * add new cputype
++
++  * add virt machine
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Sun, 19 Nov 2023 14:29:21 +0800
++
+ qemu-server (8.0.8) bookworm; urgency=medium
+ 
+   * fix #2816: restore: remove timeout when allocating disks

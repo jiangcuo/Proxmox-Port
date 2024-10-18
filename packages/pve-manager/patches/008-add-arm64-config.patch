@@ -1,0 +1,123 @@
+diff --git a/www/manager6/Utils.js b/www/manager6/Utils.js
+index db86fa9a3..5f60b0ae2 100644
+--- a/www/manager6/Utils.js
++++ b/www/manager6/Utils.js
+@@ -496,7 +486,7 @@ Ext.define('PVE.Utils', {
+     },
+ 
+     render_qemu_machine: function(value) {
+-	return value || Proxmox.Utils.defaultText + ' (i440fx)';
++	return value || Proxmox.Utils.defaultText + ' (virt)';
+     },
+ 
+     render_qemu_bios: function(value) {
+diff --git a/www/manager6/form/CPUModelSelector.js b/www/manager6/form/CPUModelSelector.js
+index a30dd1fb6..f1c40a319 100644
+--- a/www/manager6/form/CPUModelSelector.js
++++ b/www/manager6/form/CPUModelSelector.js
+@@ -15,7 +15,7 @@ Ext.define('PVE.form.CPUModelSelector', {
+     valueField: 'name',
+     displayField: 'displayname',
+ 
+-    emptyText: Proxmox.Utils.defaultText + ' (kvm64)',
++    emptyText: Proxmox.Utils.defaultText + ' (host)',
+     allowBlank: true,
+ 
+     editable: true,
+diff --git a/www/manager6/form/ControllerSelector.js b/www/manager6/form/ControllerSelector.js
+index d7c2625da..432316247 100644
+--- a/www/manager6/form/ControllerSelector.js
++++ b/www/manager6/form/ControllerSelector.js
+@@ -34,7 +34,7 @@ Ext.define('PVE.form.ControllerSelector', {
+ 
+ 	let clist;
+ 	if (autoSelect === 'cdrom') {
+-	    if (!Ext.isDefined(me.vmconfig.ide2)) {
++	    if (!Ext.isDefined(me.vmconfig.scsi2)) {
+ 		bussel.setValue('ide');
+ 		deviceid.setValue(2);
+ 		return;
+
+diff --git a/www/manager6/panel/MultiDiskEdit.js b/www/manager6/panel/MultiDiskEdit.js
+index ea1f974da..51b68eff9 100644
+--- a/www/manager6/panel/MultiDiskEdit.js
++++ b/www/manager6/panel/MultiDiskEdit.js
+@@ -19,7 +19,7 @@ Ext.define('PVE.panel.MultiDiskPanel', {
+ 	    let me = this;
+ 	    me.lookup('addButton').setDisabled(true);
+ 	    me.addDisk();
+-	    let count = me.lookup('grid').getStore().getCount() + 1; // +1 is from ide2
++	    let count = me.lookup('grid').getStore().getCount() + 1; // +1 is from scsi2
+ 	    me.lookup('addButton').setDisabled(count >= me.maxCount);
+ 	},
+ 
+diff --git a/www/manager6/qemu/CreateWizard.js b/www/manager6/qemu/CreateWizard.js
+index 375f0c667..226209cba 100644
+--- a/www/manager6/qemu/CreateWizard.js
++++ b/www/manager6/qemu/CreateWizard.js
+@@ -190,7 +190,7 @@ Ext.define('PVE.qemu.CreateWizard', {
+ 		    bind: {
+ 			nodename: '{nodename}',
+ 		    },
+-		    confid: 'ide2',
++		    confid: 'scsi2',
+ 		    insideWizard: true,
+ 		},
+ 		{
+diff --git a/www/manager6/qemu/HardwareView.js b/www/manager6/qemu/HardwareView.js
+index 86d5f4cf3..0541a1de9 100644
+--- a/www/manager6/qemu/HardwareView.js
++++ b/www/manager6/qemu/HardwareView.js
+@@ -164,7 +164,7 @@ Ext.define('PVE.qemu.HardwareView', {
+ 		    let ostype = me.getObjectValue('ostype', undefined, pending);
+ 		    if (PVE.Utils.is_windows(ostype) &&
+ 			(!value || value === 'pc' || value === 'q35')) {
+-			return value === 'q35' ? 'pc-q35-5.1' : 'pc-i440fx-5.1';
++			return value === 'q35' ? 'pc-q35-5.1' : 'virt';
+ 		    }
+ 		    return PVE.Utils.render_qemu_machine(value);
+ 		},
+diff --git a/www/manager6/qemu/MachineEdit.js b/www/manager6/qemu/MachineEdit.js
+index a697cd344..3e5a5981b 100644
+--- a/www/manager6/qemu/MachineEdit.js
++++ b/www/manager6/qemu/MachineEdit.js
+@@ -24,7 +24,7 @@ Ext.define('PVE.qemu.MachineInputPanel', {
+ 	    let version = me.lookup('version');
+ 	    let store = version.getStore();
+ 	    let oldRec = store.findRecord('id', version.getValue(), 0, false, false, true);
+-	    let type = value === 'q35' ? 'q35' : 'i440fx';
++	    let type = value === 'q35' ? 'q35' : 'virt';
+ 	    store.clearFilter();
+ 	    store.addFilter(val => val.data.id === 'latest' || val.data.type === type);
+ 	    if (!me.getView().isWindows) {
+@@ -75,7 +75,7 @@ Ext.define('PVE.qemu.MachineInputPanel', {
+ 
+ 	if (me.isWindows) {
+ 	    if (values.machine === '__default__') {
+-		values.version = 'pc-i440fx-5.1';
++		values.version = 'virt';
+ 	    } else if (values.machine === 'q35') {
+ 		values.version = 'pc-q35-5.1';
+ 	    }
+diff --git a/www/manager6/qemu/MultiHDEdit.js b/www/manager6/qemu/MultiHDEdit.js
+index 27884f3f3..4dd2ce96d 100644
+--- a/www/manager6/qemu/MultiHDEdit.js
++++ b/www/manager6/qemu/MultiHDEdit.js
+@@ -7,7 +7,7 @@ Ext.define('PVE.qemu.MultiHDPanel', {
+     controller: {
+ 	xclass: 'Ext.app.ViewController',
+ 
+-	// maxCount is the sum of all controller ids - 1 (ide2 is fixed in the wizard)
++	// maxCount is the sum of all controller ids - 1 (scsi2 is fixed in the wizard)
+ 	maxCount: Object.values(PVE.Utils.diskControllerMaxIDs)
+ 		.reduce((previous, current) => previous+current, 0) - 1,
+ 
+@@ -38,7 +38,7 @@ Ext.define('PVE.qemu.MultiHDPanel', {
+ 	    let vm = me.getViewModel();
+ 
+ 	    let res = {
+-		ide2: 'media=cdrom',
++		scsi2: 'media=cdrom',
+ 		scsihw: vm.get('current.scsihw'),
+ 		ostype: vm.get('current.ostype'),
+ 	    };

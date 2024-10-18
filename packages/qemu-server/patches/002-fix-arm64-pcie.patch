@@ -1,0 +1,210 @@
+diff --git a/PVE/QemuServer/PCI.pm b/PVE/QemuServer/PCI.pm
+index 1673041b..429d110b 100644
+--- a/PVE/QemuServer/PCI.pm
++++ b/PVE/QemuServer/PCI.pm
+@@ -151,82 +151,72 @@ sub get_pci_addr_map {
+ 	ahci0 => { bus => 0, addr => 7 },
+ 	qga0 => { bus => 0, addr => 8 },
+ 	spice => { bus => 0, addr => 9 },
+-	virtio0 => { bus => 0, addr => 10 },
+-	virtio1 => { bus => 0, addr => 11 },
+-	virtio2 => { bus => 0, addr => 12 },
+-	virtio3 => { bus => 0, addr => 13 },
+-	virtio4 => { bus => 0, addr => 14 },
+-	virtio5 => { bus => 0, addr => 15 },
+-	hostpci0 => { bus => 0, addr => 16 },
+-	hostpci1 => { bus => 0, addr => 17 },
+-	net0 => { bus => 0, addr => 18 },
+-	net1 => { bus => 0, addr => 19 },
+-	net2 => { bus => 0, addr => 20 },
+-	net3 => { bus => 0, addr => 21 },
+-	net4 => { bus => 0, addr => 22 },
+-	net5 => { bus => 0, addr => 23 },
++#   pcie.1 =>  { bus => 0, addr => 10 }, 
++	net0 => { bus => 0, addr => 11 },
++	hostpci4 => { bus => 0, addr => 12 },
++	hostpci5 => { bus => 0, addr => 13 },
++	hostpci6 => { bus => 0, addr => 14 },
++	hostpci7 => { bus => 0, addr => 15 },
++	hostpci8 => { bus => 0, addr => 16 },
++	hostpci19 => { bus => 0, addr => 17 },
++	hostpci10 => { bus => 0, addr => 18 },
++ 	'xhci' => { bus => 0, addr => 19 },
++	hostpci0 => { bus => 0, addr => 22 },
++	hostpci1 => { bus => 0, addr => 23 },
+ 	vga1 => { bus => 0, addr => 24 },
+ 	vga2 => { bus => 0, addr => 25 },
+-	vga3 => { bus => 0, addr => 26 },
++#	vga3 => { bus => 0, addr => 26 }, #use to pcie2-3,for aarch64
+ 	hostpci2 => { bus => 0, addr => 27 },
+ 	hostpci3 => { bus => 0, addr => 28 },
+-	#addr29 : usb-host (pve-usb.cfg)
++#	addr29 : usb-host (pve-usb.cfg)
+ 	'pci.1' => { bus => 0, addr => 30 },
+ 	'pci.2' => { bus => 0, addr => 31 },
+-	'net6' => { bus => 1, addr => 1 },
+-	'net7' => { bus => 1, addr => 2 },
+-	'net8' => { bus => 1, addr => 3 },
+-	'net9' => { bus => 1, addr => 4 },
+-	'net10' => { bus => 1, addr => 5 },
+-	'net11' => { bus => 1, addr => 6 },
+-	'net12' => { bus => 1, addr => 7 },
+-	'net13' => { bus => 1, addr => 8 },
+-	'net14' => { bus => 1, addr => 9 },
+-	'net15' => { bus => 1, addr => 10 },
+-	'net16' => { bus => 1, addr => 11 },
+-	'net17' => { bus => 1, addr => 12 },
+-	'net18' => { bus => 1, addr => 13 },
+-	'net19' => { bus => 1, addr => 14 },
+-	'net20' => { bus => 1, addr => 15 },
+-	'net21' => { bus => 1, addr => 16 },
+-	'net22' => { bus => 1, addr => 17 },
+-	'net23' => { bus => 1, addr => 18 },
+-	'net24' => { bus => 1, addr => 19 },
+-	'net25' => { bus => 1, addr => 20 },
+-	'net26' => { bus => 1, addr => 21 },
+-	'net27' => { bus => 1, addr => 22 },
+-	'net28' => { bus => 1, addr => 23 },
+-	'net29' => { bus => 1, addr => 24 },
+-	'net30' => { bus => 1, addr => 25 },
+-	'net31' => { bus => 1, addr => 26 },
+-	'xhci' => { bus => 1, addr => 27 },
++#	'net0' => { bus => 1, addr => 1 },
++	'net1' => { bus => 1, addr => 2 },
++	'net2' => { bus => 1, addr => 3 },
++	'net3' => { bus => 1, addr => 4 },
++	'net4' => { bus => 1, addr => 5 },
++	'net5' => { bus => 1, addr => 6 },
++	'net6' => { bus => 1, addr => 7 },
++	'net7' => { bus => 1, addr => 8 },
++	'net8' => { bus => 1, addr => 9 },
++	'net9' => { bus => 1, addr => 10 },
++	'net10' => { bus => 1, addr => 11 },
++	'net11' => { bus => 1, addr => 12 },
++	'net12' => { bus => 1, addr => 13 },
++	'net13' => { bus => 1, addr => 14 },
++	'net14' => { bus => 1, addr => 15 },
++	'net15' => { bus => 1, addr => 16 },
++	'net16' => { bus => 1, addr => 17 },
++	'net17' => { bus => 1, addr => 18 },
++	'net18' => { bus => 1, addr => 19 },
++	'net19' => { bus => 1, addr => 20 },
++	'net20' => { bus => 1, addr => 21 },
++	'net21' => { bus => 1, addr => 22 },
++	'net22' => { bus => 1, addr => 23 },
++	'net23' => { bus => 1, addr => 24 },
++	'net24' => { bus => 1, addr => 25 },	
+ 	'pci.4' => { bus => 1, addr => 28 },
+ 	'rng0' => { bus => 1, addr => 29 },
+ 	'pci.2-igd' => { bus => 1, addr => 30 }, # replaces pci.2 in case a legacy IGD device is passed through
+-	'virtio6' => { bus => 2, addr => 1 },
+-	'virtio7' => { bus => 2, addr => 2 },
+-	'virtio8' => { bus => 2, addr => 3 },
+-	'virtio9' => { bus => 2, addr => 4 },
+-	'virtio10' => { bus => 2, addr => 5 },
+-	'virtio11' => { bus => 2, addr => 6 },
+-	'virtio12' => { bus => 2, addr => 7 },
+-	'virtio13' => { bus => 2, addr => 8 },
+-	'virtio14' => { bus => 2, addr => 9 },
+-	'virtio15' => { bus => 2, addr => 10 },
+-	'ivshmem' => { bus => 2, addr => 11 },
+-	'audio0' => { bus => 2, addr => 12 },
+-	hostpci4 => { bus => 2, addr => 13 },
+-	hostpci5 => { bus => 2, addr => 14 },
+-	hostpci6 => { bus => 2, addr => 15 },
+-	hostpci7 => { bus => 2, addr => 16 },
+-	hostpci8 => { bus => 2, addr => 17 },
+-	hostpci9 => { bus => 2, addr => 18 },
+-	hostpci10 => { bus => 2, addr => 19 },
+-	hostpci11 => { bus => 2, addr => 20 },
+-	hostpci12 => { bus => 2, addr => 21 },
+-	hostpci13 => { bus => 2, addr => 22 },
+-	hostpci14 => { bus => 2, addr => 23 },
+-	hostpci15 => { bus => 2, addr => 24 },
++	'virtio0' => { bus => 2, addr => 1 },
++	'virtio1' => { bus => 2, addr => 2 },
++	'virtio2' => { bus => 2, addr => 3 },
++	'virtio3' => { bus => 2, addr => 4 },
++	'virtio4' => { bus => 2, addr => 5 },
++	'virtio5' => { bus => 2, addr => 6 },
++	'virtio6' => { bus => 2, addr => 7 },
++	'virtio7' => { bus => 2, addr => 8 },
++	'virtio8' => { bus => 2, addr => 9 },
++	'virtio9' => { bus => 2, addr => 10 },
++    'virtio10' => { bus => 2, addr => 11 },
++	'virtio11' => { bus => 2, addr => 12 },
++	'virtio12' => { bus => 2, addr => 13 },
++	'virtio13' => { bus => 2, addr => 14 },
++	'virtio14' => { bus => 2, addr => 15 },
++	'virtio15' => { bus => 2, addr => 16 },
++	'ivshmem' => { bus => 2, addr => 17 },
++	'audio0' => { bus => 2, addr => 18 },
+ 	'virtioscsi0' => { bus => 3, addr => 1 },
+ 	'virtioscsi1' => { bus => 3, addr => 2 },
+ 	'virtioscsi2' => { bus => 3, addr => 3 },
+@@ -576,7 +566,9 @@ sub print_hostpci_devices {
+     my $kvm_off = 0;
+     my $gpu_passthrough = 0;
+     my $legacy_igd = 0;
+-
++	if ($arch eq 'aarch64') { 
++        push @$devices, '-readconfig', '/usr/share/qemu-server/pve-aarch64.cfg';
++    }
+     my $pciaddr;
+     my $pci_devices = choose_hostpci_devices(parse_hostpci_devices($conf), $vmid);
+
+diff --git a/qemu-configs/Makefile b/qemu-configs/Makefile
+index f55e9bef..463df4f3 100644
+--- a/qemu-configs/Makefile
++++ b/qemu-configs/Makefile
+@@ -2,11 +2,12 @@ DESTDIR=
+ USRSHAREDIR=$(DESTDIR)/usr/share/qemu-server
+ 
+ .PHONY: install
+-install: pve-usb.cfg pve-q35.cfg pve-q35-4.0.cfg
++install: pve-usb.cfg pve-q35.cfg pve-q35-4.0.cfg pve-aarch64.cfg
+ 	install -d $(USRSHAREDIR)
+ 	install -m 0644 pve-usb.cfg $(USRSHAREDIR)
+ 	install -m 0644 pve-q35.cfg $(USRSHAREDIR)
+ 	install -m 0644 pve-q35-4.0.cfg $(USRSHAREDIR)
++	install -m 0644 pve-aarch64.cfg $(USRSHAREDIR)
+ 
+ .PHONY: clean
+ clean:
+diff --git a/qemu-configs/pve-aarch64.cfg b/qemu-configs/pve-aarch64.cfg
+new file mode 100644
+index 00000000..9ba549e6
+--- /dev/null
++++ b/qemu-configs/pve-aarch64.cfg
+@@ -0,0 +1,30 @@
++[device "pcie.1"]
++  driver = "pci-bridge"
++  bus = "pcie.0"
++  addr = "0xa"
++  chassis_nr = "1"
++
++#[device "pciroot"]
++# driver = "pci-bridge"
++#  bus = "pci.1"
++#  addr = "1.0"
++#  chassis_nr = "1"
++
++[device "pcie.2"]
++  driver = "pci-bridge"
++  bus = "pci.1"
++  addr = "1.0"
++  chassis_nr = "2"
++
++
++[device "pcie.3"]
++  driver = "pci-bridge"
++  bus = "pci.2"
++  addr = "1.0"
++  chassis_nr = "3"
++
++[device "pcie.4"]
++  driver = "pci-bridge"
++  bus = "pci.2"
++  addr = "2.0"
++  chassis_nr = "4"
+

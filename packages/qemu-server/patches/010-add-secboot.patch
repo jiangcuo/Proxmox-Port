@@ -1,0 +1,44 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index b26da505..fc8ca388 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -97,6 +97,22 @@ my $OVMF = {
+ 	],
+     },
+     aarch64 => {
++    '4m-no-smm' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.fd",
++    ],
++    '4m-no-smm-ms' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.ms.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.ms.fd",
++    ],
++   '4m' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.fd",
++    ],
++    '4m-ms' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.ms.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.ms.fd",
++    ],
+ 	default => [
+ 	    "$EDK2_FW_BASE/AAVMF_CODE.fd",
+ 	    "$EDK2_FW_BASE/AAVMF_VARS.fd",
+@@ -3295,13 +3308,9 @@ sub get_ovmf_files($$$) {
+ 	or die "no OVMF images known for architecture '$arch'\n";
+ 
+     my $type = 'default';
+-    if ($arch eq 'x86_64') {
+-	if (defined($efidisk->{efitype}) && $efidisk->{efitype} eq '4m') {
+-	    $type = $smm ? "4m" : "4m-no-smm";
+-	    $type .= '-ms' if $efidisk->{'pre-enrolled-keys'};
+-	} else {
+-	    # TODO: log_warn about use of legacy images for x86_64 with Promxox VE 9
+-	}
++    if (defined($efidisk->{efitype}) && $efidisk->{efitype} eq '4m') {
++	$type = $smm ? "4m" : "4m-no-smm";
++	$type .= '-ms' if $efidisk->{'pre-enrolled-keys'};
+     }
+ 
+     my ($ovmf_code, $ovmf_vars) = $types->{$type}->@*;

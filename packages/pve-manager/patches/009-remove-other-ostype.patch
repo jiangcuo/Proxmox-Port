@@ -1,0 +1,25 @@
+diff --git a/www/manager6/Utils.js b/www/manager6/Utils.js
+index db86fa9a3..5f60b0ae2 100644
+--- a/www/manager6/Utils.js
++++ b/www/manager6/Utils.js
+@@ -48,19 +48,9 @@ Ext.define('PVE.Utils', {
+     kvm_ostypes: {
+ 	'Linux': [
+ 	    { desc: '6.x - 2.6 Kernel', val: 'l26' },
+-	    { desc: '2.4 Kernel', val: 'l24' },
+ 	],
+ 	'Microsoft Windows': [
+-	    { desc: '11/2022/2025', val: 'win11' },
+-	    { desc: '10/2016/2019', val: 'win10' },
+-	    { desc: '8.x/2012/2012r2', val: 'win8' },
+-	    { desc: '7/2008r2', val: 'win7' },
+-	    { desc: 'Vista/2008', val: 'w2k8' },
+-	    { desc: 'XP/2003', val: 'wxp' },
+-	    { desc: '2000', val: 'w2k' },
+-	],
+-	'Solaris Kernel': [
+-	    { desc: '-', val: 'solaris' },
++	    { desc: '11/2022', val: 'win11' },
+ 	],
+ 	'Other': [
+ 	    { desc: '-', val: 'other' },

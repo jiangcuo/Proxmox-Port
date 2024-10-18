@@ -1,0 +1,40 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index b26da505..fc8ca388 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -184,7 +200,7 @@ my $vga_fmt = {
+ 	default => 'std',
+ 	optional => 1,
+ 	default_key => 1,
+-	enum => [qw(cirrus qxl qxl2 qxl3 qxl4 none serial0 serial1 serial2 serial3 std virtio virtio-gl vmware)],
++	enum => [qw(cirrus qxl qxl2 qxl3 qxl4 none serial0 serial1 serial2 serial3 std virtio virtio-gl vmware ramfb)],
+     },
+     memory => {
+ 	description => "Sets the VGA memory (in MiB). Has no effect with serial display.",
+@@ -1775,7 +1780,8 @@ my $vga_map = {
+     'std' => 'VGA',
+     'vmware' => 'vmware-svga',
+     'virtio' => 'virtio-vga',
+-    'virtio-gl' => 'virtio-vga-gl',
++    'virtio-gl' => 'virtio-gpu-gl',
++    'ramfb' => 'ramfb',
+ };
+ 
+ sub print_vga_device {
+@@ -3793,9 +3803,12 @@ sub config_to_command {
+     push @$cmd, '-no-reboot' if  defined($conf->{reboot}) && $conf->{reboot} == 0;
+ 
+     if ($vga->{type} && $vga->{type} !~ m/^serial\d+$/ && $vga->{type} ne 'none'){
+-	push @$devices, '-device', print_vga_device(
+-	    $conf, $vga, $arch, $machine_version, $machine_type, undef, $qxlnum, $bridges);
+-
++        if ($vga->{type} eq 'ramfb'){
++            push @$devices, '-device', 'ramfb';
++        } else {
++            push @$devices, '-device', print_vga_device(
++            $conf, $vga, $arch, $machine_version, $machine_type, undef, $qxlnum, $bridges);
++    	}
+ 	push @$cmd, '-display', 'egl-headless,gl=core' if $vga->{type} eq 'virtio-gl'; # VIRGL
+ 
+ 	my $socket = PVE::QemuServer::Helpers::vnc_socket($vmid);
+

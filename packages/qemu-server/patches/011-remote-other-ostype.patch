@@ -1,0 +1,35 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index b26da505..fc8ca388 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -404,8 +420,7 @@ my $confdesc = {
+     ostype => {
+ 	optional => 1,
+ 	type => 'string',
+-	# NOTE: When extending, also consider extending `%guest_types` in `Import/ESXi.pm`.
+-	enum => [qw(other wxp w2k w2k3 w2k8 wvista win7 win8 win10 win11 l24 l26 solaris)],
++	enum => [qw(win11 l26 other)],
+ 	description => "Specify guest operating system.",
+ 	verbose_description => <<EODESC,
+ Specify guest operating system. This is used to enable special
+
+@@ -413,18 +428,8 @@ optimization/features for specific operating systems:
+ 
+ [horizontal]
+ other;; unspecified OS
+-wxp;; Microsoft Windows XP
+-w2k;; Microsoft Windows 2000
+-w2k3;; Microsoft Windows 2003
+-w2k8;; Microsoft Windows 2008
+-wvista;; Microsoft Windows Vista
+-win7;; Microsoft Windows 7
+-win8;; Microsoft Windows 8/2012/2012r2
+-win10;; Microsoft Windows 10/2016/2019
+-win11;; Microsoft Windows 11/2022/2025
+-l24;; Linux 2.4 Kernel
++win11;; Microsoft Windows 11/2022
+ l26;; Linux 2.6 - 6.X Kernel
+-solaris;; Solaris/OpenSolaris/OpenIndiania kernel
+ EODESC
+     },
+     boot => {
