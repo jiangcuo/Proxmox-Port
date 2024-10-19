@@ -4,3 +4,12 @@
 [submodule "packages/qemu-server/qemu-server"]
 	path = packages/qemu-server/qemu-server
 	url = https://git.proxmox.com/git/qemu-server.git
+[submodule "packages/zfsonlinux/zfsonlinux"]
+	path = packages/zfsonlinux/zfsonlinux
+	url = https://git.proxmox.com/git/zfsonlinux.git
+[submodule "packages/pve-qemu/pve-qemu"]
+	path = packages/pve-qemu/pve-qemu
+	url = https://git.proxmox.com/git/pve-qemu.git
+[submodule "packages/pve-common/pve-common"]
+	path = packages/pve-common/pve-common
+	url = https://git.proxmox.com/git/pve-common

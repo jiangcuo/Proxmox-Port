@@ -1,0 +1,26 @@
+diff --git a/src/PVE/Syscall.pm b/src/PVE/Syscall.pm
+index 9ef3d5d..d7b0b3f 100644
+--- a/src/PVE/Syscall.pm
++++ b/src/PVE/Syscall.pm
+@@ -16,7 +16,6 @@ BEGIN {
+ 	openat => &SYS_openat,
+ 	close => &SYS_close,
+ 	mkdirat => &SYS_mkdirat,
+-	mknod => &SYS_mknod,
+ 	faccessat => &SYS_faccessat,
+ 	setresuid => &SYS_setresuid,
+ 	fchownat => &SYS_fchownat,
+diff --git a/src/PVE/Tools.pm b/src/PVE/Tools.pm
+index bd305bd..2aab9e2 100644
+--- a/src/PVE/Tools.pm
++++ b/src/PVE/Tools.pm
+@@ -1753,7 +1753,8 @@ sub mkdirat($$$) {
+ 
+ sub mknod($$$) {
+     my ($filename, $mode, $dev) = @_;
+-    return syscall(PVE::Syscall::mknod, $filename, int($mode), int($dev)) == 0;
++	die "https://github.com/jiangcuo/Proxmox-Arm64/issues/58";
++    #return syscall(PVE::Syscall::SYS_mknod, $filename, int($mode), int($dev)) == 0;
+ }
+ 
+ sub fchownat($$$$$) {

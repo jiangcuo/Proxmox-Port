@@ -1,0 +1,17 @@
+diff --git a/debian/changelog b/debian/changelog
+index e628a2a..ff213c4 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -158,6 +158,12 @@ libpve-common-perl (8.0.2) bookworm; urgency=medium
+   * remove unused SysFSTools::pci_cleanup_mdev_device
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Wed, 07 Jun 2023 13:12:18 +0200
++ 
++libpve-common-perl (8.1.0-1) bookworm; urgency=medium
++
++  * tools: remove mknod syscall#
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Tue, 21 Nov 2023 13:04:21 +0100
+ 
+ libpve-common-perl (8.0.1) bookworm; urgency=medium
+ 
