@@ -1,0 +1,37 @@
+diff --git a/Proxmox/Install.pm b/Proxmox/Install.pm
+index fa2702c..636e684 100644
+--- a/Proxmox/Install.pm
++++ b/Proxmox/Install.pm
+@@ -608,6 +617,24 @@ my sub chroot_chmod {
+ 	die "chroot: unable to change permission mode for '$path'\n";
+ }
+ 
++sub rockchip_dtb_setup {
++	my ($espdev, $targetdir, $zfs) = @_;
++	# For rockchpi efi env need Device Tree mode,   https://github.com/edk2-porting/edk2-rk3588
++	# We create \dtb\base\ in esp root
++	my $kernel_version = `uname -r`;
++	if ($kernel_version =~ /rockchip/){
++	print "kernel is rockchip\n";
++		if ($zfs == '1') {
++			syscmd("mount $espdev $targetdir/boot/efi/");
++			syscmd("cp -r /cdrom/dtb $targetdir/boot/efi/");
++			syscmd("umount -l $targetdir/boot/efi/") ;
++		}else{
++			syscmd("cp -r /cdrom/dtb $targetdir/boot/efi/");
++		}
++	}
++}
++
++
+ sub prepare_proxmox_boot_esp {
+     my ($espdev, $targetdir, $secureboot) = @_;
+ 
+@@ -618,6 +645,7 @@ sub prepare_proxmox_boot_esp {
+ 
+     syscmd("chroot $targetdir proxmox-boot-tool init $espdev $mode") == 0 ||
+ 	die "unable to init ESP and install proxmox-boot loader on '$espdev'\n";
++	rockchip_dtb_setup($espdev, $targetdir,1);
+ }
+ 
+ sub prepare_grub_efi_boot_esp {

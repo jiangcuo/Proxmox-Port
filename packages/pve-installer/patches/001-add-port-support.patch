@@ -1,0 +1,117 @@
+diff --git a/Proxmox/Install.pm b/Proxmox/Install.pm
+index fa2702c..636e684 100644
+--- a/Proxmox/Install.pm
++++ b/Proxmox/Install.pm
+@@ -6,6 +6,7 @@ use warnings;
+ use Cwd 'abs_path';
+ use Encode;
+ use POSIX ":sys_wait_h";
++use POSIX qw(EINTR EEXIST EOPNOTSUPP);
+ 
+ use Proxmox::Install::ISOEnv;
+ use Proxmox::Install::RunEnv;
+@@ -58,6 +59,13 @@ sub reset_last_display_change {
+     $last_display_change = 0;
+ }
+ 
++my $host_arch;
++sub get_host_arch {
++    $host_arch = (POSIX::uname())[4] if !$host_arch;
++    return $host_arch;
++}
++my $arch = get_host_arch();
++
+ sub display_info {
+     my $min_display_time = 15;
+ 
+@@ -97,6 +105,7 @@ my $fssetup = {
+     },
+ };
+ 
++
+ sub create_filesystem {
+     my ($dev, $name, $type, $start, $end, $fs, $fe) = @_;
+ 
+@@ -625,9 +653,18 @@ sub prepare_grub_efi_boot_esp {
+ 
+     syscmd("mount -n $espdev -t vfat $targetdir/boot/efi") == 0 ||
+ 	die "unable to mount $espdev\n";
+-
++    my $arch = get_host_arch();
++    my $rc;
+     eval {
+-	my $rc = syscmd("chroot $targetdir /usr/sbin/grub-install --target x86_64-efi --no-floppy --bootloader-id='proxmox' $dev");
++	if ($arch eq "aarch64"){
++		my $rc = syscmd("chroot $targetdir /usr/sbin/grub-install --target arm64-efi --no-floppy --bootloader-id='proxmox' $dev");
++	} elsif ($arch eq "loongarch64"){
++		my $rc = syscmd("chroot $targetdir /usr/sbin/grub-install --target loongarch64-efi --no-floppy --bootloader-id='proxmox' $dev");
++	} elsif ($arch eq "riscv64"){
++		my $rc = syscmd("chroot $targetdir /usr/sbin/grub-install --target riscv64-efi --no-floppy --bootloader-id='proxmox' $dev");
++	} else {
++		die "unable to install grub on arch $arch\n";
++	}
+ 	if ($rc != 0) {
+ 	    my $run_env = Proxmox::Install::RunEnv::get();
+ 	    if ($run_env->{boot_type} eq 'efi') {
+@@ -636,12 +673,23 @@ sub prepare_grub_efi_boot_esp {
+ 		warn "unable to install the EFI boot loader on '$dev', ignoring (not booted using UEFI)\n";
+ 	    }
+ 	}
++	rockchip_dtb_setup($espdev, $targetdir , 0);
++
+ 	# also install fallback boot file (OVMF does not boot without)
+ 	mkdir("$targetdir/boot/efi/EFI/BOOT");
+-	syscmd("cp $targetdir/boot/efi/EFI/proxmox/*.efi $targetdir/boot/efi/EFI/BOOT/") == 0 ||
++	syscmd("cp -r $targetdir/boot/efi/EFI/proxmox/* $targetdir/boot/efi/EFI/BOOT/");
++	if ($arch eq "aarch64"){
++		syscmd("cp $targetdir/boot/efi/EFI/BOOT/grubaa64.efi $targetdir/boot/efi/EFI/BOOT/BOOTAA64.EFI ") == 0  ||
+ 	    die "unable to copy efi boot loader\n";
+-	syscmd("mv $targetdir/boot/efi/EFI/BOOT/shimx64.efi $targetdir/boot/efi/EFI/BOOT/BOOTx64.efi") == 0 ||
+-	    die "unable to setup default efi boot loader\n";
++	} elsif ($arch eq "loongarch64") { 
++		syscmd("cp $targetdir/boot/efi/EFI/BOOT/grubloongarch64.efi $targetdir/boot/efi/EFI/BOOT/BOOTLOONGARCH64.efi") == 0  ||
++            die "unable to copy efi boot loader\n";
++	} elsif ($arch eq "riscv64") {
++		syscmd("cp $targetdir/boot/efi/EFI/BOOT/grubriscv64.efi $targetdir/boot/efi/EFI/BOOT/BOOTRISCV64.efi") == 0  ||
++            die "unable to copy efi boot loader\n";
++	}  else {
++                die "unable to opy efi boot loader on arch $arch\n";
++        }
+     };
+     my $err = $@;
+ 
+@@ -1258,14 +1306,6 @@ _EOD
+ 	diversion_remove($targetdir, "/usr/sbin/update-grub");
+ 	diversion_remove($targetdir, "/usr/sbin/update-initramfs");
+ 
+-	my $kapi;
+-	foreach my $fn (<$targetdir/lib/modules/*>) {
+-	    if ($fn =~ m!/(\d+\.\d+\.\d+-\d+-pve)$!) {
+-		die "found multiple kernels\n" if defined($kapi);
+-		$kapi = $1;
+-	    }
+-	}
+-	die "unable to detect kernel version\n" if !defined($kapi);
+ 
+ 	if (!is_test_mode()) {
+ 
+@@ -1275,7 +1315,7 @@ _EOD
+ 
+ 	    my $bootloader_err_list = [];
+ 	    eval {
+-		syscmd("chroot $targetdir /usr/sbin/update-initramfs -c -k $kapi") == 0 ||
++		syscmd("chroot $targetdir /usr/sbin/update-initramfs -c -k all") == 0 ||
+ 		    die "unable to install initramfs\n";
+ 
+ 		my $native_4k_disk_bootable = 0;
+@@ -1290,8 +1330,8 @@ _EOD
+ 		    } else {
+ 			if (!$native_4k_disk_bootable) {
+ 			    eval {
+-				syscmd("chroot $targetdir /usr/sbin/grub-install --target i386-pc --no-floppy --bootloader-id='proxmox' $dev") == 0 ||
+-					die "unable to install the i386-pc boot loader on '$dev'\n";
++#				syscmd("chroot $targetdir /usr/sbin/grub-install --target i386-pc --no-floppy --bootloader-id='proxmox' $dev") == 0 ||
++					print ("not need  install the i386-pc boot loader on '$dev'\n");
+ 			    };
+ 			    push @$bootloader_err_list, $@ if $@;
+ 			}

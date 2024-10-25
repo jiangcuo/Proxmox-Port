@@ -1,0 +1,109 @@
+diff --git a/src/PVE/LXC/Config.pm b/src/PVE/LXC/Config.pm
+index 1664a35..73f60f0 100644
+--- a/src/PVE/LXC/Config.pm
++++ b/src/PVE/LXC/Config.pm
+@@ -473,7 +473,7 @@ my $confdesc = {
+     arch => {
+ 	optional => 1,
+ 	type => 'string',
+-	enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64'],
++	enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64', 'loongarch64'],
+ 	description => "OS architecture type.",
+ 	default => 'amd64',
+     },
+diff --git a/src/PVE/LXC/Setup.pm b/src/PVE/LXC/Setup.pm
+index 5c9114c..cae55b1 100644
+--- a/src/PVE/LXC/Setup.pm
++++ b/src/PVE/LXC/Setup.pm
+@@ -135,17 +135,6 @@ sub new {
+     if (!defined($conf->{arch})) {
+ 	my $arch = eval { $self->protected_call(sub { $plugin->detect_architecture() }) };
+ 
+-	if (my $err = $@) {
+-	    warn "Architecture detection failed: $err" if $err;
+-	}
+-
+-	if (!defined($arch)) {
+-	    $arch = 'amd64';
+-	    print "Falling back to $arch.\nUse `pct set VMID --arch ARCH` to change.\n";
+-	} else {
+-	    print "Detected container architecture: $arch\n";
+-	}
+-
+ 	$conf->{arch} = $arch;
+     }
+ 
+diff --git a/src/PVE/LXC/Setup/Plugin.pm b/src/PVE/LXC/Setup/Plugin.pm
+index b9d9c2d..533afe0 100644
+--- a/src/PVE/LXC/Setup/Plugin.pm
++++ b/src/PVE/LXC/Setup/Plugin.pm
+@@ -6,6 +6,7 @@ use strict;
+ use warnings;
+ 
+ use Carp;
++use PVE::Tools;
+ 
+ sub new {
+     my ($class, $conf, $rootdir, $os_release) = @_;
+@@ -64,7 +65,48 @@ sub ssh_host_key_types_to_generate {
+ 
+ sub detect_architecture {
+     my ($self) = @_;
+-    croak "implement me in sub-class\n";
++    # see https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
++    my $supported_elf_machine = {
++	0x03 => 'i386',
++	0x3e => 'amd64',
++	0x28 => 'armhf',
++	0xb7 => 'arm64',
++    0xf3 => 'riscv',
++	0x2 => 'loongarch64',
++    };
++
++    my $elf_fn = '/bin/sh'; # '/bin/sh' is POSIX mandatory
++    my $detect_arch = sub {
++	# chroot avoids a problem where we check the binary of the host system
++	# if $elf_fn is an absolut symlink (e.g. $rootdir/bin/sh -> /bin/bash)
++	open(my $fh, "<", $elf_fn) or die "open '$elf_fn' failed: $!\n";
++	binmode($fh);
++
++	my $length = read($fh, my $data, 20) or die "read failed: $!\n";
++
++	# 4 bytes ELF magic number and 1 byte ELF class, padding, machine
++	my ($magic, $class, undef, $machine) = unpack("A4CA12n", $data);
++
++	die "'$elf_fn' does not resolve to an ELF!\n"
++	    if (!defined($class) || !defined($magic) || $magic ne "\177ELF");
++
++	my $arch = $supported_elf_machine->{$machine};
++	die "'$elf_fn' has unknown ELF machine '$machine'!\n"
++	    if !defined($arch);
++
++	return $arch;
++    };
++
++    my $arch = eval { PVE::Tools::run_fork_with_timeout(5, $detect_arch) };
++    if (my $err = $@) {
++	    $arch = 'arm64';
++	    print "Architecture detection failed: $err\nFalling back to loongarch64.\n" .
++	    "Use `pct set VMID --arch ARCH` to change.\n";
++    } else {
++	    print "Detected container architecture: $arch\n";
++    }
++
++    return $arch;
+ }
+ 
+ # hooks
+diff --git a/src/PVE/LXC/Tools.pm b/src/PVE/LXC/Tools.pm
+index 7e3e530..838327f 100644
+--- a/src/PVE/LXC/Tools.pm
++++ b/src/PVE/LXC/Tools.pm
+@@ -179,6 +179,7 @@ sub detect_elf_architecture {
+ 	0x28 => 'armhf',
+ 	0xb7 => 'arm64',
+ 	0xf3 => 'riscv',
++	0x2 => 'loongarch64',
+     };
+ 
+     my $detect_arch = sub {
