@@ -1,0 +1,58 @@
+diff --git a/src/sys_quotactl.rs b/src/sys_quotactl.rs
+index 8a243fd..b125502 100644
+--- a/src/sys_quotactl.rs
++++ b/src/sys_quotactl.rs
+@@ -113,7 +113,7 @@ pub async fn q_getinfo(
+         let mut data: dqinfo = unsafe { mem::zeroed() };
+         let special = special.as_ref().map(|c| c.as_ptr()).unwrap_or(ptr::null());
+         sc_libc_try!(unsafe {
+-            libc::quotactl(cmd, special, id, &mut data as *mut dqinfo as *mut i8)
++            libc::quotactl(cmd, special, id, &mut data as *mut dqinfo as *mut u8)
+         });
+ 
+         msg.mem_write_struct(addr, &data)?;
+@@ -143,7 +143,7 @@ pub async fn q_setinfo(
+                 cmd,
+                 special.as_ptr(),
+                 id,
+-                &mut data as *mut dqinfo as *mut i8,
++                &mut data as *mut dqinfo as *mut u8,
+             )
+         });
+ 
+@@ -166,7 +166,7 @@ pub async fn q_getfmt(
+ 
+         let mut data: u32 = 0;
+         let special = special.as_ref().map(|c| c.as_ptr()).unwrap_or(ptr::null());
+-        sc_libc_try!(unsafe { libc::quotactl(cmd, special, id, &mut data as *mut u32 as *mut i8) });
++        sc_libc_try!(unsafe { libc::quotactl(cmd, special, id, &mut data as *mut u32 as *mut u8) });
+ 
+         msg.mem_write_struct(addr, &data)?;
+         Ok(SyscallStatus::Ok(0))
+@@ -257,7 +257,7 @@ pub async fn q_getquota(
+                 cmd,
+                 special.as_ptr(),
+                 id,
+-                &mut data as *mut libc::dqblk as *mut i8,
++                &mut data as *mut libc::dqblk as *mut u8,
+             )
+         });
+ 
+@@ -290,7 +290,7 @@ pub async fn q_setquota(
+                 cmd,
+                 special.as_ptr(),
+                 id,
+-                &mut data as *mut libc::dqblk as *mut i8,
++                &mut data as *mut libc::dqblk as *mut u8,
+             )
+         });
+ 
+@@ -323,7 +323,7 @@ pub async fn q_getnextquota(
+                 cmd,
+                 special.as_ptr(),
+                 id,
+-                &mut data as *mut nextdqblk as *mut i8,
++                &mut data as *mut nextdqblk as *mut u8,
+             )
+         });
+ 

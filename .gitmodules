@@ -42,3 +42,159 @@
 [submodule "packages/ceph-19/ceph"]
 	path = packages/ceph-19/ceph
 	url = https://git.proxmox.com/git/ceph.git
+[submodule "packages/pve-cluster/pve-cluster"]
+	path = packages/pve-cluster/pve-cluster
+	url = https://git.proxmox.com/git/pve-cluster.git
+[submodule "packages/perlmod/perlmod"]
+	path = packages/perlmod/perlmod
+	url = https://git.proxmox.com/git/perlmod.git
+[submodule "packages/package-rebuilds/package-rebuilds"]
+	path = packages/package-rebuilds/package-rebuilds
+	url = https://git.proxmox.com/git/package-rebuilds
+[submodule "packages/proxmox-i18n/proxmox-i18n"]
+	path = packages/proxmox-i18n/proxmox-i18n
+	url = https://git.proxmox.com/git/proxmox-i18n
+[submodule "packages/proxmox-widget-toolkit/proxmox-widget-toolkit"]
+	path = packages/proxmox-widget-toolkit/proxmox-widget-toolkit
+	url = https://git.proxmox.com/git/proxmox-widget-toolkit
+[submodule "packages/pve-http-server/pve-http-server"]
+	path = packages/pve-http-server/pve-http-server
+	url = https://git.proxmox.com/git/pve-http-server
+[submodule "packages/pve-docs/pve-docs"]
+	path = packages/pve-docs/pve-docs
+	url = https://git.proxmox.com/git/pve-docs
+[submodule "packages/libgit2/libgit2"]
+	path = packages/libgit2/libgit2
+	url = https://git.proxmox.com/git/libgit2
+[submodule "packages/pve-guest-common/pve-guest-common"]
+	path = packages/pve-guest-common/pve-guest-common
+	url = https://git.proxmox.com/git/pve-guest-common
+[submodule "packages/pve-xtermjs/pve-xtermjs"]
+	path = packages/pve-xtermjs/pve-xtermjs
+	url = https://git.proxmox.com/git/pve-xtermjs
+[submodule "packages/pve-access-control/pve-access-control"]
+	path = packages/pve-access-control/pve-access-control
+	url = https://git.proxmox.com/git/pve-access-control
+[submodule "packages/ifupdown2/ifupdown2"]
+	path = packages/ifupdown2/ifupdown2
+	url = https://git.proxmox.com/git/ifupdown2
+[submodule "packages/pve-ha-manager/pve-ha-manager"]
+	path = packages/pve-ha-manager/pve-ha-manager
+	url = https://git.proxmox.com/git/pve-ha-manager
+[submodule "packages/pve-firewall/pve-firewall"]
+	path = packages/pve-firewall/pve-firewall
+	url = https://git.proxmox.com/git/pve-firewall
+[submodule "packages/proxmox-acme/proxmox-acme"]
+	path = packages/proxmox-acme/proxmox-acme
+	url = https://git.proxmox.com/git/proxmox-acme
+[submodule "packages/pve-network/pve-network"]
+	path = packages/pve-network/pve-network
+	url = https://git.proxmox.com/git/pve-network
+[submodule "packages/pve-zsync/pve-zsync"]
+	path = packages/pve-zsync/pve-zsync
+	url = https://git.proxmox.com/git/pve-zsync
+[submodule "packages/lxcfs/lxcfs"]
+	path = packages/lxcfs/lxcfs
+	url = https://git.proxmox.com/git/lxcfs
+[submodule "packages/ksm-control-daemon/ksm-control-daemon"]
+	path = packages/ksm-control-daemon/ksm-control-daemon
+	url = https://git.proxmox.com/git/ksm-control-daemon
+[submodule "packages/lxc/lxc"]
+	path = packages/lxc/lxc
+	url = https://git.proxmox.com/git/lxc
+[submodule "packages/proxmox-kernel-helper/proxmox-kernel-helper"]
+	path = packages/proxmox-kernel-helper/proxmox-kernel-helper
+	url = https://git.proxmox.com/git/proxmox-kernel-helper
+[submodule "packages/fonts-font-logos/fonts-font-logos"]
+	path = packages/fonts-font-logos/fonts-font-logos
+	url = https://git.proxmox.com/git/fonts-font-logos
+[submodule "packages/kronosnet/kronosnet"]
+	path = packages/kronosnet/kronosnet
+	url = https://git.proxmox.com/git/kronosnet
+[submodule "packages/pve-eslint/pve-eslint"]
+	path = packages/pve-eslint/pve-eslint
+	url = https://git.proxmox.com/git/pve-eslint
+[submodule "packages/librados2-perl/librados2-perl"]
+	path = packages/librados2-perl/librados2-perl
+	url = https://git.proxmox.com/git/librados2-perl
+[submodule "packages/extjs/extjs"]
+	path = packages/extjs/extjs
+	url = https://git.proxmox.com/git/extjs
+[submodule "packages/libxdgmime-perl/libxdgmime-perl"]
+	path = packages/libxdgmime-perl/libxdgmime-perl
+	url = https://git.proxmox.com/git/libxdgmime-perl
+[submodule "packages/libarchive-perl/libarchive-perl"]
+	path = packages/libarchive-perl/libarchive-perl
+	url = https://git.proxmox.com/git/libarchive-perl
+[submodule "packages/smartmontools/smartmontools"]
+	path = packages/smartmontools/smartmontools
+	url = https://git.proxmox.com/git/smartmontools
+[submodule "packages/vncterm/vncterm"]
+	path = packages/vncterm/vncterm
+	url = https://git.proxmox.com/git/vncterm
+[submodule "packages/sencha-touch/sencha-touch"]
+	path = packages/sencha-touch/sencha-touch
+	url = https://git.proxmox.com/git/sencha-touch
+[submodule "packages/spiceterm/spiceterm"]
+	path = packages/spiceterm/spiceterm
+	url = https://git.proxmox.com/git/spiceterm
+[submodule "packages/swtpm/swtpm"]
+	path = packages/swtpm/swtpm
+	url = https://git.proxmox.com/git/swtpm
+[submodule "packages/libtpms/libtpms"]
+	path = packages/libtpms/libtpms
+	url = https://git.proxmox.com/git/libtpms
+[submodule "packages/libjs-qrcodejs/libjs-qrcodejs"]
+	path = packages/libjs-qrcodejs/libjs-qrcodejs
+	url = https://git.proxmox.com/git/libjs-qrcodejs
+[submodule "packages/libpve-u2f-server-perl/libpve-u2f-server-perl"]
+	path = packages/libpve-u2f-server-perl/libpve-u2f-server-perl
+	url = https://git.proxmox.com/git/libpve-u2f-server-perl
+[submodule "packages/corosync-pve/corosync-pve"]
+	path = packages/corosync-pve/corosync-pve
+	url = https://git.proxmox.com/git/corosync-pve
+[submodule "packages/corosync-qdevice/corosync-qdevice"]
+	path = packages/corosync-qdevice/corosync-qdevice
+	url = https://git.proxmox.com/git/corosync-qdevice
+[submodule "packages/proxmox-backup-qemu/proxmox-backup-qemu"]
+	path = packages/proxmox-backup-qemu/proxmox-backup-qemu
+	url = https://git.proxmox.com/git/proxmox-backup-qemu
+[submodule "packages/proxmox-backup/proxmox-backup"]
+	path = packages/proxmox-backup/proxmox-backup
+	url = https://git.proxmox.com/git/proxmox-backup
+[submodule "packages/wasi-libc/wasi-libc"]
+	path = packages/wasi-libc/wasi-libc
+	url = https://git.proxmox.com/git/wasi-libc
+[submodule "packages/debcargo-conf/debcargo-conf"]
+	path = packages/debcargo-conf/debcargo-conf
+	url = https://git.proxmox.com/git/debcargo-conf
+[submodule "packages/proxmox-offline-mirror/proxmox-offline-mirror"]
+	path = packages/proxmox-offline-mirror/proxmox-offline-mirror
+	url = https://git.proxmox.com/git/proxmox-offline-mirror
+[submodule "packages/proxmox-perl-rs/proxmox-perl-rs"]
+	path = packages/proxmox-perl-rs/proxmox-perl-rs
+	url = https://git.proxmox.com/git/proxmox-perl-rs
+[submodule "packages/pxar/pxar"]
+	path = packages/pxar/pxar
+	url = https://git.proxmox.com/git/pxar
+[submodule "packages/proxmox-firewall/proxmox-firewall"]
+	path = packages/proxmox-firewall/proxmox-firewall
+	url = https://git.proxmox.com/git/proxmox-firewall
+[submodule "packages/pathpatterns/pathpatterns"]
+	path = packages/pathpatterns/pathpatterns
+	url = https://git.proxmox.com/git/pathpatterns
+[submodule "packages/proxmox-backup-meta/proxmox-backup-meta"]
+	path = packages/proxmox-backup-meta/proxmox-backup-meta
+	url = https://git.proxmox.com/git/proxmox-backup-meta
+[submodule "packages/proxmox-backup-restore-image/proxmox-backup-restore-image"]
+	path = packages/proxmox-backup-restore-image/proxmox-backup-restore-image
+	url = https://git.proxmox.com/git/proxmox-backup-restore-image
+[submodule "packages/cargo/cargo"]
+	path = packages/cargo/cargo
+	url = https://git.proxmox.com/git/cargo
+[submodule "packages/proxmox-acme-rs/proxmox-acme-rs"]
+	path = packages/proxmox-acme-rs/proxmox-acme-rs
+	url = https://git.proxmox.com/git/proxmox-acme-rs
+[submodule "packages/pve-lxc-syscalld/pve-lxc-syscalld"]
+        path = packages/pve-lxc-syscalld/pve-lxc-syscalld
+        url = https://git.proxmox.com/git/pve-lxc-syscalld
