@@ -22,3 +22,6 @@
 [submodule "packages/proxmox-archive-keyring/proxmox-archive-keyring"]
 	path = packages/proxmox-archive-keyring/proxmox-archive-keyring
 	url = https://git.proxmox.com/git/proxmox-archive-keyring.git
+[submodule "packages/proxmox-ve/proxmox-ve"]
+	path = packages/proxmox-ve/proxmox-ve
+	url = https://git.proxmox.com/git/proxmox-ve.git
