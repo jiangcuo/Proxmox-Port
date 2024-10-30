@@ -28,3 +28,6 @@
 [submodule "packages/pve-storage/pve-storage"]
 	path = packages/pve-storage/pve-storage
 	url = https://git.proxmox.com/git/pve-storage.git
+[submodule "packages/proxmox-mini-journalreader/proxmox-mini-journalreader"]
+	path = packages/proxmox-mini-journalreader/proxmox-mini-journalreader
+	url = https://git.proxmox.com/git/proxmox-mini-journalreader.git
