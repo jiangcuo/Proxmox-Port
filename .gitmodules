@@ -31,3 +31,14 @@
 [submodule "packages/proxmox-mini-journalreader/proxmox-mini-journalreader"]
 	path = packages/proxmox-mini-journalreader/proxmox-mini-journalreader
 	url = https://git.proxmox.com/git/proxmox-mini-journalreader.git
+[submodule "packages/ceph-17/ceph"]
+	path = packages/ceph-17/ceph
+	url = https://git.proxmox.com/git/ceph.git
+	branch = quincy-stable-8
+[submodule "packages/ceph-18/ceph"]
+	path = packages/ceph-18/ceph
+	url = https://git.proxmox.com/git/ceph.git
+	branch = reef-stable-8
+[submodule "packages/ceph-19/ceph"]
+	path = packages/ceph-19/ceph
+	url = https://git.proxmox.com/git/ceph.git
