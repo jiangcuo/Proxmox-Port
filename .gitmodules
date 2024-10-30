@@ -25,3 +25,6 @@
 [submodule "packages/proxmox-ve/proxmox-ve"]
 	path = packages/proxmox-ve/proxmox-ve
 	url = https://git.proxmox.com/git/proxmox-ve.git
+[submodule "packages/pve-storage/pve-storage"]
+	path = packages/pve-storage/pve-storage
+	url = https://git.proxmox.com/git/pve-storage.git
