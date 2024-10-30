@@ -1,0 +1,16 @@
+From 1590a0be2c1b7b238f4962d4f28ec36af91f10f4 Mon Sep 17 00:00:00 2001
+From: jiangcuo <49061187+jiangcuo@users.noreply.github.com>
+Date: Wed, 30 Oct 2024 21:11:26 +0800
+Subject: [PATCH] fix lib patch
+
+---
+ debian/lxcfs.links | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/lxcfs.links b/debian/lxcfs.links
+index 36e0af9..78a35d3 100644
+--- a/debian/lxcfs.links
++++ b/debian/lxcfs.links
+@@ -1 +1 @@
+-usr/lib/x86_64-linux-gnu/lxcfs/liblxcfs.so usr/lib/x86_64-linux-gnu/liblxcfs.so
++usr/lib/riscv64-linux-gnu/lxcfs/liblxcfs.so usr/lib/riscv64-linux-gnu/liblxcfs.so
