@@ -1,0 +1,43 @@
+FROM debian:12
+ARG DEBIAN_APT=http://mirrors.ustc.edu.cn
+ARG PVE_APT=https://mirrors.lierfang.com
+ARG ARCH=
+
+
+
+
+RUN rm /etc/apt/sources.list.d/*  \
+&& echo "deb $DEBIAN_APT/debian bookworm main contrib non-free non-free-firmware" >/etc/apt/sources.list \
+&& echo "deb $DEBIAN_APT/debian  bookworm-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+&& echo "deb $DEBIAN_APT/debian  bookworm-backports main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+&& echo "deb $DEBIAN_APT/debian-security  bookworm-security main contrib non-free non-free-firmware " >> /etc/apt/sources.list 
+
+
+RUN apt update && apt install -y wget nano curl gnupg  ca-certificates apt-utils
+
+
+
+RUN ARCH=$(dpkg --print-architecture) \
+&& if [ "$ARCH" = "amd64" ]; then \
+    echo "deb $PVE_APT/proxmox/debian/pve bookworm pve-no-subscription" >> /etc/apt/sources.list;  \
+    echo "deb $PVE_APT/proxmox/debian/devel bookworm main" >> /etc/apt/sources.list; \
+    curl -l -o /etc/apt/trusted.gpg.d/proxmox-release-bookworm.gpg $PVE_APT/proxmox/debian/proxmox-release-bookworm.gpg; \
+else  \
+    echo "deb $PVE_APT/proxmox/debian/pve bookworm port" >> /etc/apt/sources.list;  \
+    echo "deb $PVE_APT/proxmox/debian/devel bookworm port" >> /etc/apt/sources.list; \
+    curl -l -o /etc/apt/trusted.gpg.d/pveport.gpg $PVE_APT/proxmox/debian/pveport.gpg; \
+fi
+
+RUN apt update && apt -y install build-* devscripts cargo dh-cargo devscripts rsync debcargo pkg-config debhelper git bison dwarves flex meson equivs
+
+RUN apt update  \
+&& DEBIAN_FRONTEND=noninteractiv apt-get -y --no-install-recommends  install  proxmox-ve || echo ok 
+
+RUN rm /var/lib/dpkg/info/pve-manager.postinst \
+&& rm /var/lib/dpkg/info/proxmox-ve.postinst \
+&& dpkg --configure -a 
+
+
+ADD ./start.sh /
+
+CMD ["bash","/start.sh"]
