@@ -156,9 +156,6 @@
 [submodule "packages/proxmox-backup/proxmox-backup"]
 	path = packages/proxmox-backup/proxmox-backup
 	url = https://git.proxmox.com/git/proxmox-backup
-[submodule "packages/wasi-libc/wasi-libc"]
-	path = packages/wasi-libc/wasi-libc
-	url = https://git.proxmox.com/git/wasi-libc
 [submodule "packages/debcargo-conf/debcargo-conf"]
 	path = packages/debcargo-conf/debcargo-conf
 	url = https://git.proxmox.com/git/debcargo-conf
