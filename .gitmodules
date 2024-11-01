@@ -140,10 +140,10 @@
 	url = https://git.proxmox.com/git/spiceterm
 [submodule "packages/swtpm/swtpm"]
 	path = packages/swtpm/swtpm
-	url = https://git.proxmox.com/git/swtpm
+	url = https://github.com/stefanberger/swtpm.git
 [submodule "packages/libtpms/libtpms"]
 	path = packages/libtpms/libtpms
-	url = https://git.proxmox.com/git/libtpms
+	url = https://github.com/stefanberger/libtpms
 [submodule "packages/libjs-qrcodejs/libjs-qrcodejs"]
 	path = packages/libjs-qrcodejs/libjs-qrcodejs
 	url = https://git.proxmox.com/git/libjs-qrcodejs
