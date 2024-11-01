@@ -45,12 +45,6 @@
 [submodule "packages/pve-cluster/pve-cluster"]
 	path = packages/pve-cluster/pve-cluster
 	url = https://git.proxmox.com/git/pve-cluster.git
-[submodule "packages/perlmod/perlmod"]
-	path = packages/perlmod/perlmod
-	url = https://git.proxmox.com/git/perlmod.git
-[submodule "packages/package-rebuilds/package-rebuilds"]
-	path = packages/package-rebuilds/package-rebuilds
-	url = https://git.proxmox.com/git/package-rebuilds
 [submodule "packages/proxmox-i18n/proxmox-i18n"]
 	path = packages/proxmox-i18n/proxmox-i18n
 	url = https://git.proxmox.com/git/proxmox-i18n
@@ -192,9 +186,6 @@
 [submodule "packages/cargo/cargo"]
 	path = packages/cargo/cargo
 	url = https://git.proxmox.com/git/cargo
-[submodule "packages/proxmox-acme-rs/proxmox-acme-rs"]
-	path = packages/proxmox-acme-rs/proxmox-acme-rs
-	url = https://git.proxmox.com/git/proxmox-acme-rs
 [submodule "packages/pve-lxc-syscalld/pve-lxc-syscalld"]
         path = packages/pve-lxc-syscalld/pve-lxc-syscalld
         url = https://git.proxmox.com/git/pve-lxc-syscalld
