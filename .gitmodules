@@ -179,7 +179,7 @@
 	url = https://git.proxmox.com/git/proxmox-backup-meta
 [submodule "packages/proxmox-backup-restore-image/proxmox-backup-restore-image"]
 	path = packages/proxmox-backup-restore-image/proxmox-backup-restore-image
-	url = https://git.proxmox.com/git/proxmox-backup-restore-image
+	url = https://github.com/jiangcuo/proxmox-backup-restore-image
 [submodule "packages/cargo/cargo"]
 	path = packages/cargo/cargo
 	url = https://git.proxmox.com/git/cargo
