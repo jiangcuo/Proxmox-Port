@@ -48,20 +48,23 @@ update_submodues(){
 
 update_submodues || errlog  "Failed to update submodule"
 
-if [ -f "$SH_PATH/packages/$PKGNAME/series" ];then
-	cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
-	QUILT_PATCHES=../ \
-	QUILT_SERIES=../series \
-	quilt --quiltrc /dev/null --color=always push -a || test $$? = 2
-fi
 
 ARCH=$(arch)
 
+if [ -f "$SH_PATH/packages/$PKGNAME/series" ];then
+	cat $SH_PATH/packages/$PKGNAME/series > $SH_PATH/packages/$PKGNAME/series.all
+fi
+
 if [ -f "$SH_PATH/packages/$PKGNAME/series.$ARCH" ];then
-        cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
-        QUILT_PATCHES=../ \
-        QUILT_SERIES=../series.$ARCH \
-        quilt --quiltrc /dev/null --color=always push -a  || test $$? = 2
+	cat $SH_PATH/packages/$PKGNAME/series.$ARCH >> $SH_PATH/packages/$PKGNAME/series.all
+fi
+
+if [ -f "$SH_PATH/packages/$PKGNAME/series.all" ];then
+	echo "apply patches for series.all"
+	cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+	QUILT_PATCHES=../ \
+	QUILT_SERIES=../series.all \
+	quilt --quiltrc /dev/null --color=always push -a  || test $$? = 2
 fi
 
 cd $SH_PATH
