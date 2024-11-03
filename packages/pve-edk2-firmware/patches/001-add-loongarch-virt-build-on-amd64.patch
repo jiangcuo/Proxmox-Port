@@ -1,0 +1,140 @@
+From 5f3c91a04bc303b216f4462ef2947f922951eac3 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Tue, 5 Nov 2024 21:15:21 +0800
+Subject: [PATCH] Add loongarch64 build on amd64
+
+---
+ Makefile                                     |  5 +++--
+ debian/control                               |  7 +++++++
+ debian/pve-edk2-firmware-loongarch64.install |  2 ++
+ debian/pve-edk2-firmware-loongarch64.links   |  2 ++
+ debian/rules                                 | 22 ++++++++++++++++----
+ 5 files changed, 32 insertions(+), 6 deletions(-)
+ create mode 100644 debian/pve-edk2-firmware-loongarch64.install
+ create mode 100644 debian/pve-edk2-firmware-loongarch64.links
+
+diff --git a/Makefile b/Makefile
+index 6091ce7..d66e4bc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -13,8 +13,9 @@ VIRTUAL_DEB = $(PACKAGE)_$(DEB_VERSION)_all.deb
+ AMD64_DEB = $(PACKAGE)-legacy_$(DEB_VERSION)_all.deb $(PACKAGE)-ovmf_$(DEB_VERSION)_all.deb
+ AARCH64_DEB = $(PACKAGE)-aarch64_$(DEB_VERSION)_all.deb
+ RISCV_DEB = $(PACKAGE)-riscv_$(DEB_VERSION)_all.deb
++LOONGARCH64_DEB = $(PACKAGE)-loongarch64_$(DEB_VERSION)_all.deb
+ 
+-DEBS = $(VIRTUAL_DEB) $(AMD64_DEB) $(AARCH64_DEB) $(RISCV_DEB)
++DEBS = $(VIRTUAL_DEB) $(AMD64_DEB) $(AARCH64_DEB) $(RISCV_DEB) $(LOONGARCH64_DEB)
+ 
+ all: $(DEBS)
+ 	@echo $(DEBS)
+@@ -29,7 +30,7 @@ $(BUILDDIR): $(SRCDIR)/Readme.md
+ 
+ .PHONY: deb
+ deb: $(DEBS)
+-$(AMD64_DEB) $(AARCH64_DEB) $(RISCV_DEB): $(VIRTUAL_DEB)
++$(AMD64_DEB) $(AARCH64_DEB) $(RISCV_DEB) $(LOONGARCH64_DEB): $(VIRTUAL_DEB)
+ $(VIRTUAL_DEB): $(BUILDDIR)
+ 	cd $(BUILDDIR); dpkg-buildpackage -b -uc -us
+ 	lintian $(DEBS)
+diff --git a/debian/control b/debian/control
+index 3867cd2..92afbe1 100644
+--- a/debian/control
++++ b/debian/control
+@@ -66,6 +66,13 @@ Description: edk2 based RISC-V UEFI firmware modules for virtual machines
+  for UEFI, including Secure Boot, allowing use of UEFI in place of a
+  traditional BIOS in your VM.
+ 
++Package: pve-edk2-firmware-loongarch64
++Architecture: all
++Depends: ${misc:Depends},
++Multi-Arch: foreign
++Description: edk2 based loongarch64 UEFI firmware modules for virtual machines
++ A build of EDK II for 64-bit loongarch virtual machines. 
++
+ Package: pve-edk2-firmware-legacy
+ Architecture: all
+ Depends: ${misc:Depends},
+diff --git a/debian/pve-edk2-firmware-loongarch64.install b/debian/pve-edk2-firmware-loongarch64.install
+new file mode 100644
+index 0000000..a0dfaf6
+--- /dev/null
++++ b/debian/pve-edk2-firmware-loongarch64.install
+@@ -0,0 +1,2 @@
++Build/LoongArchVirtQemu/RELEASE_*GCC*/FV/QEMU_EFI.fd /usr/share/pve-edk2-firmware/LOONGARCH64
++Build/LoongArchVirtQemu/RELEASE_*GCC*/FV/QEMU_VARS.fd /usr/share/pve-edk2-firmware/LOONGARCH64
+\ No newline at end of file
+diff --git a/debian/pve-edk2-firmware-loongarch64.links b/debian/pve-edk2-firmware-loongarch64.links
+new file mode 100644
+index 0000000..973a78e
+--- /dev/null
++++ b/debian/pve-edk2-firmware-loongarch64.links
+@@ -0,0 +1,2 @@
++/usr/share/pve-edk2-firmware/LOONGARCH64/QEMU_EFI.fd /usr/share/pve-edk2-firmware/LOONGARCH64_VIRT_CODE.fd
++/usr/share/pve-edk2-firmware/LOONGARCH64/QEMU_VARS.fd /usr/share/pve-edk2-firmware/LOONGARCH64_VIRT_VARS.fd
+\ No newline at end of file
+diff --git a/debian/rules b/debian/rules
+index a47c807..09d6908 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -28,7 +28,7 @@ ifeq ($(DEB_BUILD_ARCH),loongarch64)
+ endif
+ 
+ PCD_RELEASE_DATE = $(shell date -d@$(SOURCE_DATE_EPOCH) "+%m/%d/%Y")
+-PCD_FLAGS  = --pcd PcdFirmwareVendor=L"Proxmox distribution of EDK II\\0"
++PCD_FLAGS  = --pcd PcdFirmwareVendor=L"Proxmox Port distribution of EDK II\\0"
+ PCD_FLAGS += --pcd PcdFirmwareVersionString=L"$(DEB_VERSION)\\0"
+ PCD_FLAGS += --pcd PcdFirmwareReleaseDateString=L"$(PCD_RELEASE_DATE)\\0"
+ COMMON_FLAGS  = -DNETWORK_HTTP_BOOT_ENABLE=TRUE
+@@ -50,7 +50,9 @@ AAVMF_FLAGS += -DTPM2_CONFIG_ENABLE=TRUE
+ AAVMF_FLAGS += -DCAVIUM_ERRATUM_27456=TRUE
+ 
+ RISCV64_FLAGS = $(COMMON_FLAGS)
+-LOONGARCH64_FLAGS = $(COMMON_FLAGS)
++LOONGARCH64_FLAGS = -DNETWORK_HTTP_BOOT_ENABLE=TRUE
++LOONGARCH64_FLAGS += -DSECURE_BOOT_ENABLE=TRUE
++LOONGARCH64_FLAGS += -DNETWORK_IP6_ENABLE=TRUE
+ 
+ # Clear variables used internally by the edk2 build system
+ undefine WORKSPACE
+@@ -63,7 +65,7 @@ undefine CONF_PATH
+ %:
+ 	dh $@
+ 
+-override_dh_auto_build: build-qemu-efi-aarch64 build-ovmf build-ovmf32 build-qemu-efi-riscv64
++override_dh_auto_build: build-qemu-efi-aarch64 build-ovmf build-ovmf32 build-qemu-efi-riscv64 build-qemu-efi-loongarch64
+ 
+ debian/setup-build-stamp:
+ 	cp -a debian/Logo.bmp MdeModulePkg/Logo/Logo.bmp
+@@ -99,6 +101,10 @@ AAVMF_PREENROLLED_VARS = $(addprefix $(AAVMF_BUILD_DIR)/FV/,AAVMF_VARS.ms.fd AAV
+ RISCV64_BUILD_DIR = Build/RiscVVirtQemu/$(BUILD_TYPE)_$(EDK2_TOOLCHAIN)
+ RISCV64_IMAGES    = $(addprefix $(RISCV64_BUILD_DIR)/FV/,RISCV_VIRT_CODE.fd RISCV_VIRT_VARS.fd)
+ 
++
++LOONGARCH64_BUILD_DIR = Build/LoongArchVirtQemu/$(BUILD_TYPE)_$(EDK2_TOOLCHAIN)
++LOONGARCH64_IMAGES    = $(addprefix $(LOONGARCH64_BUILD_DIR)/FV/,QEMU_EFI.fd QEMU_VARS.fd)
++
+ build-ovmf32: $(OVMF32_BINARIES) $(OVMF32_IMAGES)
+ $(OVMF32_BINARIES) $(OVMF32_IMAGES): debian/setup-build-stamp
+ 	rm -rf $(OVMF32_INSTALL_DIR)
+@@ -217,6 +223,14 @@ $(RISCV64_IMAGES): debian/setup-build-stamp
+ 	truncate -s 32M $(RISCV64_BUILD_DIR)/FV/RISCV_VIRT_CODE.fd
+ 	truncate -s 32M $(RISCV64_BUILD_DIR)/FV/RISCV_VIRT_VARS.fd
+ 
++build-qemu-efi-loongarch64:  $(LOONGARCH64_IMAGES)
++$(LOONGARCH64_IMAGES): debian/setup-build-stamp
++	set -e; . ./edksetup.sh; \
++		build -a LOONGARCH64 \
++			-t $(EDK2_TOOLCHAIN) \
++			-p OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc \
++			$(LOONGARCH64_FLAGS) -b $(BUILD_TYPE)
++
+ override_dh_auto_clean:
+ 	-. ./edksetup.sh; build clean
+ 	make -C BaseTools clean
+@@ -253,4 +267,4 @@ get-orig-source:
+ 		edk2-$(DEB_VERSION_UPSTREAM)
+ 	rm -rf edk2.tmp edk2-$(DEB_VERSION_UPSTREAM)
+ 
+-.PHONY: build-ovmf build-ovmf32 build-qemu-efi build-qemu-efi-aarch64 build-qemu-efi-riscv64
++.PHONY: build-ovmf build-ovmf32 build-qemu-efi build-qemu-efi-aarch64 build-qemu-efi-riscv64 build-qemu-efi-loongarch64
