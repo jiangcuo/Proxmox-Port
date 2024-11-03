@@ -70,17 +70,4 @@ index ee114ea34..09951b8f2 100644
  usr/sbin/pbs2to3
  usr/sbin/proxmox-backup-debug
  usr/sbin/proxmox-backup-manager
-diff --git a/pbs-buildcfg/src/lib.rs b/pbs-buildcfg/src/lib.rs
-index 3311d2770..fd03e0047 100644
---- a/pbs-buildcfg/src/lib.rs
-+++ b/pbs-buildcfg/src/lib.rs
-@@ -48,7 +48,7 @@ macro_rules! PROXMOX_BACKUP_CACHE_DIR_M {
- #[macro_export]
- macro_rules! PROXMOX_BACKUP_FILE_RESTORE_BIN_DIR_M {
-     () => {
--        "/usr/lib/x86_64-linux-gnu/proxmox-backup/file-restore"
-+        "/usr/lib/riscv64-linux-gnu/proxmox-backup/file-restore"
-     };
- }
- 
  

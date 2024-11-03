@@ -1,0 +1,158 @@
+diff --git a/pbs-buildcfg/src/lib.rs b/pbs-buildcfg/src/lib.rs
+index 3d087015b..ba3b5702a 100644
+--- a/pbs-buildcfg/src/lib.rs
++++ b/pbs-buildcfg/src/lib.rs
+@@ -53,8 +53,9 @@ macro_rules! PROXMOX_BACKUP_CACHE_DIR_M {
+ 
+ #[macro_export]
+ macro_rules! PROXMOX_BACKUP_FILE_RESTORE_BIN_DIR_M {
+-    () => {
+-        "/usr/lib/x86_64-linux-gnu/proxmox-backup/file-restore"
++    ($arch:expr) => {
++        // Different architectures have different paths.
++        format!("/usr/lib/{}-linux-gnu/proxmox-backup/file-restore", $arch)
+     };
+ }
+ 
+@@ -93,8 +94,16 @@ pub const PROXMOX_BACKUP_INITRAMFS_DBG_FN: &str = concat!(
+ );
+ 
+ /// filename of the kernel to use for booting single file restore VMs
+-pub const PROXMOX_BACKUP_KERNEL_FN: &str =
+-    concat!(PROXMOX_BACKUP_FILE_RESTORE_BIN_DIR_M!(), "/bzImage");
++pub fn PROXMOX_BACKUP_KERNEL_FN() -> String {
++    let arch = std::env::consts::ARCH;
++    let file_restore_dir = PROXMOX_BACKUP_FILE_RESTORE_BIN_DIR_M!(arch);
++
++    if arch == "x86_64" {
++        format!("{}/bzImage", file_restore_dir)
++    } else {
++        format!("{}/Image", file_restore_dir)
++    }
++}
+ 
+ pub const PROXMOX_BACKUP_SUBSCRIPTION_FN: &str = configdir!("/subscription");
+ 
+diff --git a/proxmox-file-restore/src/qemu_helper.rs b/proxmox-file-restore/src/qemu_helper.rs
+index 471010aa1..adea944d2 100644
+--- a/proxmox-file-restore/src/qemu_helper.rs
++++ b/proxmox-file-restore/src/qemu_helper.rs
+@@ -4,6 +4,7 @@ use std::io::prelude::*;
+ use std::os::unix::io::AsRawFd;
+ use std::path::PathBuf;
+ use std::time::{Duration, Instant};
++use std::env;
+ 
+ use anyhow::{bail, format_err, Error};
+ use serde_json::json;
+@@ -52,7 +53,7 @@ fn create_restore_log_dir() -> Result<String, Error> {
+ }
+ 
+ fn validate_img_existence(debug: bool) -> Result<(), Error> {
+-    let kernel = PathBuf::from(pbs_buildcfg::PROXMOX_BACKUP_KERNEL_FN);
++    let kernel = PathBuf::from(pbs_buildcfg::PROXMOX_BACKUP_KERNEL_FN());
+     let initramfs = PathBuf::from(if debug {
+         pbs_buildcfg::PROXMOX_BACKUP_INITRAMFS_DBG_FN
+     } else {
+@@ -253,9 +254,8 @@ pub async fn start_vm(
+         "chardev:log",
+         "-vnc",
+         "none",
+-        "-enable-kvm",
+         "-kernel",
+-        pbs_buildcfg::PROXMOX_BACKUP_KERNEL_FN,
++        &pbs_buildcfg::PROXMOX_BACKUP_KERNEL_FN(),
+         "-initrd",
+         &ramfs_path,
+         "-append",
+@@ -294,38 +294,56 @@ pub async fn start_vm(
+             "file=pbs:repository={}{},,snapshot={},,archive={}{},read-only=on,if=none,id=drive{}",
+             details.repo, namespace, details.snapshot, file, keyfile, id
+         ));
+-
++        let arch = std::env::consts::ARCH;
+         // a PCI bus can only support 32 devices, so add a new one every 32
+         let bus = (id / 32) + 2;
+-        if id % 32 == 0 {
+-            drives.push("-device".to_owned());
+-            drives.push(format!("pci-bridge,id=bridge{bus},chassis_nr={bus}"));
++        if arch == "x86_64" {
++            if id % 32 == 0 {
++                drives.push("-device".to_owned());
++                drives.push(format!("pci-bridge,id=bridge{bus},chassis_nr={bus}"));
++            }
+         }
+ 
+         drives.push("-device".to_owned());
+         // drive serial is used by VM to map .fidx files to /dev paths
+         let serial = file.strip_suffix(".img.fidx").unwrap_or(&file);
+-        drives.push(format!(
+-            "virtio-blk-pci,drive=drive{id},serial={serial},bus=bridge{bus}"
+-        ));
++        if arch == "x86_64" {
++            drives.push(format!(
++                "virtio-blk-pci,drive=drive{id},serial={serial},bus=bridge{bus}"
++            ));
++        } else {
++            drives.push(format!(
++                // We use virtio-blk-device because QEMU will automatically assigns PCI addresses.
++                "virtio-blk-device,drive=drive{id},serial={serial}"
++            ));
++        }
+         id += 1;
+     }
+ 
+-    let ram = if debug {
++    let arch = std::env::consts::ARCH;
++
++    let mut ram = if debug {
+         1024
+     } else {
+         // add more RAM if many drives are given
++        // We need more memory for !x86 device
+         match id {
+-            f if f < 10 => 192,
+-            f if f < 20 => 256,
+-            _ => 384,
++            f if f < 10 => 512,
++            f if f < 20 => 768,
++            _ => 1024,
+         }
+     };
+ 
++    // loongarch minimum memeory is 1024
++    if arch == "loongarch64" {
++        ram = 1024;
++    }
++
+     // Try starting QEMU in a loop to retry if we fail because of a bad 'cid' value
++    let qemu_bin = format!("qemu-system-{}", arch);
+     let mut attempts = 0;
+     loop {
+-        let mut qemu_cmd = std::process::Command::new("qemu-system-x86_64");
++        let mut qemu_cmd = std::process::Command::new(&qemu_bin);
+         qemu_cmd.args(base_args.iter());
+         qemu_cmd.arg("-m");
+         qemu_cmd.arg(format!(
+@@ -346,6 +364,21 @@ pub async fn start_vm(
+         qemu_cmd.arg("-mon");
+         qemu_cmd.arg("chardev=qmp,mode=control");
+ 
++        // Use virt and tcg to start file-restore.
++        // If pve run in neasted env ,this will be ok.
++        // If you make sure that pve run on host,  -accel kvm will be better! 
++        if arch != "x86_64" {
++            qemu_cmd.arg("-M");
++            qemu_cmd.arg("virt");
++            qemu_cmd.arg("-accel");
++            qemu_cmd.arg("tcg");
++            qemu_cmd.arg("-cpu");
++            qemu_cmd.arg("max");
++        } else {
++            qemu_cmd.arg("-accel");
++            qemu_cmd.arg("kvm");
++        }
++    
+         if debug {
+             let debug_args = [
+                 "-chardev",
