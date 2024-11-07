@@ -90,7 +90,7 @@ update_submodues(){
 		echo "skip submodule"
 	else
 		cd $SH_PATH/packages/$PKGNAME/
-#		git submodule update --init  --recursive "$PKGNAME"
+		git submodule update --init  --recursive "$PKGNAME"
 	fi
 }
 
