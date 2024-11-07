@@ -1,6 +1,8 @@
 #!/bin/bash
 PKGNAME=$1
 SH_PATH=$(readlink -f `dirname "$0"`)
+PKG_LOCATION_PATH="/tmp/2022"
+DEB_OPT="dd"
 
 errlog(){
    echo $1;
@@ -15,26 +17,72 @@ if [ ! -d "$SH_PATH/packages/$PKGNAME" ];then
 	errlog "$PKGNAME is not exsited!"
 fi
 
+if [ -n "$PKG_DIR" ];then
+	PKG_LOCATION_PATH=$PKG_DIR
+fi
+
+if [ -n "$DEB_BUILD_OPTIONS" ];then
+        DEB_OPT=$DEB_BUILD_OPTIONS
+fi
+
+
+
+echo  "--------------info------------------"
+echo  "This is Proxmox-Port package build scripts"
+echo  "Package is $PKGNAME"
+echo  "Docker build is $BUILDERNAME"
+echo  "Package dir is $PKG_LOCATION_PATH/$PKGNAME"
+if [ -n "$DEB_BUILD_OPTIONS" ];
+then
+	echo "DEB_BUILD_OPTIONS = $DEB_BUILD_OPTIONS"
+fi
+echo  "--------------start-----------------"
+
 dockerbuild(){
 	rm $SH_PATH/packages/$PKGNAME/$PKGNAME/pvebuild -rf
-	if [ -n "$BUILDERNAME" ];then
-		docker run -it -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm $BUILDERNAME || errlog "builderror"
+	if [ -n "$BUILDERNAME"  ];then
+		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm $BUILDERNAME || errlog "builderror"
 	else
-		docker run -it -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder || errlog "builderror"
+		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder || errlog "builderror"
 	fi
 }
 
 upload_pkg(){
-	mkdir /tmp/$PKGNAME -p
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb" -exec cp {} /tmp/$PKGNAME \;
-	for i in `ls /tmp/$PKGNAME/*.deb`;
+	mkdir $PKG_LOCATION_PATH/$PKGNAME -p
+	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.buildinfo" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.changes" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.dsc" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.tar*" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.deb`;
 		do
 		md5sum $i > $i.md5
 		cat $i.md5
 	done
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb.md5" -exec cp {} /tmp/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.buildinfo" -exec cp {} /tmp/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.changes" -exec cp {} /tmp/$PKGNAME \;
+	for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.buildinfo`;
+                do
+                md5sum $i > $i.md5
+                cat $i.md5
+        done
+
+        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.changes`;
+                do
+                md5sum $i > $i.md5
+                cat $i.md5
+        done
+
+        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.dsc`;
+                do
+                md5sum $i > $i.md5
+                cat $i.md5
+        done
+
+        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.tar*`;
+                do
+                md5sum $i > $i.md5
+                cat $i.md5
+        done
+
 }
 
 update_submodues(){
@@ -42,29 +90,26 @@ update_submodues(){
 		echo "skip submodule"
 	else
 		cd $SH_PATH/packages/$PKGNAME/
-		git submodule update --init  --recursive "$PKGNAME"
+#		git submodule update --init  --recursive "$PKGNAME"
 	fi
 }
 
 update_submodues || errlog  "Failed to update submodule"
 
+if [ -f "$SH_PATH/packages/$PKGNAME/series" ];then
+	cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+	QUILT_PATCHES=../ \
+	QUILT_SERIES=../series \
+	quilt --quiltrc /dev/null --color=always push -a || test $$? = 2
+fi
 
 ARCH=$(arch)
 
-if [ -f "$SH_PATH/packages/$PKGNAME/series" ];then
-	cat $SH_PATH/packages/$PKGNAME/series > $SH_PATH/packages/$PKGNAME/series.all
-fi
-
 if [ -f "$SH_PATH/packages/$PKGNAME/series.$ARCH" ];then
-	cat $SH_PATH/packages/$PKGNAME/series.$ARCH >> $SH_PATH/packages/$PKGNAME/series.all
-fi
-
-if [ -f "$SH_PATH/packages/$PKGNAME/series.all" ];then
-	echo "apply patches for series.all"
-	cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
-	QUILT_PATCHES=../ \
-	QUILT_SERIES=../series.all \
-	quilt --quiltrc /dev/null --color=always push -a  || test $$? = 2
+        cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+        QUILT_PATCHES=../ \
+        QUILT_SERIES=../series.$ARCH \
+        quilt --quiltrc /dev/null --color=always push -a  || test $$? = 2
 fi
 
 cd $SH_PATH

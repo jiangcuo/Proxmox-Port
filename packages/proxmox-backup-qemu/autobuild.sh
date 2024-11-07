@@ -14,6 +14,7 @@ exec_build(){
         make clean || echo ok
         echo "build deb in `pwd` "
         make deb
+	make dsc
 }
 
 echo "This is $PKGNAME build scripts"

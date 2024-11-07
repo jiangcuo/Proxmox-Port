@@ -1,4 +1,4 @@
-FROM debian:12
+FROM dockerpull.com/debian:12
 ARG DEBIAN_APT=http://mirrors.ustc.edu.cn
 ARG PVE_APT=https://mirrors.lierfang.com
 ARG ARCH=

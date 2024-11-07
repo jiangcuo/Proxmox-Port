@@ -18,6 +18,7 @@ exec_build(){
 	meson subprojects download
 	cd $SH_DIR/$PKGNAME
         make deb
+	make dsc
 }
 
 echo "This is $PKGNAME build scripts"

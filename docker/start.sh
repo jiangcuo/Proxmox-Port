@@ -14,9 +14,11 @@ exec_build(){
 		make clean || echo ok
 		echo "build deb in `pwd` "
                 make deb
+		make dsc
         else
                 dpkg-buildpackage -b -us -uc ||errlog "build error"
-                cp ../*.deb ../*.buildinfo ../*.changes $PKGDIR
+                dpkg-buildpackage -b -us -uc -S -d ||errlog "build  des error"
+                cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
         fi
 }
 

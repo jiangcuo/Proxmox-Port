@@ -14,6 +14,7 @@ exec_build(){
         make clean || echo ok
         echo "build deb in `pwd` "
         dpkg-buildpackage -b -us -uc
+        dpkg-buildpackage -b -us -uc -S -d
 }
 
 copy_dir(){
