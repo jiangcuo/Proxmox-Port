@@ -190,3 +190,6 @@
 	path = packages/pve-edk2-firmware/pve-edk2-firmware
 	url = https://github.com/jiangcuo/pve-edk2-firmware
 	branch = Port
+[submodule "packages/pixman/pixman"]
+	path = packages/pixman/pixman
+	url = https://salsa.debian.org/xorg-team/lib/pixman
