@@ -1,0 +1,39 @@
+From 1a783707b03c7219c22816ca7af6befc6559f791 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Sat, 16 Nov 2024 17:27:31 +0800
+Subject: [PATCH] add-support-for-loongson
+
+---
+ configure.ac | 5 +++++
+ lib/unix.c   | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 879ad154..ec9b35b8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -353,6 +353,11 @@ case $host_cpu in
+ 		AC_DEFINE_UNQUOTED([QB_ARCH_MIPS], [1], [mips])
+ 		arch_force_shmlba=yes
+ 		;;
++	loongson*)
++		AC_MSG_RESULT([loongson])
++		AC_DEFINE_UNQUOTED([QB_ARCH_LOONGSON], [1], [loongson])
++		arch_force_shmlba=yes
++		;;
+ 	*)
+ 		AC_MSG_RESULT([${host_cpu}])
+ 		;;
+diff --git a/lib/unix.c b/lib/unix.c
+index 6bd3cc24..0dc76470 100644
+--- a/lib/unix.c
++++ b/lib/unix.c
+@@ -229,7 +229,7 @@ qb_sys_circular_mmap(int32_t fd, void **buf, size_t bytes)
+ 	flags |= MAP_PRIVATE;
+ #endif /* QB_FORCE_SHM_ALIGN */
+
+-#if defined(QB_ARCH_HPPA)
++#if defined(QB_ARCH_HPPA) || defined(QB_ARCH_LOONGSON)
+ 	/* map twice the size we want to make sure we have already mapped
+ 	   the second memory location behind it too. Otherwise the Linux
+ 	   kernel may map it in the upper memory so that we can't map

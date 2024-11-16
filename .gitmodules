@@ -193,3 +193,6 @@
 [submodule "packages/pixman/pixman"]
 	path = packages/pixman/pixman
 	url = https://salsa.debian.org/xorg-team/lib/pixman
+[submodule "packages/libqb/libqb"]
+	path = packages/libqb/libqb
+	url = https://salsa.debian.org/ha-team/libqb
