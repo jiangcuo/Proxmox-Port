@@ -13,8 +13,8 @@ exec_build(){
         echo "clean "
         make clean || echo ok
         echo "build deb in `pwd` "
-        dpkg-buildpackage -b -us -uc
-        dpkg-buildpackage -b -us -uc -S -d
+        dpkg-buildpackage -b -us -uc || errlog "build deb error"
+        dpkg-buildpackage -us -uc -S -d errlog "build dsc error"
 }
 
 copy_dir(){
