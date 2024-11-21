@@ -1,26 +1,10 @@
 #!/bin/bash
-PKGNAME="qemu-server"
-
-errlog(){
-        echo $1
-        exit 1
-
-}
-
-exec_build(){
-        apt update
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-	DEB_BUILD_OPTIONS=nocheck  make deb
-}
+SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+PKGNAME=$(basename $SCRIPT_DIR)
 
 echo "This is $PKGNAME build scripts"
 
+. ../common.sh
 
-SH_PATH=$(realpath "$0")
-SH_DIR=$(dirname $SH_PATH)
-
-cd $SH_DIR/$PKGNAME
-exec_build
+cd $SCRIPT_DIR/$PKGNAME
+exec_build_make

@@ -15,12 +15,11 @@ exec_build(){
         make clean || echo ok
         echo "build deb in `pwd` "
 	cd $SH_DIR/$PKGNAME
-        make deb||echo ok
-        make dsc||echo ok
+        make deb|| echo "ok"
 }
 
 echo "This is $PKGNAME build scripts"
-
+export dscflag=nodsc
 
 SH_PATH=$(realpath "$0")
 SH_DIR=$(dirname $SH_PATH)

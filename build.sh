@@ -9,6 +9,11 @@ errlog(){
    exit 1;
 }
 
+copy_dir(){
+                rsync -ra $SH_DIR/$PKGNAME /build
+                cd /build/$PKGNAME
+}
+
 if [ ! -n "$PKGNAME" ];then
 	errlog "Useage: ./build.sh pve-common"
 fi
@@ -25,7 +30,11 @@ if [ -n "$DEB_BUILD_OPTIONS" ];then
         DEB_OPT=$DEB_BUILD_OPTIONS
 fi
 
+dscflag="dsc"
 
+if [[  "$DEB_BUILD_OPTIONS" == *"nodsc"*   ]];then
+	dscflag="nodsc"
+fi
 
 echo  "--------------info------------------"
 echo  "This is Proxmox-Port package build scripts"
@@ -46,6 +55,31 @@ dockerbuild(){
 		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder || errlog "builderror"
 	fi
 }
+
+exec_build_make(){
+        apt update
+        yes |mk-build-deps --install --remove
+        echo "clean "
+        make clean || echo ok
+        echo "build deb in `pwd` "
+        if [ $dscflag == "dsc" ];then
+                make dsc ||  errlog "build dsc error"
+        fi
+        DEB_BUILD_OPTIONS=nocheck  make deb || errlog "build deb error"
+}
+
+exec_build_dpkg(){
+        apt update
+        yes |mk-build-deps --install --remove
+        echo "clean "
+        make clean || echo ok
+        echo "build deb in `pwd` "
+        if [ $dscflag == "dsc" ];then
+                dpkg-buildpackage -us -uc -S -d || errlog "build dsc error"
+        fi
+        dpkg-buildpackage -b -us -uc || errlog "build deb error"
+}
+
 
 upload_pkg(){
 	mkdir $PKG_LOCATION_PATH/$PKGNAME -p
@@ -71,17 +105,18 @@ upload_pkg(){
                 cat $i.md5
         done
 
-        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.dsc`;
-                do
-                md5sum $i > $i.md5
-                cat $i.md5
-        done
-
-        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.tar*`;
-                do
-                md5sum $i > $i.md5
-                cat $i.md5
-        done
+	if [ $dscflag == "dsc" ];then
+        	for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.dsc`;
+	                do
+                	md5sum $i > $i.md5
+	                cat $i.md5
+        	done
+	        for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.tar*`;
+        	        do
+                	md5sum $i > $i.md5
+	                cat $i.md5
+        	done
+	fi
 
 }
 

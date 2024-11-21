@@ -5,6 +5,12 @@ errlog(){
 
 }
 
+export dscflag="dsc"
+
+if [[  "$DEB_BUILD_OPTIONS" == *"nodsc"*   ]];then
+	dscflag="nodsc"
+fi
+
 exec_build(){
 	echo "install depends"
 	apt update
@@ -13,12 +19,21 @@ exec_build(){
 		echo "clean "
 		make clean || echo ok
 		echo "build deb in `pwd` "
-                make deb
-		make dsc
+                make deb || errlog "build  deb error"
+		# We need copy deb files first beacuse of deb will be clean when dsc build 
+		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+		if [ $dscflag == "dsc" ];then
+			make dsc || errlog "build  dsc error"
+			cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+		fi
         else
-                dpkg-buildpackage -b -us -uc ||errlog "build error"
-                dpkg-buildpackage -b -us -uc -S -d ||errlog "build  des error"
+                dpkg-buildpackage -b -us -uc -S -d ||errlog "build  dsc error"
+		# We need copy deb files first beacuse of deb will be clean when dsc build
                 cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+                if [ $dscflag == "dsc" ];then
+			dpkg-buildpackage -b -us -uc ||errlog "build deb error"
+	                cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+		fi
         fi
 }
 

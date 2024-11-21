@@ -1,30 +1,16 @@
 #!/bin/bash
-errlog(){
-        echo $1
-        exit 1
+SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+PKGNAME=$(basename $SCRIPT_DIR)
 
-}
+echo "This is $PKGNAME build scripts"
 
-exec_build(){
-	apt update 
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-        make deb
-	make dsc
-}
+. ../common.sh
 
-echo "This is pve-xtermjs build scripts"
-PKGNAME="pve-xtermjs"
-
-
-SH_PATH=$(realpath "$0")
-SH_DIR=$(dirname $SH_PATH)
+cd $SCRIPT_DIR/$PKGNAME
 
 for i in xterm.js  termproxy;
 do
-	cd $SH_DIR/pve-xtermjs/$i
-	exec_build
+	cd $SCRIPT_DIR/$PKGNAME/$i
+	exec_build_make
 done
 

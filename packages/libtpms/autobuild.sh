@@ -1,33 +1,14 @@
 #!/bin/bash
-PKGNAME="libtpms"
-
-errlog(){
-        echo $1
-        exit 1
-
-}
-
-exec_build(){
-        apt update
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-        dpkg-buildpackage -b -us -uc || errlog "build deb error"
-        dpkg-buildpackage -us -uc -S -d errlog "build dsc error"
-}
-
-copy_dir(){
-                rsync -ra $SH_DIR/$PKGNAME /build
-                cd /build/$PKGNAME
-}
+SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+PKGNAME=$(basename $SCRIPT_DIR)
 
 echo "This is $PKGNAME build scripts"
-
 
 SH_PATH=$(realpath "$0")
 SH_DIR=$(dirname $SH_PATH)
 
+. ../common.sh
+
 copy_dir
-exec_build
-cp  /build/*.changes /build/*.buildinfo /build/*.deb $SH_DIR/$PKGNAME
+exec_build_dpkg
+cp  /build/*.changes /build/*.buildinfo /build/*.deb /build/*.tar.* /build/*.dsc $SH_DIR/$PKGNAME

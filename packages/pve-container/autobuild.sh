@@ -1,27 +1,19 @@
 #!/bin/bash
-PKGNAME="pve-container"
-
-errlog(){
-        echo $1
-        exit 1
-
-}
-
-exec_build(){
-        apt update
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-	make deb
-	make dsc
-}
+SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+PKGNAME=$(basename $SCRIPT_DIR)
 
 echo "This is $PKGNAME build scripts"
 
+. ../common.sh
 
-SH_PATH=$(realpath "$0")
-SH_DIR=$(dirname $SH_PATH)
+cd $SCRIPT_DIR/$PKGNAME
 
-cd $SH_DIR/$PKGNAME
-exec_build
+if [ "$(ls -di /)" != "$(ls -di /proc/1/root)" ]; then
+	export DEB_BUILD_OPTIONS=nocheck
+fi
+
+if grep -qa container /proc/1/cgroup; then
+	export DEB_BUILD_OPTIONS=nocheck
+fi
+
+exec_build_make

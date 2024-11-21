@@ -1,11 +1,9 @@
 #!/bin/bash
-PKGNAME="librados2-perl"
+SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+PKGNAME=$(basename $SCRIPT_DIR)
+. ../common.sh
+echo "This is $PKGNAME build scripts"
 
-errlog(){
-        echo $1
-        exit 1
-
-}
 
 exec_build(){
         apt update
@@ -14,15 +12,11 @@ exec_build(){
         echo "clean "
         make clean || echo ok
         echo "build deb in `pwd` "
-        make deb
-        make dsc
+        make deb || errlog "build deb error"
+	if [ $dscflag == "dsc" ];then
+		make dsc || errlog "build dsc error"
+	fi
 }
 
-echo "This is $PKGNAME build scripts"
-
-
-SH_PATH=$(realpath "$0")
-SH_DIR=$(dirname $SH_PATH)
-
-cd $SH_DIR/$PKGNAME
+cd $SCRIPT_DIR/$PKGNAME
 exec_build
