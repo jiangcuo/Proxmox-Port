@@ -52,17 +52,19 @@ dockerbuild(){
 	if [ -n "$BUILDERNAME"  ];then
 		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm $BUILDERNAME || errlog "builderror"
 	else
-		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder || errlog "builderror"
+		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder|| errlog "builderror"
 	fi
 }
 
 upload_pkg(){
+	rm  $PKG_LOCATION_PATH/$PKGNAME -rf
 	mkdir $PKG_LOCATION_PATH/$PKGNAME -p
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.buildinfo" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.changes" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.dsc" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.tar*" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
+	ls $PKG_LOCATION_PATH/$PKGNAME/
 	for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.deb`;
 		do
 		md5sum $i > $i.md5

@@ -15,21 +15,21 @@ exec_build(){
 	echo "install depends"
 	apt update
         yes |mk-build-deps --install --remove
+	mkdir /tmp/$PKGDIR -p
         if [ -f "Makefile" ];then
 		echo "clean "
 		make clean || echo ok
 		echo "build deb in `pwd` "
 		if [ $dscflag == "dsc" ];then
 			make dsc || errlog "build  dsc error"
-			cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+			cp *.dsc *.tar.* /tmp/$PKGDIR
 		fi
-		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
                 make deb || errlog "build  deb error"
-		# We need copy deb files first beacuse of deb will be clean when dsc build 
-		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+		# We need copy deb files first beacuse of deb will be clean when dsc build
+		cp -r /tmp/$PKGDIR/* ./
         else
 		dpkg-buildpackage -b -us -uc ||errlog "build deb error"
-                cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+                mv ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
         fi
 }
 
@@ -42,16 +42,7 @@ if [ -f "$PKGDIR/../autobuild.sh" ];then
         cd $PKGDIR/../
         bash autobuild.sh
 else
-        # Rust not need copy
-        if [ ! -f "Cargo.toml" ];then
-                cd $PKGDIR
-                exec_build
-        else
-                mkdir /build/
-                rsync -ra $PKGDIR /build
-                cd /build/data
-                exec_build
-        fi
-
+        cd $PKGDIR
+        exec_build
 
 fi
