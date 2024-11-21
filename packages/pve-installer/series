@@ -3,3 +3,4 @@ patches/001-remove-kvm-check.patch
 patches/002-add-some-depends-for-pve-installer.patch
 patches/003-add-mmc-check-in-pve-installer.patch
 patches/004-add-rockchip-dtb.patch
+patches/005-remove-lintain.patch
