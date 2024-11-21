@@ -27,7 +27,7 @@ exec_build(){
 			cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
 		fi
         else
-                dpkg-buildpackage -b -us -uc -S -d ||errlog "build  dsc error"
+                dpkg-buildpackage -us -uc -S -d ||errlog "build  dsc error"
 		# We need copy deb files first beacuse of deb will be clean when dsc build
                 cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
                 if [ $dscflag == "dsc" ];then
