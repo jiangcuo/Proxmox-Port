@@ -22,9 +22,6 @@ exec_build_dpkg(){
         echo "clean "
         make clean || echo ok
         echo "build deb in `pwd` "
-        if [ $dscflag == "dsc" ];then
-                dpkg-buildpackage -us -uc -S -d || errlog "build dsc error"
-        fi
         dpkg-buildpackage -b -us -uc || errlog "build deb error"
 }
 
