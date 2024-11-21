@@ -185,3 +185,12 @@
 [submodule "packages/libqb/libqb"]
 	path = packages/libqb/libqb
 	url = https://salsa.debian.org/ha-team/libqb
+[submodule "packages/ceph-17/ceph-17"]
+	path = packages/ceph-17/ceph-17
+	url = https://git.proxmox.com/git/ceph.git
+[submodule "packages/ceph-18/ceph-18"]
+	path = packages/ceph-18/ceph-18
+	url = https://git.proxmox.com/git/ceph.git
+[submodule "packages/ceph-19/ceph-19"]
+	path = packages/ceph-19/ceph-19
+	url = https://git.proxmox.com/git/ceph.git
