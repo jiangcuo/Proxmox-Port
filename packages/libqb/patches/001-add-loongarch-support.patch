@@ -37,3 +37,17 @@ index 6bd3cc24..0dc76470 100644
  	/* map twice the size we want to make sure we have already mapped
  	   the second memory location behind it too. Otherwise the Linux
  	   kernel may map it in the upper memory so that we can't map
+diff --git a/debian/changelog b/debian/changelog
+index 5f009af..e53f81c 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++libqb (2.0.8-2+port) unstable; urgency=medium
++
++  * Add loongarch64 support
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Thu, 21 Nov 2024 13:59:33 +0800
++
+ libqb (2.0.8-2) unstable; urgency=medium
+
+   * [ca9bf88] Add procps build dependency for resources.test

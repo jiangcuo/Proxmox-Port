@@ -56,31 +56,6 @@ dockerbuild(){
 	fi
 }
 
-exec_build_make(){
-        apt update
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-        if [ $dscflag == "dsc" ];then
-                make dsc ||  errlog "build dsc error"
-        fi
-        DEB_BUILD_OPTIONS=nocheck  make deb || errlog "build deb error"
-}
-
-exec_build_dpkg(){
-        apt update
-        yes |mk-build-deps --install --remove
-        echo "clean "
-        make clean || echo ok
-        echo "build deb in `pwd` "
-        if [ $dscflag == "dsc" ];then
-                dpkg-buildpackage -us -uc -S -d || errlog "build dsc error"
-        fi
-        dpkg-buildpackage -b -us -uc || errlog "build deb error"
-}
-
-
 upload_pkg(){
 	mkdir $PKG_LOCATION_PATH/$PKGNAME -p
 	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
@@ -121,30 +96,27 @@ upload_pkg(){
 }
 
 update_submodues(){
-	if [ -d "$SH_PATH/packages/$PKGNAME/$PKGNAME/.git/" ]; then
-		echo "skip submodule"
-	else
-		cd $SH_PATH/packages/$PKGNAME/
-		git submodule update --init  --recursive "$PKGNAME"
-	fi
+	rm $SH_PATH/packages/$PKGNAME/$PKGNAME/ -rf
+	mkdir $SH_PATH/packages/$PKGNAME/$PKGNAME/
+	git submodule update --init --recursive "$SH_PATH/packages/$PKGNAME/$PKGNAME"
 }
 
 update_submodues || errlog  "Failed to update submodule"
 
 if [ -f "$SH_PATH/packages/$PKGNAME/series" ];then
 	cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
-	QUILT_PATCHES=../ \
-	QUILT_SERIES=../series \
-	quilt --quiltrc /dev/null --color=always push -a || test $$? = 2
+	for i in `cat $SH_PATH/packages/$PKGNAME/series`;
+                do patch -p1 < $SH_PATH/packages/$PKGNAME/$i
+        done
 fi
 
 ARCH=$(arch)
 
 if [ -f "$SH_PATH/packages/$PKGNAME/series.$ARCH" ];then
         cd "$SH_PATH/packages/$PKGNAME/$PKGNAME"
-        QUILT_PATCHES=../ \
-        QUILT_SERIES=../series.$ARCH \
-        quilt --quiltrc /dev/null --color=always push -a  || test $$? = 2
+        for i in `cat $SH_PATH/packages/$PKGNAME/series.$ARCH`;
+                do patch -p1 < $SH_PATH/packages/$PKGNAME/$i
+        done
 fi
 
 cd $SH_PATH
