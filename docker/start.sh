@@ -19,13 +19,14 @@ exec_build(){
 		echo "clean "
 		make clean || echo ok
 		echo "build deb in `pwd` "
-                make deb || errlog "build  deb error"
-		# We need copy deb files first beacuse of deb will be clean when dsc build 
-		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
 		if [ $dscflag == "dsc" ];then
 			make dsc || errlog "build  dsc error"
 			cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
 		fi
+		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
+                make deb || errlog "build  deb error"
+		# We need copy deb files first beacuse of deb will be clean when dsc build 
+		cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
         else
 		dpkg-buildpackage -b -us -uc ||errlog "build deb error"
                 cp ../*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.* $PKGDIR
