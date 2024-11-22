@@ -11,7 +11,7 @@ exec_build_make(){
         make clean || echo ok
         echo "build deb in `pwd` "
         if [ $dscflag == "dsc" ];then
-                make dsc ||  errlog "build dsc error"
+                make dsc ||  "dsc build error but it is not  fatal error"
         fi
         DEB_BUILD_OPTIONS=nocheck  make deb || errlog "build deb error"
 }
@@ -29,4 +29,3 @@ errlog(){
    echo $1;
    exit 1;
 }
-
