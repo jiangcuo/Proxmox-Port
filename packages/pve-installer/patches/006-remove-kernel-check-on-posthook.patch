@@ -1,0 +1,32 @@
+diff --git a/proxmox-post-hook/src/main.rs b/proxmox-post-hook/src/main.rs
+index da47da9..b7b91c3 100644
+--- a/proxmox-post-hook/src/main.rs
++++ b/proxmox-post-hook/src/main.rs
+@@ -174,7 +174,7 @@ struct PostHookInfo {
+     /// Release information for the ISO used for the installation.
+     iso: IsoInfo,
+     /// Installed kernel version
+-    kernel_version: KernelVersionInformation,
++    /// kernel_version: KernelVersionInformation,
+     /// Describes the boot mode of the machine and the SecureBoot status.
+     boot_info: BootInfo,
+     /// Information about the installed CPU(s)
+@@ -252,7 +252,8 @@ impl PostHookInfo {
+             debian_version: read_file("/etc/debian_version")?,
+             product: Self::gather_product_info(&setup_info, &run_cmd)?,
+             iso: setup_info.iso_info.clone(),
+-            kernel_version: Self::gather_kernel_version(&run_cmd, &open_file)?,
++            //We remove this entry for port
++            //kernel_version: Self::gather_kernel_version(&run_cmd, &open_file)?,
+             boot_info: BootInfo {
+                 mode: run_env.boot_type,
+                 secureboot: run_env.secure_boot,
+@@ -429,7 +430,7 @@ impl PostHookInfo {
+     ///
+     /// * `run_cmd` - Callback to run a command inside the target chroot.
+     /// * `open_file` - Callback to open a file inside the target chroot.
+-    #[cfg(target_arch = "x86_64")]
++    ///#[cfg(target_arch = "x86_64")] This function call was removed before, so it is safe
+     fn gather_kernel_version(
+         run_cmd: &dyn Fn(&[&str]) -> Result<String>,
+         open_file: &dyn Fn(&str) -> Result<File>,

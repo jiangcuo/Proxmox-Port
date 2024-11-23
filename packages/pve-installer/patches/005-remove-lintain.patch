@@ -1,16 +1,16 @@
 diff --git a/Makefile b/Makefile
-index e96a0f2..e397190 100644
+index a17f6c5..bb317d4 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -73,7 +73,6 @@ deb: $(DEB)
- $(ASSISTANT_DEB): $(DEB)
+@@ -81,7 +81,6 @@ $(ASSISTANT_DEB): $(DEB)
+ $(FIRST_BOOT_DEB): $(DEB)
  $(DEB): $(BUILDDIR)
  	cd $(BUILDDIR); dpkg-buildpackage -b -us -uc
--	lintian $(DEB)
+-	lintian $(ALL_DEBS)
  
  test-$(DEB): $(INSTALLER_SOURCES)
  	rsync --exclude='test*.img' --exclude='*.deb' --exclude='build' -a * build
-@@ -83,7 +82,6 @@ test-$(DEB): $(INSTALLER_SOURCES)
+@@ -91,7 +90,6 @@ test-$(DEB): $(INSTALLER_SOURCES)
  dsc: $(DSC)
  	$(MAKE) clean
  	$(MAKE) $(DSC)
