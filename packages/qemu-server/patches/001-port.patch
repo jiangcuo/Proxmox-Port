@@ -1,0 +1,1381 @@
+diff --git a/Makefile b/Makefile
+index 133468da..18de31bc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -14,7 +14,7 @@ MAN5DIR=$(MANDIR)/man5/
+ BASHCOMPLDIR=$(PREFIX)/share/bash-completion/completions/
+ ZSHCOMPLDIR=$(PREFIX)/share/zsh/vendor-completions/
+ export PERLDIR=$(PREFIX)/share/perl5
+-PERLINCDIR=$(PERLDIR)/asm-x86_64
++PERLINCDIR=$(PERLDIR)/asm-aarch64
+ 
+ GITVERSION:=$(shell git rev-parse HEAD)
+ 
+@@ -80,7 +80,7 @@ install: $(PKGSOURCES)
+ $(BUILDDIR):
+ 	rm -rf $(BUILDDIR) $(BUILDDIR).tmp
+ 	rsync -a * $(BUILDDIR).tmp
+-	echo "git clone git://git.proxmox.com/git/qemu-server.git\\ngit checkout $(GITVERSION)" > $(BUILDDIR).tmp/debian/SOURCE
++	echo "git clone https://github.com/jiangcuo/qemu-server.git\\ngit checkout $(GITVERSION)" > $(BUILDDIR).tmp/debian/SOURCE
+ 	mv $(BUILDDIR).tmp $(BUILDDIR)
+ 
+ .PHONY: deb
+@@ -99,11 +99,6 @@ $(DSC): $(BUILDDIR)
+ sbuild: $(DSC)
+ 	sbuild $(DSC)
+ 
+-.PHONY: test
+-test:
+-	PVE_GENERATING_DOCS=1 perl -I. ./qm verifyapi
+-	$(MAKE) -C test
+-
+ .PHONY: upload
+ upload: UPLOAD_DIST ?= $(DEB_DISTRIBUTION)
+ upload: $(DEB)
+@@ -111,7 +106,6 @@ upload: $(DEB)
+ 
+ .PHONY: clean
+ clean:
+-	$(MAKE) -C test $@
+ 	rm -rf $(PACKAGE)-*/ *.deb *.build *.buildinfo *.changes *.dsc $(PACKAGE)_*.tar.?z
+ 	rm -f *.xml.tmp *.1 *.5 *.8 *{synopsis,opts}.adoc docinfo.xml
+ 
+diff --git a/PVE/API2/Qemu/Machine.pm b/PVE/API2/Qemu/Machine.pm
+index afb535c2..db6c3d80 100644
+--- a/PVE/API2/Qemu/Machine.pm
++++ b/PVE/API2/Qemu/Machine.pm
+@@ -38,7 +38,7 @@ __PACKAGE__->register_method({
+ 		},
+ 		type => {
+ 		    type => 'string',
+-		    enum => ['q35', 'i440fx'],
++		    enum => ['q35', 'virt'],
+ 		    description => "The machine type.",
+ 		},
+ 		version => {
+@@ -50,7 +50,7 @@ __PACKAGE__->register_method({
+     },
+     code => sub {
+ 	my $machines = eval {
+-	    my $raw = file_get_contents('/usr/share/kvm/machine-versions-x86_64.json');
++	    my $raw = file_get_contents('/usr/share/kvm/machine-versions-aarch64.json');
+ 	    return from_json($raw, { utf8 => 1 });
+ 	};
+ 	die "could not load supported machine versions - $@\n" if $@;
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index 0df3bda0..700dda73 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -97,11 +97,40 @@ my $OVMF = {
+ 	],
+     },
+     aarch64 => {
++    '4m-no-smm' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.fd",
++    ],
++    '4m-no-smm-ms' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.ms.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.ms.fd",
++    ],
++   '4m' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.fd",
++    ],
++    '4m-ms' => [
++        "$EDK2_FW_BASE/AAVMF_CODE.ms.fd",
++        "$EDK2_FW_BASE/AAVMF_VARS.ms.fd",
++    ],
+ 	default => [
+ 	    "$EDK2_FW_BASE/AAVMF_CODE.fd",
+ 	    "$EDK2_FW_BASE/AAVMF_VARS.fd",
+ 	],
+     },
++	loongarch64 => {
++	default =>	[
++		"$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
++		"$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
++	],
++	},
++	riscv64 => {
++	default =>	[
++		"$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
++		"$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
++	],
++	},
++
+ };
+ 
+ my $cpuinfo = PVE::ProcFSTools::read_cpuinfo();
+@@ -184,7 +213,7 @@ my $vga_fmt = {
+ 	default => 'std',
+ 	optional => 1,
+ 	default_key => 1,
+-	enum => [qw(cirrus qxl qxl2 qxl3 qxl4 none serial0 serial1 serial2 serial3 std virtio virtio-gl vmware)],
++	enum => [qw(cirrus qxl qxl2 qxl3 qxl4 none serial0 serial1 serial2 serial3 std virtio virtio-gl vmware ramfb)],
+     },
+     memory => {
+ 	description => "Sets the VGA memory (in MiB). Has no effect with serial display.",
+@@ -391,8 +420,8 @@ my $confdesc = {
+ 	optional => 1,
+ 	type => 'string',
+ 	description => "SCSI controller model",
+-	enum => [qw(lsi lsi53c810 virtio-scsi-pci virtio-scsi-single megasas pvscsi)],
+-	default => 'lsi',
++	enum => [qw(virtio-scsi-pci virtio-scsi-single)],
++	default => 'virtio-scsi-pci',
+     },
+     description => {
+ 	optional => 1,
+@@ -404,8 +433,7 @@ my $confdesc = {
+     ostype => {
+ 	optional => 1,
+ 	type => 'string',
+-	# NOTE: When extending, also consider extending `%guest_types` in `Import/ESXi.pm`.
+-	enum => [qw(other wxp w2k w2k3 w2k8 wvista win7 win8 win10 win11 l24 l26 solaris)],
++	enum => [qw(win11 l26 other)],
+ 	description => "Specify guest operating system.",
+ 	verbose_description => <<EODESC,
+ Specify guest operating system. This is used to enable special
+@@ -599,9 +627,9 @@ EODESCR
+     },
+     cdrom => {
+ 	optional => 1,
+-	type => 'string', format => 'pve-qm-ide',
++	type => 'string', format => 'pve-qm-scsi',
+ 	typetext => '<volume>',
+-	description => "This is an alias for option -ide2",
++	description => "This is an alias for option -scsi",
+     },
+     cpu => {
+ 	optional => 1,
+@@ -646,7 +674,7 @@ EODESCR
+ 	description => "Virtual processor architecture. Defaults to the host.",
+ 	optional => 1,
+ 	type => 'string',
+-	enum => [qw(x86_64 aarch64)],
++	enum => [qw(x86_64 aarch64 loongarch64 riscv64)],
+     },
+     smbios1 => {
+ 	description => "Specify SMBIOS type 1 fields.",
+@@ -1369,11 +1397,14 @@ sub print_tabletdevice_full {
+ 
+     # we use uhci for old VMs because tablet driver was buggy in older qemu
+     my $usbbus;
+-    if ($q35 || $arch eq 'aarch64') {
+-	$usbbus = 'ehci';
++	if ($q35) {
++		$usbbus = 'ehci';
+     } else {
+-	$usbbus = 'uhci';
++		$usbbus = 'uhci';
+     }
++	if ($arch ne 'x86_64'){
++		$usbbus = 'ehci';
++	}
+ 
+     return "usb-tablet,id=tablet,bus=$usbbus.0,port=1";
+ }
+@@ -1381,7 +1412,7 @@ sub print_tabletdevice_full {
+ sub print_keyboarddevice_full {
+     my ($conf, $arch) = @_;
+ 
+-    return if $arch ne 'aarch64';
++    return if $arch eq 'x86_64';
+ 
+     return "usb-kbd,id=keyboard,bus=ehci.0,port=2";
+ }
+@@ -1775,15 +1806,19 @@ my $vga_map = {
+     'std' => 'VGA',
+     'vmware' => 'vmware-svga',
+     'virtio' => 'virtio-vga',
+-    'virtio-gl' => 'virtio-vga-gl',
++    'virtio-gl' => 'virtio-gpu-gl',
++    'ramfb' => 'ramfb',
+ };
+ 
+ sub print_vga_device {
+     my ($conf, $vga, $arch, $machine_version, $machine, $id, $qxlnum, $bridges) = @_;
+ 
+     my $type = $vga_map->{$vga->{type}};
+-    if ($arch eq 'aarch64' && defined($type) && $type eq 'virtio-vga') {
+-	$type = 'virtio-gpu';
++    if ($arch ne 'x86_64' && defined($type) && $type eq 'virtio-vga') {
++		$type = 'virtio-gpu-pci';
++    }
++	if ($arch ne 'x86_64' && defined($type) && $type eq 'virtio-gpu-gl') {
++		$type = 'virtio-gpu-gl';
+     }
+     my $vgamem_mb = $vga->{memory};
+ 
+@@ -1835,7 +1870,7 @@ sub print_vga_device {
+     }
+ 
+     if ($vga->{type} eq 'virtio-gl') {
+-	my $base = '/usr/lib/x86_64-linux-gnu/lib';
++	my $base = "/usr/lib/$arch-linux-gnu/lib";
+ 	die "missing libraries for '$vga->{type}' detected! Please install 'libgl1' and 'libegl1'\n"
+ 	    if !-e "${base}EGL.so.1" || !-e "${base}GL.so.1";
+ 
+@@ -3159,7 +3194,14 @@ sub add_tpm_device {
+ 
+     push @$devices, "-chardev", "socket,id=tpmchar,path=$paths->{socket}";
+     push @$devices, "-tpmdev", "emulator,id=tpmdev,chardev=tpmchar";
++
++	#https://bugzilla.proxmox.com/show_bug.cgi?id=4219
++	my $arch = $conf->{arch} // get_host_arch();
++	if ($arch eq 'x86_64'){
+     push @$devices, "-device", "tpm-tis,tpmdev=tpmdev";
++	}else{
++	push @$devices, "-device", "tpm-tis-device,tpmdev=tpmdev";
++	}
+ }
+ 
+ sub start_swtpm {
+@@ -3255,6 +3297,8 @@ sub get_vm_arch {
+ my $default_machines = {
+     x86_64 => 'pc',
+     aarch64 => 'virt',
++	riscv64 => 'virt',
++	loongarch64 => 'virt',
+ };
+ 
+ sub get_installed_machine_version {
+@@ -3300,7 +3344,7 @@ sub get_vm_machine {
+ 	if (windows_version($conf->{ostype})) {
+ 	    $machine = windows_get_pinned_machine_version($machine, '5.1', $kvmversion);
+ 	}
+-	$arch //= 'x86_64';
++	$arch //= get_host_arch();
+ 	$machine ||= $default_machines->{$arch};
+ 	if ($add_pve_version) {
+ 	    my $pvever = PVE::QemuServer::Machine::get_pve_version($kvmversion);
+@@ -3329,13 +3373,9 @@ sub get_ovmf_files($$$) {
+ 	or die "no OVMF images known for architecture '$arch'\n";
+ 
+     my $type = 'default';
+-    if ($arch eq 'x86_64') {
+-	if (defined($efidisk->{efitype}) && $efidisk->{efitype} eq '4m') {
+-	    $type = $smm ? "4m" : "4m-no-smm";
+-	    $type .= '-ms' if $efidisk->{'pre-enrolled-keys'};
+-	} else {
+-	    # TODO: log_warn about use of legacy images for x86_64 with Promxox VE 9
+-	}
++    if (defined($efidisk->{efitype}) && $efidisk->{efitype} eq '4m') {
++	$type = $smm ? "4m" : "4m-no-smm";
++	$type .= '-ms' if $efidisk->{'pre-enrolled-keys'};
+     }
+ 
+     my ($ovmf_code, $ovmf_vars) = $types->{$type}->@*;
+@@ -3348,6 +3388,8 @@ sub get_ovmf_files($$$) {
+ my $Arch2Qemu = {
+     aarch64 => '/usr/bin/qemu-system-aarch64',
+     x86_64 => '/usr/bin/qemu-system-x86_64',
++	loongarch64 => '/usr/bin/qemu-system-loongarch64',
++	riscv64 => '/usr/bin/qemu-system-riscv64',
+ };
+ sub get_command_for_arch($) {
+     my ($arch) = @_;
+@@ -3388,8 +3430,8 @@ sub query_supported_cpu_flags {
+ 
+     # FIXME: Once this is merged, the code below should work for ARM as well:
+     # https://lists.nongnu.org/archive/html/qemu-devel/2019-06/msg04947.html
+-    die "QEMU/KVM cannot detect CPU flags on ARM (aarch64)\n" if
+-	$arch eq "aarch64";
++    # die "QEMU/KVM cannot detect CPU flags on ARM (aarch64)\n" if
++	# $arch eq "aarch64";
+ 
+     my $kvm_supported = defined(kvm_version());
+     my $qemu_cmd = get_command_for_arch($arch);
+@@ -3408,7 +3450,8 @@ sub query_supported_cpu_flags {
+ 	    '-chardev', "socket,id=qmp,path=/var/run/qemu-server/$fakevmid.qmp,server=on,wait=off",
+ 	    '-mon', 'chardev=qmp,mode=control',
+ 	    '-pidfile', $pidfile,
+-	    '-S', '-daemonize'
++	    '-S', '-daemonize',
++		'-cpu', 'max'
+ 	];
+ 
+ 	if (!$kvm) {
+@@ -3536,7 +3579,7 @@ my sub get_vga_properties {
+     $vga->{type} = 'qxl' if $qxlnum;
+ 
+     if (!$vga->{type}) {
+-	if ($arch eq 'aarch64') {
++	if ($arch ne 'x86_64') {
+ 	    $vga->{type} = 'virtio';
+ 	} elsif (min_version($machine_version, 2, 9)) {
+ 	    $vga->{type} = (!$winversion || $winversion >= 6) ? 'std' : 'cirrus';
+@@ -3696,8 +3739,16 @@ sub config_to_command {
+ 
+ 	my ($code_drive_str, $var_drive_str) =
+ 	    print_ovmf_drive_commandlines($conf, $storecfg, $vmid, $arch, $q35, $version_guard);
+-	push $cmd->@*, '-drive', $code_drive_str;
+-	push $cmd->@*, '-drive', $var_drive_str;
++	if ($arch eq 'loongarch64') {
++			push  $cmd->@*, '-bios','/usr/share/pve-edk2-firmware//LOONGARCH64_VIRT_CODE.fd';
++		}elsif ($arch eq 'riscv64') {
++			push @$cmd, '-bios','/usr/share/pve-edk2-firmware//fw_dynamic.bin';
++			push @$cmd, '-drive', $code_drive_str;
++        }else{
++			push $cmd->@*, '-drive', $code_drive_str;
++			push $cmd->@*, '-drive', $var_drive_str;
++		}
++
+     }
+ 
+     if ($q35) { # tell QEMU to load q35 config early
+@@ -3709,11 +3760,12 @@ sub config_to_command {
+ 	}
+     }
+ 
++
+     if (defined(my $fixups = qemu_created_version_fixups($conf, $forcemachine, $kvmver))) {
+ 	push @$cmd, $fixups->@*;
+     }
+ 
+-    if ($conf->{vmgenid}) {
++    if ($conf->{vmgenid} && $arch eq 'x86_64') {
+ 	push @$devices, '-device', 'vmgenid,guid='.$conf->{vmgenid};
+     }
+ 
+@@ -3761,7 +3813,7 @@ sub config_to_command {
+ 	    # On aarch64, serial0 is the UART device. QEMU only allows
+ 	    # connecting UART devices via the '-serial' command line, as
+ 	    # the device has a fixed slot on the hardware...
+-	    if ($arch eq 'aarch64' && $i == 0) {
++	    if ($arch ne 'x86_64' && $i == 0) {
+ 		push @$devices, '-serial', "chardev:serial$i";
+ 	    } else {
+ 		push @$devices, '-device', "isa-serial,chardev=serial$i";
+@@ -3827,9 +3879,12 @@ sub config_to_command {
+     push @$cmd, '-no-reboot' if  defined($conf->{reboot}) && $conf->{reboot} == 0;
+ 
+     if ($vga->{type} && $vga->{type} !~ m/^serial\d+$/ && $vga->{type} ne 'none'){
+-	push @$devices, '-device', print_vga_device(
+-	    $conf, $vga, $arch, $machine_version, $machine_type, undef, $qxlnum, $bridges);
+-
++        if ($vga->{type} eq 'ramfb'){
++            push @$devices, '-device', 'ramfb';
++        } else {
++            push @$devices, '-device', print_vga_device(
++            $conf, $vga, $arch, $machine_version, $machine_type, undef, $qxlnum, $bridges);
++    	}
+ 	push @$cmd, '-display', 'egl-headless,gl=core' if $vga->{type} eq 'virtio-gl'; # VIRGL
+ 
+ 	my $socket = PVE::QemuServer::Helpers::vnc_socket($vmid);
+@@ -4125,14 +4180,19 @@ sub config_to_command {
+ 	if ($k == 2 && $legacy_igd) {
+ 	    $k_name = "$k-igd";
+ 	}
+-	my $pciaddr = print_pci_addr("pci.$k_name", undef, $arch, $machine_type);
+-	my $devstr = "pci-bridge,id=pci.$k,chassis_nr=$k$pciaddr";
+-
+-	if ($q35) { # add after -readconfig pve-q35.cfg
+-	    splice @$devices, 2, 0, '-device', $devstr;
+-	} else {
+-	    unshift @$devices, '-device', $devstr if $k > 0;
++	if ( $arch eq 'x86_64' ){ 
++		my $pciaddr = print_pci_addr("pci.$k_name", undef, $arch, $machine_type);
++		my $devstr = "pci-bridge,id=pci.$k,chassis_nr=$k$pciaddr";
++	
++		if ($q35) { # add after -readconfig pve-q35.cfg
++			splice @$devices, 2, 0, '-device', $devstr;
++		} else {
++			unshift @$devices, '-device', $devstr if $k > 0;
++		}
++		}
+ 	}
++	if ($arch ne 'x86_64') { 
++       unshift @$devices, '-readconfig', '/usr/share/qemu-server/pve-port.cfg';
+     }
+ 
+     if (!$kvm) {
+@@ -4146,19 +4206,15 @@ sub config_to_command {
+ 	$machine_type_min =~ s/\+pve\d+$//;
+ 	$machine_type_min .= "+pve$required_pve_version";
+     }
+-    push @$machineFlags, "type=${machine_type_min}";
+-
+-    PVE::QemuServer::Machine::assert_valid_machine_property($conf, $machine_conf);
+-
+-    if (my $viommu = $machine_conf->{viommu}) {
+-	if ($viommu eq 'intel') {
+-	    unshift @$devices, '-device', 'intel-iommu,intremap=on,caching-mode=on';
+-	    push @$machineFlags, 'kernel-irqchip=split';
+-	} elsif ($viommu eq 'virtio') {
+-	    push @$devices, '-device', 'virtio-iommu-pci';
++    if ($arch eq 'aarch64'){
++	if (!$kvm){
++        push @$machineFlags, "type=${machine_type_min}";
++	}else{
++	 push @$machineFlags, "type=${machine_type_min},gic-version=host";
+ 	}
++    }else{
++       push @$machineFlags, "type=${machine_type_min}";
+     }
+-
+     push @$cmd, @$devices;
+     push @$cmd, '-rtc', join(',', @$rtcFlags) if scalar(@$rtcFlags);
+     push @$cmd, '-machine', join(',', @$machineFlags) if scalar(@$machineFlags);
+@@ -5018,10 +5074,10 @@ sub vmconfig_hotplug_pending {
+ 		if ($defaults->{tablet}) {
+ 		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
+ 		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
+-			if $arch eq 'aarch64';
++			if $arch ne 'x86_64';
+ 		} else {
+ 		    vm_deviceunplug($vmid, $conf, 'tablet');
+-		    vm_deviceunplug($vmid, $conf, 'keyboard') if $arch eq 'aarch64';
++		    vm_deviceunplug($vmid, $conf, 'keyboard') if $arch ne 'x86_64';
+ 		}
+ 	    } elsif ($opt =~ m/^usb(\d+)$/) {
+ 		my $index = $1;
+@@ -5083,10 +5139,10 @@ sub vmconfig_hotplug_pending {
+ 		if ($value == 1) {
+ 		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
+ 		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
+-			if $arch eq 'aarch64';
++			if $arch ne 'x86_64';
+ 		} elsif ($value == 0) {
+ 		    vm_deviceunplug($vmid, $conf, 'tablet');
+-		    vm_deviceunplug($vmid, $conf, 'keyboard') if $arch eq 'aarch64';
++		    vm_deviceunplug($vmid, $conf, 'keyboard') if $arch ne 'x86_64';
+ 		}
+ 	    } elsif ($opt =~ m/^usb(\d+)$/) {
+ 		my $index = $1;
+diff --git a/PVE/QemuServer/CPUConfig.pm b/PVE/QemuServer/CPUConfig.pm
+index 33f7524f..51602d46 100644
+--- a/PVE/QemuServer/CPUConfig.pm
++++ b/PVE/QemuServer/CPUConfig.pm
+@@ -36,22 +36,22 @@ sub load_custom_model_conf {
+ 
+ #builtin models : reported-model is mandatory
+ my $builtin_models = {
+-    'x86-64-v2' => {
+-	'reported-model' => 'qemu64',
+-	flags => "+popcnt;+pni;+sse4.1;+sse4.2;+ssse3",
+-    },
+-    'x86-64-v2-AES' => {
+-	'reported-model' => 'qemu64',
+-	flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3",
+-    },
+-    'x86-64-v3' => {
+-	'reported-model' => 'qemu64',
+-	flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3;+avx;+avx2;+bmi1;+bmi2;+f16c;+fma;+abm;+movbe;+xsave",
+-    },
+-    'x86-64-v4' => {
+-	'reported-model' => 'qemu64',
+-	flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3;+avx;+avx2;+bmi1;+bmi2;+f16c;+fma;+abm;+movbe;+xsave;+avx512f;+avx512bw;+avx512cd;+avx512dq;+avx512vl",
+-    },
++    # 'x86-64-v2' => {
++	# 'reported-model' => 'qemu64',
++	# flags => "+popcnt;+pni;+sse4.1;+sse4.2;+ssse3",
++    # },
++    # 'x86-64-v2-AES' => {
++	# 'reported-model' => 'qemu64',
++	# flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3",
++    # },
++    # 'x86-64-v3' => {
++	# 'reported-model' => 'qemu64',
++	# flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3;+avx;+avx2;+bmi1;+bmi2;+f16c;+fma;+abm;+movbe;+xsave",
++    # },
++    # 'x86-64-v4' => {
++	# 'reported-model' => 'qemu64',
++	# flags => "+aes;+popcnt;+pni;+sse4.1;+sse4.2;+ssse3;+avx;+avx2;+bmi1;+bmi2;+f16c;+fma;+abm;+movbe;+xsave;+avx512f;+avx512bw;+avx512cd;+avx512dq;+avx512vl",
++    # },
+ };
+ 
+ my $depreacated_cpu_map = {
+@@ -73,100 +73,100 @@ my $cputypes_32bit = {
+ 
+ my $cpu_vendor_list = {
+     # Intel CPUs
+-    486 => 'GenuineIntel',
+-    pentium => 'GenuineIntel',
+-    pentium2 => 'GenuineIntel',
+-    pentium3 => 'GenuineIntel',
+-    coreduo => 'GenuineIntel',
+-    core2duo => 'GenuineIntel',
+-    Conroe => 'GenuineIntel',
+-    Penryn => 'GenuineIntel',
+-    Nehalem => 'GenuineIntel',
+-    'Nehalem-IBRS' => 'GenuineIntel',
+-    Westmere => 'GenuineIntel',
+-    'Westmere-IBRS' => 'GenuineIntel',
+-    SandyBridge => 'GenuineIntel',
+-    'SandyBridge-IBRS' => 'GenuineIntel',
+-    IvyBridge => 'GenuineIntel',
+-    'IvyBridge-IBRS' => 'GenuineIntel',
+-    Haswell => 'GenuineIntel',
+-    'Haswell-IBRS' => 'GenuineIntel',
+-    'Haswell-noTSX' => 'GenuineIntel',
+-    'Haswell-noTSX-IBRS' => 'GenuineIntel',
+-    Broadwell => 'GenuineIntel',
+-    'Broadwell-IBRS' => 'GenuineIntel',
+-    'Broadwell-noTSX' => 'GenuineIntel',
+-    'Broadwell-noTSX-IBRS' => 'GenuineIntel',
+-    'Skylake-Client' => 'GenuineIntel',
+-    'Skylake-Client-IBRS' => 'GenuineIntel',
+-    'Skylake-Client-noTSX-IBRS' => 'GenuineIntel',
+-    'Skylake-Client-v4' => 'GenuineIntel',
+-    'Skylake-Server' => 'GenuineIntel',
+-    'Skylake-Server-IBRS' => 'GenuineIntel',
+-    'Skylake-Server-noTSX-IBRS' => 'GenuineIntel',
+-    'Skylake-Server-v4' => 'GenuineIntel',
+-    'Skylake-Server-v5' => 'GenuineIntel',
+-    'Cascadelake-Server' => 'GenuineIntel',
+-    'Cascadelake-Server-v2' => 'GenuineIntel',
+-    'Cascadelake-Server-noTSX' => 'GenuineIntel',
+-    'Cascadelake-Server-v4' => 'GenuineIntel',
+-    'Cascadelake-Server-v5' => 'GenuineIntel',
+-    'Cooperlake' => 'GenuineIntel',
+-    'Cooperlake-v2' => 'GenuineIntel',
+-    KnightsMill => 'GenuineIntel',
+-    'Icelake-Client' => 'GenuineIntel', # depreacated, removed with QEMU 7.1
+-    'Icelake-Client-noTSX' => 'GenuineIntel', # depreacated, removed with QEMU 7.1
+-    'Icelake-Server' => 'GenuineIntel',
+-    'Icelake-Server-noTSX' => 'GenuineIntel',
+-    'Icelake-Server-v3' => 'GenuineIntel',
+-    'Icelake-Server-v4' => 'GenuineIntel',
+-    'Icelake-Server-v5' => 'GenuineIntel',
+-    'Icelake-Server-v6' => 'GenuineIntel',
+-    'SapphireRapids' => 'GenuineIntel',
+-    'SapphireRapids-v2' => 'GenuineIntel',
+-    'GraniteRapids' => 'GenuineIntel',
+-
+-    # AMD CPUs
+-    athlon => 'AuthenticAMD',
+-    phenom => 'AuthenticAMD',
+-    Opteron_G1 => 'AuthenticAMD',
+-    Opteron_G2 => 'AuthenticAMD',
+-    Opteron_G3 => 'AuthenticAMD',
+-    Opteron_G4 => 'AuthenticAMD',
+-    Opteron_G5 => 'AuthenticAMD',
+-    EPYC => 'AuthenticAMD',
+-    'EPYC-IBPB' => 'AuthenticAMD',
+-    'EPYC-v3' => 'AuthenticAMD',
+-    'EPYC-v4' => 'AuthenticAMD',
+-    'EPYC-Rome' => 'AuthenticAMD',
+-    'EPYC-Rome-v2' => 'AuthenticAMD',
+-    'EPYC-Rome-v3' => 'AuthenticAMD',
+-    'EPYC-Rome-v4' => 'AuthenticAMD',
+-    'EPYC-Milan' => 'AuthenticAMD',
+-    'EPYC-Milan-v2' => 'AuthenticAMD',
+-    'EPYC-Genoa' => 'AuthenticAMD',
+-
+-    # generic types, use vendor from host node
+-    host => 'default',
+-    kvm32 => 'default',
+-    kvm64 => 'default',
+-    qemu32 => 'default',
+-    qemu64 => 'default',
+-    max => 'default',
++    # 486 => 'GenuineIntel',
++    # pentium => 'GenuineIntel',
++    # pentium2 => 'GenuineIntel',
++    # pentium3 => 'GenuineIntel',
++    # coreduo => 'GenuineIntel',
++    # core2duo => 'GenuineIntel',
++    # Conroe => 'GenuineIntel',
++    # Penryn => 'GenuineIntel',
++    # Nehalem => 'GenuineIntel',
++    # 'Nehalem-IBRS' => 'GenuineIntel',
++    # Westmere => 'GenuineIntel',
++    # 'Westmere-IBRS' => 'GenuineIntel',
++    # SandyBridge => 'GenuineIntel',
++    # 'SandyBridge-IBRS' => 'GenuineIntel',
++    # IvyBridge => 'GenuineIntel',
++    # 'IvyBridge-IBRS' => 'GenuineIntel',
++    # Haswell => 'GenuineIntel',
++    # 'Haswell-IBRS' => 'GenuineIntel',
++    # 'Haswell-noTSX' => 'GenuineIntel',
++    # 'Haswell-noTSX-IBRS' => 'GenuineIntel',
++    # Broadwell => 'GenuineIntel',
++    # 'Broadwell-IBRS' => 'GenuineIntel',
++    # 'Broadwell-noTSX' => 'GenuineIntel',
++    # 'Broadwell-noTSX-IBRS' => 'GenuineIntel',
++    # 'Skylake-Client' => 'GenuineIntel',
++    # 'Skylake-Client-IBRS' => 'GenuineIntel',
++    # 'Skylake-Client-noTSX-IBRS' => 'GenuineIntel',
++    # 'Skylake-Client-v4' => 'GenuineIntel',
++    # 'Skylake-Server' => 'GenuineIntel',
++    # 'Skylake-Server-IBRS' => 'GenuineIntel',
++    # 'Skylake-Server-noTSX-IBRS' => 'GenuineIntel',
++    # 'Skylake-Server-v4' => 'GenuineIntel',
++    # 'Skylake-Server-v5' => 'GenuineIntel',
++    # 'Cascadelake-Server' => 'GenuineIntel',
++    # 'Cascadelake-Server-v2' => 'GenuineIntel',
++    # 'Cascadelake-Server-noTSX' => 'GenuineIntel',
++    # 'Cascadelake-Server-v4' => 'GenuineIntel',
++    # 'Cascadelake-Server-v5' => 'GenuineIntel',
++    # 'Cooperlake' => 'GenuineIntel',
++    # 'Cooperlake-v2' => 'GenuineIntel',
++    # KnightsMill => 'GenuineIntel',
++    # 'Icelake-Client' => 'GenuineIntel', # depreacated, removed with QEMU 7.1
++    # 'Icelake-Client-noTSX' => 'GenuineIntel', # depreacated, removed with QEMU 7.1
++    # 'Icelake-Server' => 'GenuineIntel',
++    # 'Icelake-Server-noTSX' => 'GenuineIntel',
++    # 'Icelake-Server-v3' => 'GenuineIntel',
++    # 'Icelake-Server-v4' => 'GenuineIntel',
++    # 'Icelake-Server-v5' => 'GenuineIntel',
++    # 'Icelake-Server-v6' => 'GenuineIntel',
++    # 'SapphireRapids' => 'GenuineIntel',
++
++    # # AMD CPUs
++    # athlon => 'AuthenticAMD',
++    # phenom => 'AuthenticAMD',
++    # Opteron_G1 => 'AuthenticAMD',
++    # Opteron_G2 => 'AuthenticAMD',
++    # Opteron_G3 => 'AuthenticAMD',
++    # Opteron_G4 => 'AuthenticAMD',
++    # Opteron_G5 => 'AuthenticAMD',
++    # EPYC => 'AuthenticAMD',
++    # 'EPYC-IBPB' => 'AuthenticAMD',
++    # 'EPYC-v3' => 'AuthenticAMD',
++    #'EPYC-v4' => 'AuthenticAMD',
++    # 'EPYC-Rome' => 'AuthenticAMD',
++    # 'EPYC-Rome-v2' => 'AuthenticAMD',
++    #'EPYC-Rome-v3' => 'AuthenticAMD',
++    #'EPYC-Rome-v4' => 'AuthenticAMD',
++    #'EPYC-Milan' => 'AuthenticAMD',
++    #'EPYC-Milan-v2' => 'AuthenticAMD',
++    #'EPYC-Genoa' => 'AuthenticAMD',
++
++    # # generic types, use vendor from host node
++    # host => 'default',
++    # kvm32 => 'default',
++    # kvm64 => 'default',
++    # qemu32 => 'default',
++    # qemu64 => 'default',
++    # max => 'default',
++    # virt arm64 cpus
++    'host' => 'default',
++    'cortex-a35' => 'default',
++    'cortex-a53' => 'default',
++    'cortex-a55' => 'default',
++    'cortex-a57' => 'default',
++    'cortex-a72' => 'default',
++    'cortex-a76' => 'default',
++    'neoverse-n1' => 'default',
++    'max' => 'default',
++    'la464_loongarch_cpu' => 'default',
++    'rv64' => 'default', 
++
+ };
+ 
+ my @supported_cpu_flags = (
+-    'pcid',
+-    'spec-ctrl',
+-    'ibpb',
+-    'ssbd',
+-    'virt-ssbd',
+-    'amd-ssbd',
+-    'amd-no-ssb',
+-    'pdpe1gb',
+-    'md-clear',
+-    'hv-tlbflush',
+-    'hv-evmcs',
+     'aes'
+ );
+ my $cpu_flag_supported_re = qr/([+-])(@{[join('|', @supported_cpu_flags)]})/;
+@@ -188,7 +188,7 @@ my $cpu_fmt = {
+ 	    ." Only valid for custom CPU model definitions, default models will always report themselves to the guest OS.",
+ 	type => 'string',
+ 	enum => [ sort { lc("$a") cmp lc("$b") } keys %$cpu_vendor_list ],
+-	default => 'kvm64',
++	default => 'host',
+ 	optional => 1,
+     },
+     hidden => {
+@@ -599,7 +599,7 @@ sub get_cpu_options {
+ 	$pve_forced_flags->{'vendor'} = {
+ 	    value => $cpu_vendor,
+ 	} if $cpu_vendor ne 'default';
+-    } elsif ($arch ne 'aarch64') {
++    } elsif ($arch ne 'loongarch64') {
+ 	die "internal error"; # should not happen
+     }
+ 
+@@ -736,7 +736,10 @@ sub get_default_cpu_type {
+     my ($arch, $kvm) = @_;
+ 
+     my $cputype = $kvm ? 'kvm64' : 'qemu64';
+-    $cputype = 'cortex-a57' if $arch eq 'aarch64';
++    $cputype = 'host' if $arch eq 'aarch64';
++    $cputype = 'host' if $arch eq 'arm';
++    $cputype = 'rv64' if $arch eq 'riscv64';
++    $cputype = 'max' if $arch eq 'loongarch64';
+ 
+     return $cputype;
+ }
+@@ -768,7 +771,9 @@ sub get_cpu_bitness {
+     }
+ 
+     return $cputypes_32bit->{$cputype} ? 32 : 64 if $arch eq 'x86_64';
+-    return 64 if $arch eq 'aarch64';
++    if ($arch eq 'aarch64' || $arch eq 'loongarch64' || $arch eq 'riscv64') {
++        return 64;
++    }
+ 
+     die "unsupported architecture '$arch'\n";
+ }
+diff --git a/PVE/QemuServer/PCI.pm b/PVE/QemuServer/PCI.pm
+index 75eac134..7c2da255 100644
+--- a/PVE/QemuServer/PCI.pm
++++ b/PVE/QemuServer/PCI.pm
+@@ -14,6 +14,7 @@ our @EXPORT_OK = qw(
+ print_pci_addr
+ print_pcie_addr
+ print_pcie_root_port
++print_pcie_root_port_for_port
+ parse_hostpci
+ );
+ 
+@@ -138,131 +139,254 @@ PVE::JSONSchema::register_standard_option("pve-qm-hostpci", $hostpcidesc);
+ 
+ my $pci_addr_map;
+ sub get_pci_addr_map {
+-    $pci_addr_map = {
+-	piix3 => { bus => 0, addr => 1, conflict_ok => qw(ehci)  },
+-	ehci => { bus => 0, addr => 1, conflict_ok => qw(piix3) }, # instead of piix3 on arm
+-	vga => { bus => 0, addr => 2, conflict_ok => qw(legacy-igd) },
+-	'legacy-igd' => { bus => 0, addr => 2, conflict_ok => qw(vga) }, # legacy-igd requires vga=none
+-	balloon0 => { bus => 0, addr => 3 },
+-	watchdog => { bus => 0, addr => 4 },
+-	scsihw0 => { bus => 0, addr => 5, conflict_ok => qw(pci.3) },
+-	'pci.3' => { bus => 0, addr => 5, conflict_ok => qw(scsihw0) }, # also used for virtio-scsi-single bridge
+-	scsihw1 => { bus => 0, addr => 6 },
+-	ahci0 => { bus => 0, addr => 7 },
+-	qga0 => { bus => 0, addr => 8 },
+-	spice => { bus => 0, addr => 9 },
+-	virtio0 => { bus => 0, addr => 10 },
+-	virtio1 => { bus => 0, addr => 11 },
+-	virtio2 => { bus => 0, addr => 12 },
+-	virtio3 => { bus => 0, addr => 13 },
+-	virtio4 => { bus => 0, addr => 14 },
+-	virtio5 => { bus => 0, addr => 15 },
+-	hostpci0 => { bus => 0, addr => 16 },
+-	hostpci1 => { bus => 0, addr => 17 },
+-	net0 => { bus => 0, addr => 18 },
+-	net1 => { bus => 0, addr => 19 },
+-	net2 => { bus => 0, addr => 20 },
+-	net3 => { bus => 0, addr => 21 },
+-	net4 => { bus => 0, addr => 22 },
+-	net5 => { bus => 0, addr => 23 },
+-	vga1 => { bus => 0, addr => 24 },
+-	vga2 => { bus => 0, addr => 25 },
+-	vga3 => { bus => 0, addr => 26 },
+-	hostpci2 => { bus => 0, addr => 27 },
+-	hostpci3 => { bus => 0, addr => 28 },
+-	#addr29 : usb-host (pve-usb.cfg)
+-	'pci.1' => { bus => 0, addr => 30 },
+-	'pci.2' => { bus => 0, addr => 31 },
+-	'net6' => { bus => 1, addr => 1 },
+-	'net7' => { bus => 1, addr => 2 },
+-	'net8' => { bus => 1, addr => 3 },
+-	'net9' => { bus => 1, addr => 4 },
+-	'net10' => { bus => 1, addr => 5 },
+-	'net11' => { bus => 1, addr => 6 },
+-	'net12' => { bus => 1, addr => 7 },
+-	'net13' => { bus => 1, addr => 8 },
+-	'net14' => { bus => 1, addr => 9 },
+-	'net15' => { bus => 1, addr => 10 },
+-	'net16' => { bus => 1, addr => 11 },
+-	'net17' => { bus => 1, addr => 12 },
+-	'net18' => { bus => 1, addr => 13 },
+-	'net19' => { bus => 1, addr => 14 },
+-	'net20' => { bus => 1, addr => 15 },
+-	'net21' => { bus => 1, addr => 16 },
+-	'net22' => { bus => 1, addr => 17 },
+-	'net23' => { bus => 1, addr => 18 },
+-	'net24' => { bus => 1, addr => 19 },
+-	'net25' => { bus => 1, addr => 20 },
+-	'net26' => { bus => 1, addr => 21 },
+-	'net27' => { bus => 1, addr => 22 },
+-	'net28' => { bus => 1, addr => 23 },
+-	'net29' => { bus => 1, addr => 24 },
+-	'net30' => { bus => 1, addr => 25 },
+-	'net31' => { bus => 1, addr => 26 },
+-	'xhci' => { bus => 1, addr => 27 },
+-	'pci.4' => { bus => 1, addr => 28 },
+-	'rng0' => { bus => 1, addr => 29 },
+-	'pci.2-igd' => { bus => 1, addr => 30 }, # replaces pci.2 in case a legacy IGD device is passed through
+-	'virtio6' => { bus => 2, addr => 1 },
+-	'virtio7' => { bus => 2, addr => 2 },
+-	'virtio8' => { bus => 2, addr => 3 },
+-	'virtio9' => { bus => 2, addr => 4 },
+-	'virtio10' => { bus => 2, addr => 5 },
+-	'virtio11' => { bus => 2, addr => 6 },
+-	'virtio12' => { bus => 2, addr => 7 },
+-	'virtio13' => { bus => 2, addr => 8 },
+-	'virtio14' => { bus => 2, addr => 9 },
+-	'virtio15' => { bus => 2, addr => 10 },
+-	'ivshmem' => { bus => 2, addr => 11 },
+-	'audio0' => { bus => 2, addr => 12 },
+-	hostpci4 => { bus => 2, addr => 13 },
+-	hostpci5 => { bus => 2, addr => 14 },
+-	hostpci6 => { bus => 2, addr => 15 },
+-	hostpci7 => { bus => 2, addr => 16 },
+-	hostpci8 => { bus => 2, addr => 17 },
+-	hostpci9 => { bus => 2, addr => 18 },
+-	hostpci10 => { bus => 2, addr => 19 },
+-	hostpci11 => { bus => 2, addr => 20 },
+-	hostpci12 => { bus => 2, addr => 21 },
+-	hostpci13 => { bus => 2, addr => 22 },
+-	hostpci14 => { bus => 2, addr => 23 },
+-	hostpci15 => { bus => 2, addr => 24 },
+-	'virtioscsi0' => { bus => 3, addr => 1 },
+-	'virtioscsi1' => { bus => 3, addr => 2 },
+-	'virtioscsi2' => { bus => 3, addr => 3 },
+-	'virtioscsi3' => { bus => 3, addr => 4 },
+-	'virtioscsi4' => { bus => 3, addr => 5 },
+-	'virtioscsi5' => { bus => 3, addr => 6 },
+-	'virtioscsi6' => { bus => 3, addr => 7 },
+-	'virtioscsi7' => { bus => 3, addr => 8 },
+-	'virtioscsi8' => { bus => 3, addr => 9 },
+-	'virtioscsi9' => { bus => 3, addr => 10 },
+-	'virtioscsi10' => { bus => 3, addr => 11 },
+-	'virtioscsi11' => { bus => 3, addr => 12 },
+-	'virtioscsi12' => { bus => 3, addr => 13 },
+-	'virtioscsi13' => { bus => 3, addr => 14 },
+-	'virtioscsi14' => { bus => 3, addr => 15 },
+-	'virtioscsi15' => { bus => 3, addr => 16 },
+-	'virtioscsi16' => { bus => 3, addr => 17 },
+-	'virtioscsi17' => { bus => 3, addr => 18 },
+-	'virtioscsi18' => { bus => 3, addr => 19 },
+-	'virtioscsi19' => { bus => 3, addr => 20 },
+-	'virtioscsi20' => { bus => 3, addr => 21 },
+-	'virtioscsi21' => { bus => 3, addr => 22 },
+-	'virtioscsi22' => { bus => 3, addr => 23 },
+-	'virtioscsi23' => { bus => 3, addr => 24 },
+-	'virtioscsi24' => { bus => 3, addr => 25 },
+-	'virtioscsi25' => { bus => 3, addr => 26 },
+-	'virtioscsi26' => { bus => 3, addr => 27 },
+-	'virtioscsi27' => { bus => 3, addr => 28 },
+-	'virtioscsi28' => { bus => 3, addr => 29 },
+-	'virtioscsi29' => { bus => 3, addr => 30 },
+-	'virtioscsi30' => { bus => 3, addr => 31 },
+-	'scsihw2' => { bus => 4, addr => 1 },
+-	'scsihw3' => { bus => 4, addr => 2 },
+-	'scsihw4' => { bus => 4, addr => 3 },
+-    } if !defined($pci_addr_map);
+-    return $pci_addr_map;
++	my ($arch) = @_;
++	if ($arch ne 'x86_64'){
++		$pci_addr_map = {
++			piix3 => { bus => 0, addr => 1, conflict_ok => qw(ehci)  },
++			ehci => { bus => 0, addr => 1, conflict_ok => qw(piix3) }, # instead of piix3 on arm
++			vga => { bus => 0, addr => 2, conflict_ok => qw(legacy-igd) },
++			'legacy-igd' => { bus => 0, addr => 2, conflict_ok => qw(vga) }, # legacy-igd requires vga=none
++			balloon0 => { bus => 0, addr => 3 },
++			watchdog => { bus => 0, addr => 4 },
++			scsihw0 => { bus => 0, addr => 5 },
++			scsihw1 => { bus => 0, addr => 6 },
++			ahci0 => { bus => 0, addr => 7 },
++			qga0 => { bus => 0, addr => 8 },
++			spice => { bus => 0, addr => 9 },
++			# net0 will not be hotpluged, This is a legacy issue, and if the addr is modified during the update, 
++			# it may cause the guest to lose internet access.
++			# So we reserved this address for net0.
++			# If you wan't eth0 support hotplug, please refer to the comments below
++			'net0' => { bus => 0, addr => 11 }, 
++			# pci 1 -> pcie.1 bus => 0, addr => 12 for net hotplug
++			# pci 2 -> pcie.1 bus => 0, addr => 13 for virtio hotplug
++			# pci 3 -> pcie.1 bus => 0, addr => 14 for virtioscsi0 hotplug
++			# pci 4 -> pcie.1 bus => 0, addr => 15. Keep it for later, maybe it will be used by nvme
++			hostpci0 => { bus => 5, addr => 0 },  	# pcie-port 5 -> pcie.5 bus => 0, addr => 16
++			hostpci1 => { bus => 6, addr => 0 },    # pcie-port 6 -> pcie.6 bus => 0, addr => 17
++			hostpci2 => { bus => 7, addr => 0 },    # pcie-port 7 -> pcie.7 bus => 0, addr => 18
++			hostpci3 => { bus => 8, addr => 0 },    # pcie-port 8 -> pcie.8 bus => 0, addr => 19
++			hostpci4 => { bus => 9, addr => 0 },    # pcie-port 9 -> pcie.9 bus => 0, addr => 20
++			hostpci5 => { bus => 10, addr => 0 },   # pcie-port 10 -> pcie.10 bus => 0, addr => 21
++			hostpci6 => { bus => 11, addr => 0 },   # pcie-port 11 -> pcie.11 bus => 0, addr => 22
++			hostpci7 => { bus => 12, addr => 0 },   # pcie-port 12 -> pcie.12 bus => 0, addr => 23
++			hostpci8 => { bus => 13, addr => 0 },   # pcie-port 13 -> pcie.13 bus => 0, addr => 24
++			hostpci9 => { bus => 14, addr => 0 },   # pcie-port 14 -> pcie.14 bus => 0, addr => 25 
++			hostpci10 => { bus => 15, addr => 0 },  # pcie-port 15 -> pcie.15 bus => 0, addr => 26 
++			hostpci11 => { bus => 16, addr => 0 },  # pcie-port 16 -> pcie.16 bus => 0, addr => 27 
++			hostpci12 => { bus => 17, addr => 0 },  # pcie-port 17 -> pcie.17 bus => 0, addr => 28 
++			hostpci13 => { bus => 18, addr => 0 },  # pcie-port 18 -> pcie.18 bus => 0, addr => 29 
++			hostpci14 => { bus => 19, addr => 0 },  # pcie-port 19 -> pcie.19 bus => 0, addr => 30 
++			'rng0' => { bus => 0, addr => 31 },
++			'xhci' => { bus => 1, addr => 1 }, # This support usbX hotplug
++			# 'net0' => { bus => 1, addr => 3 }, This support net0 hotplug
++			'net1' => { bus => 1, addr => 4 },
++			'net2' => { bus => 1, addr => 5 },
++			'net3' => { bus => 1, addr => 6 },
++			'net4' => { bus => 1, addr => 7 },
++			'net5' => { bus => 1, addr => 8 },
++			'net6' => { bus => 1, addr => 9 },
++			'net7' => { bus => 1, addr => 10 },
++			'net8' => { bus => 1, addr => 11 },
++			'net9' => { bus => 1, addr => 12 },
++			'net10' => { bus => 1, addr => 13 },
++			'net11' => { bus => 1, addr => 14 },
++			'net12' => { bus => 1, addr => 15 },
++			'net13' => { bus => 1, addr => 16 },
++			'net14' => { bus => 1, addr => 17 },
++			'net15' => { bus => 1, addr => 18 },
++			'net16' => { bus => 1, addr => 19 },
++			'net17' => { bus => 1, addr => 20 },
++			'net18' => { bus => 1, addr => 21 },
++			'net19' => { bus => 1, addr => 22 },
++			'net20' => { bus => 1, addr => 23 },
++			'net21' => { bus => 1, addr => 24 },
++			'net22' => { bus => 1, addr => 25 },
++			'net23' => { bus => 1, addr => 26 },
++			'net24' => { bus => 1, addr => 27 },	
++			vga1 => { bus => 1, addr => 28 },
++			vga2 => { bus => 1, addr => 29 },
++			'pci.2-igd' => { bus => 1, addr => 30 }, # replaces pci.2 in case a legacy IGD device is passed through
++			'virtio0' => { bus => 2, addr => 1 },
++			'virtio1' => { bus => 2, addr => 2 },
++			'virtio2' => { bus => 2, addr => 3 },
++			'virtio3' => { bus => 2, addr => 4 },
++			'virtio4' => { bus => 2, addr => 5 },
++			'virtio5' => { bus => 2, addr => 6 },
++			'virtio6' => { bus => 2, addr => 7 },
++			'virtio7' => { bus => 2, addr => 8 },
++			'virtio8' => { bus => 2, addr => 9 },
++			'virtio9' => { bus => 2, addr => 10 },
++			'virtio10' => { bus => 2, addr => 11 },
++			'virtio11' => { bus => 2, addr => 12 },
++			'virtio12' => { bus => 2, addr => 13 },
++			'virtio13' => { bus => 2, addr => 14 },
++			'virtio14' => { bus => 2, addr => 15 },
++			'virtio15' => { bus => 2, addr => 16 },
++			'ivshmem' => { bus => 2, addr => 17 },
++			'audio0' => { bus => 2, addr => 18 },
++			'scsihw2' => { bus => 2, addr => 19 },
++			'scsihw3' => { bus => 2, addr => 20 },
++			'scsihw4' => { bus => 2, addr => 21 },
++			'virtioscsi0' => { bus => 3, addr => 1 },
++			'virtioscsi1' => { bus => 3, addr => 2 },
++			'virtioscsi2' => { bus => 3, addr => 3 },
++			'virtioscsi3' => { bus => 3, addr => 4 },
++			'virtioscsi4' => { bus => 3, addr => 5 },
++			'virtioscsi5' => { bus => 3, addr => 6 },
++			'virtioscsi6' => { bus => 3, addr => 7 },
++			'virtioscsi7' => { bus => 3, addr => 8 },
++			'virtioscsi8' => { bus => 3, addr => 9 },
++			'virtioscsi9' => { bus => 3, addr => 10 },
++			'virtioscsi10' => { bus => 3, addr => 11 },
++			'virtioscsi11' => { bus => 3, addr => 12 },
++			'virtioscsi12' => { bus => 3, addr => 13 },
++			'virtioscsi13' => { bus => 3, addr => 14 },
++			'virtioscsi14' => { bus => 3, addr => 15 },
++			'virtioscsi15' => { bus => 3, addr => 16 },
++			'virtioscsi16' => { bus => 3, addr => 17 },
++			'virtioscsi17' => { bus => 3, addr => 18 },
++			'virtioscsi18' => { bus => 3, addr => 19 },
++			'virtioscsi19' => { bus => 3, addr => 20 },
++			'virtioscsi20' => { bus => 3, addr => 21 },
++			'virtioscsi21' => { bus => 3, addr => 22 },
++			'virtioscsi22' => { bus => 3, addr => 23 },
++			'virtioscsi23' => { bus => 3, addr => 24 },
++			'virtioscsi24' => { bus => 3, addr => 25 },
++			'virtioscsi25' => { bus => 3, addr => 26 },
++			'virtioscsi26' => { bus => 3, addr => 27 },
++			'virtioscsi27' => { bus => 3, addr => 28 },
++			'virtioscsi28' => { bus => 3, addr => 29 },
++			'virtioscsi29' => { bus => 3, addr => 30 },
++			'virtioscsi30' => { bus => 3, addr => 31 },
++		}
++		} else{
++		$pci_addr_map = {
++			piix3 => { bus => 0, addr => 1, conflict_ok => qw(ehci)  },
++			ehci => { bus => 0, addr => 1, conflict_ok => qw(piix3) }, # instead of piix3 on arm
++			vga => { bus => 0, addr => 2, conflict_ok => qw(legacy-igd) },
++			'legacy-igd' => { bus => 0, addr => 2, conflict_ok => qw(vga) }, # legacy-igd requires vga=none
++			balloon0 => { bus => 0, addr => 3 },
++			watchdog => { bus => 0, addr => 4 },
++			scsihw0 => { bus => 0, addr => 5, conflict_ok => qw(pci.3) },
++			'pci.3' => { bus => 0, addr => 5, conflict_ok => qw(scsihw0) }, # also used for virtio-scsi-single bridge
++			scsihw1 => { bus => 0, addr => 6 },
++			ahci0 => { bus => 0, addr => 7 },
++			qga0 => { bus => 0, addr => 8 },
++			spice => { bus => 0, addr => 9 },
++			virtio0 => { bus => 0, addr => 10 },
++			virtio1 => { bus => 0, addr => 11 },
++			virtio2 => { bus => 0, addr => 12 },
++			virtio3 => { bus => 0, addr => 13 },
++			virtio4 => { bus => 0, addr => 14 },
++			virtio5 => { bus => 0, addr => 15 },
++			hostpci0 => { bus => 0, addr => 16 },
++			hostpci1 => { bus => 0, addr => 17 },
++			net0 => { bus => 0, addr => 18 },
++			net1 => { bus => 0, addr => 19 },
++			net2 => { bus => 0, addr => 20 },
++			net3 => { bus => 0, addr => 21 },
++			net4 => { bus => 0, addr => 22 },
++			net5 => { bus => 0, addr => 23 },
++			vga1 => { bus => 0, addr => 24 },
++			vga2 => { bus => 0, addr => 25 },
++			vga3 => { bus => 0, addr => 26 },
++			hostpci2 => { bus => 0, addr => 27 },
++			hostpci3 => { bus => 0, addr => 28 },
++			#addr29 : usb-host (pve-usb.cfg)
++			'pci.1' => { bus => 0, addr => 30 },
++			'pci.2' => { bus => 0, addr => 31 },
++			'net6' => { bus => 2, addr => 1 },
++			'net7' => { bus => 2, addr => 2 },
++			'net8' => { bus => 2, addr => 3 },
++			'net9' => { bus => 2, addr => 4 },
++			'net10' => { bus => 2, addr => 5 },
++			'net11' => { bus => 2, addr => 6 },
++			'net12' => { bus => 2, addr => 7 },
++			'net13' => { bus => 2, addr => 8 },
++			'net14' => { bus => 2, addr => 9 },
++			'net15' => { bus => 2, addr => 10 },
++			'net16' => { bus => 2, addr => 11 },
++			'net17' => { bus => 2, addr => 12 },
++			'net18' => { bus => 2, addr => 13 },
++			'net19' => { bus => 2, addr => 14 },
++			'net20' => { bus => 2, addr => 15 },
++			'net21' => { bus => 2, addr => 16 },
++			'net22' => { bus => 2, addr => 17 },
++			'net23' => { bus => 2, addr => 18 },
++			'net24' => { bus => 2, addr => 19 },
++			'net25' => { bus => 2, addr => 20 },
++			'net26' => { bus => 2, addr => 21 },
++			'net27' => { bus => 2, addr => 22 },
++			'net28' => { bus => 2, addr => 23 },
++			'net29' => { bus => 2, addr => 24 },
++			'net30' => { bus => 2, addr => 25 },
++			'net31' => { bus => 2, addr => 26 },
++			'xhci' => { bus => 2, addr => 27 },
++			'pci.4' => { bus => 2, addr => 28 },
++			'rng0' => { bus => 2, addr => 29 },
++			'pci.2-igd' => { bus => 2, addr => 30 }, # replaces pci.2 in case a legacy IGD device is passed through
++			'virtio6' => { bus => 3, addr => 1 },
++			'virtio7' => { bus => 3, addr => 2 },
++			'virtio8' => { bus => 3, addr => 3 },
++			'virtio9' => { bus => 3, addr => 4 },
++			'virtio10' => { bus => 3, addr => 5 },
++			'virtio11' => { bus => 3, addr => 6 },
++			'virtio12' => { bus => 3, addr => 7 },
++			'virtio13' => { bus => 3, addr => 8 },
++			'virtio14' => { bus => 3, addr => 9 },
++			'virtio15' => { bus => 3, addr => 10 },
++			'ivshmem' => { bus => 3, addr => 11 },
++			'audio0' => { bus => 3, addr => 12 },
++			hostpci4 => { bus => 3, addr => 13 },
++			hostpci5 => { bus => 3, addr => 14 },
++			hostpci6 => { bus => 3, addr => 15 },
++			hostpci7 => { bus => 3, addr => 16 },
++			hostpci8 => { bus => 3, addr => 17 },
++			hostpci9 => { bus => 3, addr => 18 },
++			hostpci10 => { bus => 3, addr => 19 },
++			hostpci11 => { bus => 3, addr => 20 },
++			hostpci12 => { bus => 3, addr => 21 },
++			hostpci13 => { bus => 3, addr => 22 },
++			hostpci14 => { bus => 3, addr => 23 },
++			hostpci15 => { bus => 3, addr => 24 },
++			'virtioscsi0' => { bus => 4, addr => 1 },
++			'virtioscsi1' => { bus => 4, addr => 2 },
++			'virtioscsi2' => { bus => 4, addr => 3 },
++			'virtioscsi3' => { bus => 4, addr => 4 },
++			'virtioscsi4' => { bus => 4, addr => 5 },
++			'virtioscsi5' => { bus => 4, addr => 6 },
++			'virtioscsi6' => { bus => 4, addr => 7 },
++			'virtioscsi7' => { bus => 4, addr => 8 },
++			'virtioscsi8' => { bus => 4, addr => 9 },
++			'virtioscsi9' => { bus => 4, addr => 10 },
++			'virtioscsi10' => { bus => 4, addr => 11 },
++			'virtioscsi11' => { bus => 4, addr => 12 },
++			'virtioscsi12' => { bus => 4, addr => 13 },
++			'virtioscsi13' => { bus => 4, addr => 14 },
++			'virtioscsi14' => { bus => 4, addr => 15 },
++			'virtioscsi15' => { bus => 4, addr => 16 },
++			'virtioscsi16' => { bus => 4, addr => 17 },
++			'virtioscsi17' => { bus => 4, addr => 18 },
++			'virtioscsi18' => { bus => 4, addr => 19 },
++			'virtioscsi19' => { bus => 4, addr => 20 },
++			'virtioscsi20' => { bus => 4, addr => 21 },
++			'virtioscsi21' => { bus => 4, addr => 22 },
++			'virtioscsi22' => { bus => 4, addr => 23 },
++			'virtioscsi23' => { bus => 4, addr => 24 },
++			'virtioscsi24' => { bus => 4, addr => 25 },
++			'virtioscsi25' => { bus => 4, addr => 26 },
++			'virtioscsi26' => { bus => 4, addr => 27 },
++			'virtioscsi27' => { bus => 4, addr => 28 },
++			'virtioscsi28' => { bus => 4, addr => 29 },
++			'virtioscsi29' => { bus => 4, addr => 30 },
++			'virtioscsi30' => { bus => 4, addr => 31 },
++			'scsihw2' => { bus => 4, addr => 1 },
++			'scsihw3' => { bus => 4, addr => 2 },
++			'scsihw4' => { bus => 4, addr => 3 },
++		}
++		}
++		return $pci_addr_map;
+ }
+ 
+ sub generate_mdev_uuid {
+@@ -286,12 +410,12 @@ sub print_pci_addr {
+ 
+     # using same bus slots on all HW, so we need to check special cases here:
+     my $busname = 'pci';
+-    if ($arch eq 'aarch64' && $machine =~ /^virt/) {
++    if ($arch ne 'x86_64' && $machine =~ /^virt/) {
+ 	die "aarch64/virt cannot use IDE devices\n" if $id =~ /^ide/;
+ 	$busname = 'pcie';
+     }
+ 
+-    my $map = get_pci_addr_map();
++    my $map = get_pci_addr_map($arch);
+     if (my $d = $get_addr_mapping_from_id->($map, $id)) {
+ 	$res = ",bus=$busname.$d->{bus},addr=$d->{addr}";
+ 	$bridges->{$d->{bus}} = 1 if $bridges;
+@@ -388,6 +512,39 @@ sub print_pcie_root_port {
+     return $res;
+ }
+ 
++sub print_pcie_root_port_for_port {
++    my ($i) = @_;
++    my $res = '';
++
++    my $root_port_addresses = {
++	 0 => "0x10",# hostpci0 -> pcie.5 
++	 1 => "0x11",# hostpci1 -> pcie.6 
++	 2 => "0x12",# hostpci2 -> pcie.7 
++	 3 => "0x13",# hostpci3 -> pcie.8 
++	 4 => "0x14",# hostpci4 -> pcie.9 
++	 5 => "0x15",# hostpci5 -> pcie.10 
++	 6 => "0x16",# hostpci6 -> pcie.11 
++	 7 => "0x17",# hostpci7 -> pcie.12 
++	 8 => "0x18",# hostpci8 -> pcie.13 
++	 9 => "0x19",# hostpci9 -> pcie.14 
++	 10 => "0x1a",# hostpci10 -> pcie.15 
++	 11 => "0x1b",# hostpci11 -> pcie.16 
++	 12 => "0x1c",# hostpci12 -> pcie.17 
++	 13 => "0x1d",# hostpci13 -> pcie.18 
++	 14 => "0x1e",# hostpci14 -> pcie.19 
++    };
++
++    if (defined($root_port_addresses->{$i})) {
++	my $id = $i + 5;
++	$res = "pcie-root-port,id=pcie.${id}";
++	$res .= ",addr=$root_port_addresses->{$i}";
++	$res .= ",x-speed=16,x-width=32,multifunction=on,bus=pcie.0";
++	$res .= ",port=${id},chassis=${id}";
++    }
++
++    return $res;
++}
++
+ # returns the parsed pci config but parses the 'host' part into
+ # a list if lists into the 'id' property like this:
+ #
+@@ -634,7 +791,6 @@ sub print_hostpci_devices {
+     my $kvm_off = 0;
+     my $gpu_passthrough = 0;
+     my $legacy_igd = 0;
+-
+     my $pciaddr;
+     my $pci_devices = choose_hostpci_devices(parse_hostpci_devices($conf), $vmid);
+ 
+@@ -659,6 +815,10 @@ sub print_hostpci_devices {
+ 		$pciaddr = print_pcie_addr($id);
+ 	    }
+ 	} else {
++		# Aarch64 need pcie-root-port too! We try add it
++		if ($arch ne 'x86_64') {
++			push @$devices, '-device', print_pcie_root_port_for_port($i);
++		}
+ 	    my $pci_name = $d->{'legacy-igd'} ? 'legacy-igd' : $id;
+ 	    $pciaddr = print_pci_addr($pci_name, $bridges, $arch, $machine_type);
+ 	}
+diff --git a/PVE/QemuServer/USB.pm b/PVE/QemuServer/USB.pm
+index 017ef9c0..4e900d79 100644
+--- a/PVE/QemuServer/USB.pm
++++ b/PVE/QemuServer/USB.pm
+@@ -133,9 +133,13 @@ sub get_usb_controllers {
+ 	&& defined($ostype) && ($ostype eq 'l26' || windows_version($ostype) > 7);
+     my $is_q35 = PVE::QemuServer::Machine::machine_type_is_q35($conf);
+ 
+-    if ($arch eq 'aarch64') {
++    if ($arch ne 'x86_64') {
+         $pciaddr = print_pci_addr('ehci', $bridges, $arch, $machine);
+-        push @$devices, '-device', "usb-ehci,id=ehci$pciaddr";
++		if (defined($ostype) && $ostype eq 'l26'){
++			push @$devices, '-device', "qemu-xhci,id=ehci$pciaddr";
++		}else{
++        	push @$devices, '-device', "usb-ehci,id=ehci$pciaddr";
++		}
+     } elsif (!$is_q35) {
+         $pciaddr = print_pci_addr("piix3", $bridges, $arch, $machine);
+         push @$devices, '-device', "piix3-usb-uhci,id=uhci$pciaddr.0x2";
+@@ -152,7 +156,7 @@ sub get_usb_controllers {
+ 	$use_usb2 = 1 if !$d->{usb3};
+     }
+ 
+-    if (!$use_qemu_xhci && !$is_q35 && $use_usb2 && $arch ne 'aarch64') {
++    if (!$use_qemu_xhci && !$is_q35 && $use_usb2 && $arch eq 'x86_64') {
+ 	# include usb device config if still on x86 before-xhci machines and if USB 3 is not used
+ 	push @$devices, '-readconfig', '/usr/share/qemu-server/pve-usb.cfg';
+     }
+diff --git a/debian/changelog b/debian/changelog
+index 1c6e9893..76f2b64f 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -139,6 +139,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Fri, 19 Apr 2024 16:09:18 +0200
+ 
++qemu-server (8.1.1+port2) bookworm; urgency=medium
++
++  * fix query_supported_cpu_flags on aarch64
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Wed, 27 Mar 2024 09:26:45 +0800
++
++qemu-server (8.1.1+port1) bookworm; urgency=medium
++
++  * update to 8.1.1
++
++  * remove qemu cpu flags check
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Fri, 22 Mar 2024 21:11:29 +0800
++
+ qemu-server (8.1.1) bookworm; urgency=medium
+ 
+   * config: pending network: avoid undef-warning on old/new comparison
+@@ -191,6 +205,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Fri, 08 Mar 2024 15:00:25 +0100
+ 
++qemu-server (8.0.10+pve1) bookworm; urgency=medium
++
++  * add pve-edk2-firmware-aarch64 depends
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Sun, 03 Dec 2023 01:46:23 -0500
++
+ qemu-server (8.0.10) bookworm; urgency=medium
+ 
+   * sdn: pass vmid and hostname to allow requesting a new mapping
+@@ -209,6 +229,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Tue, 21 Nov 2023 15:40:27 +0100
+ 
++qemu-server (8.0.8-1) bookworm; urgency=medium
++
++  * remove some scshw
++
++  * add new cputype
++
++  * add virt machine
++
++ -- jiangcuo <jiangcuo@bingsin.com>  Sun, 19 Nov 2023 14:29:21 +0800
++
+ qemu-server (8.0.8) bookworm; urgency=medium
+ 
+   * fix #2816: restore: remove timeout when allocating disks
+diff --git a/debian/control b/debian/control
+index aa5f4c6d..c37c130f 100644
+--- a/debian/control
++++ b/debian/control
+@@ -21,6 +21,7 @@ Build-Depends: debhelper-compat (= 13),
+                pve-cluster,
+                pve-doc-generator (>= 6.2-5),
+                pve-edk2-firmware,
++               pve-edk2-firmware-aarch64,
+                pve-firewall,
+                pve-ha-manager <!nocheck>,
+                pve-qemu-kvm (>= 7.1~),
+@@ -51,6 +52,7 @@ Depends: dbus,
+ # TODO: make legacy edk2 optional (suggests) for PVE 9 and warn explicitly about it
+          pve-edk2-firmware-legacy | pve-edk2-firmware (<< 4~),
+          pve-edk2-firmware-ovmf | pve-edk2-firmware (>= 3.20210831-1),
++         pve-edk2-firmware-aarch64,
+          pve-firewall (>= 5.0.4),
+          pve-ha-manager (>= 3.0-9),
+          pve-qemu-kvm (>= 7.1~),
+diff --git a/qemu-configs/Makefile b/qemu-configs/Makefile
+index f55e9bef..bccbc7e4 100644
+--- a/qemu-configs/Makefile
++++ b/qemu-configs/Makefile
+@@ -2,11 +2,12 @@ DESTDIR=
+ USRSHAREDIR=$(DESTDIR)/usr/share/qemu-server
+ 
+ .PHONY: install
+-install: pve-usb.cfg pve-q35.cfg pve-q35-4.0.cfg
++install: pve-usb.cfg pve-q35.cfg pve-q35-4.0.cfg pve-port.cfg
+ 	install -d $(USRSHAREDIR)
+ 	install -m 0644 pve-usb.cfg $(USRSHAREDIR)
+ 	install -m 0644 pve-q35.cfg $(USRSHAREDIR)
+ 	install -m 0644 pve-q35-4.0.cfg $(USRSHAREDIR)
++	install -m 0644 pve-port.cfg $(USRSHAREDIR)
+ 
+ .PHONY: clean
+ clean:
+diff --git a/qemu-configs/pve-port.cfg b/qemu-configs/pve-port.cfg
+new file mode 100644
+index 00000000..2d13bc63
+--- /dev/null
++++ b/qemu-configs/pve-port.cfg
+@@ -0,0 +1,48 @@
++[device "pci.1"]
++  driver = "pci-bridge"
++  bus = "pcie.0"
++  addr = "0xc"
++  chassis_nr = "1"
++
++[device "pci.2"]
++  driver = "pci-bridge"
++  bus = "pcie.0"
++  addr = "0xd"
++  chassis_nr = "2"
++
++[device "pci.3"]
++  driver = "pci-bridge"
++  bus = "pcie.0"
++  addr = "0xe"
++  chassis_nr = "3"
++
++[device "pci.4"]
++  driver = "pci-bridge"
++  bus = "pcie.0"
++  addr = "0xf"
++  chassis_nr = "4"
++
++[device "pcie.1"]
++  driver = "pci-bridge"
++  bus = "pci.1"
++  addr = "1.0"
++  chassis_nr = "1"
++
++[device "pcie.2"]
++  driver = "pci-bridge"
++  bus = "pci.2"
++  addr = "1.0"
++  chassis_nr = "1"
++
++[device "pcie.3"]
++  driver = "pci-bridge"
++  bus = "pci.3"
++  addr = "1.0"
++  chassis_nr = "1"
++
++[device "pcie.4"]
++  driver = "pci-bridge"
++  bus = "pci.4"
++  addr = "1.0"
++  chassis_nr = "1"
++
+diff --git a/debian/changelog b/debian/changelog
+index e686bac4..0f6cf6be 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -54,6 +54,12 @@ qemu-server (8.2.6) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Mon, 11 Nov 2024 20:38:25 +0100
+ 
++qemu-server (8.2.5+port1) bookworm; urgency=medium
++
++  * Optimize pcie addr
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Tue, 26 Nov 2024 12:52:36 +0800
++
+ qemu-server (8.2.5) bookworm; urgency=medium
+ 
+   * remote migration: fix online migration via API clients
