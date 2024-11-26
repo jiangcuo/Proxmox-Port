@@ -1,33 +1,36 @@
-From 974e952c2b49e3c25005a846cbd20b02429c3652 Mon Sep 17 00:00:00 2001
-From: jiangcuo <jiangcuo@bingsin.com>
-Date: Sat, 2 Dec 2023 05:11:40 -0500
-Subject: [PATCH] update
-
----
- debian/control | 10 ----------
- 1 file changed, 10 deletions(-)
-
+diff --git a/Makefile b/Makefile
+index 1ecdef3..2e127e2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,7 +10,7 @@ DSC=$(PACKAGE)_$(DEB_VERSION).dsc
+ PVE_DEB=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb
+ PVE_HEADERS_DEB=pve-headers_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb
+ 
+-DEBS=$(PVE_DEB) $(PVE_HEADERS_DEB)
++DEBS=$(PVE_DEB)
+ 
+ all: deb
+ deb: $(DEBS)
 diff --git a/debian/control b/debian/control
-index d14e449..98157e9 100644
+index 365933e..4f5d525 100644
 --- a/debian/control
 +++ b/debian/control
-@@ -14,7 +14,6 @@ Depends: apt,
+@@ -13,7 +13,6 @@ Depends: apt,
+          openssh-client,
           openssh-server,
           proxmox-archive-keyring,
-          proxmox-kernel-helper (>= 8.0.3),
 -         proxmox-default-kernel,
+          proxmox-kernel-helper (>= 8.0.3),
           pve-manager (>= 8.0.4),
           pve-qemu-kvm,
-          qemu-server,
-@@ -24,12 +23,3 @@ Description: Proxmox Virtual Environment
+@@ -25,11 +24,3 @@ Description: Proxmox Virtual Environment
   virtualization platform for running Virtual Appliances and Virtual
   Machines. This is a meta package which will install everything
   needed.
 -
 -Package: pve-headers
 -Architecture: all
--Depends: proxmox-default-headers,
--         ${misc:Depends},
+-Depends: proxmox-default-headers, ${misc:Depends},
 -Section: oldlibs
 -Description: Default Proxmox Kernel Headers (transitional package)
 - This is a dummy transitional package to transition to proxmox-default-headers.
