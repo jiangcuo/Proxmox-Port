@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 133468da..18de31bc 100644
+index ed67fe0a..20c3d4a6 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -14,7 +14,7 @@ MAN5DIR=$(MANDIR)/man5/
@@ -11,7 +11,7 @@ index 133468da..18de31bc 100644
  
  GITVERSION:=$(shell git rev-parse HEAD)
  
-@@ -80,7 +80,7 @@ install: $(PKGSOURCES)
+@@ -81,7 +81,7 @@ install: $(PKGSOURCES)
  $(BUILDDIR):
  	rm -rf $(BUILDDIR) $(BUILDDIR).tmp
  	rsync -a * $(BUILDDIR).tmp
@@ -20,7 +20,7 @@ index 133468da..18de31bc 100644
  	mv $(BUILDDIR).tmp $(BUILDDIR)
  
  .PHONY: deb
-@@ -99,11 +99,6 @@ $(DSC): $(BUILDDIR)
+@@ -100,11 +100,6 @@ $(DSC): $(BUILDDIR)
  sbuild: $(DSC)
  	sbuild $(DSC)
  
@@ -32,7 +32,7 @@ index 133468da..18de31bc 100644
  .PHONY: upload
  upload: UPLOAD_DIST ?= $(DEB_DISTRIBUTION)
  upload: $(DEB)
-@@ -111,7 +106,6 @@ upload: $(DEB)
+@@ -112,7 +107,6 @@ upload: $(DEB)
  
  .PHONY: clean
  clean:
@@ -63,10 +63,10 @@ index afb535c2..db6c3d80 100644
  	};
  	die "could not load supported machine versions - $@\n" if $@;
 diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
-index 0df3bda0..700dda73 100644
+index 2046a7c5..942c448d 100644
 --- a/PVE/QemuServer.pm
 +++ b/PVE/QemuServer.pm
-@@ -97,11 +97,40 @@ my $OVMF = {
+@@ -98,11 +98,40 @@ my $OVMF = {
  	],
      },
      aarch64 => {
@@ -107,7 +107,7 @@ index 0df3bda0..700dda73 100644
  };
  
  my $cpuinfo = PVE::ProcFSTools::read_cpuinfo();
-@@ -184,7 +213,7 @@ my $vga_fmt = {
+@@ -185,7 +214,7 @@ my $vga_fmt = {
  	default => 'std',
  	optional => 1,
  	default_key => 1,
@@ -116,7 +116,7 @@ index 0df3bda0..700dda73 100644
      },
      memory => {
  	description => "Sets the VGA memory (in MiB). Has no effect with serial display.",
-@@ -391,8 +420,8 @@ my $confdesc = {
+@@ -398,8 +427,8 @@ my $confdesc = {
  	optional => 1,
  	type => 'string',
  	description => "SCSI controller model",
@@ -127,7 +127,7 @@ index 0df3bda0..700dda73 100644
      },
      description => {
  	optional => 1,
-@@ -404,8 +433,7 @@ my $confdesc = {
+@@ -411,8 +440,7 @@ my $confdesc = {
      ostype => {
  	optional => 1,
  	type => 'string',
@@ -137,7 +137,7 @@ index 0df3bda0..700dda73 100644
  	description => "Specify guest operating system.",
  	verbose_description => <<EODESC,
  Specify guest operating system. This is used to enable special
-@@ -599,9 +627,9 @@ EODESCR
+@@ -606,9 +634,9 @@ EODESCR
      },
      cdrom => {
  	optional => 1,
@@ -149,7 +149,7 @@ index 0df3bda0..700dda73 100644
      },
      cpu => {
  	optional => 1,
-@@ -646,7 +674,7 @@ EODESCR
+@@ -653,7 +681,7 @@ EODESCR
  	description => "Virtual processor architecture. Defaults to the host.",
  	optional => 1,
  	type => 'string',
@@ -158,7 +158,7 @@ index 0df3bda0..700dda73 100644
      },
      smbios1 => {
  	description => "Specify SMBIOS type 1 fields.",
-@@ -1369,11 +1397,14 @@ sub print_tabletdevice_full {
+@@ -1376,11 +1404,14 @@ sub print_tabletdevice_full {
  
      # we use uhci for old VMs because tablet driver was buggy in older qemu
      my $usbbus;
@@ -176,7 +176,7 @@ index 0df3bda0..700dda73 100644
  
      return "usb-tablet,id=tablet,bus=$usbbus.0,port=1";
  }
-@@ -1381,7 +1412,7 @@ sub print_tabletdevice_full {
+@@ -1388,7 +1419,7 @@ sub print_tabletdevice_full {
  sub print_keyboarddevice_full {
      my ($conf, $arch) = @_;
  
@@ -185,7 +185,7 @@ index 0df3bda0..700dda73 100644
  
      return "usb-kbd,id=keyboard,bus=ehci.0,port=2";
  }
-@@ -1775,15 +1806,19 @@ my $vga_map = {
+@@ -1782,15 +1813,19 @@ my $vga_map = {
      'std' => 'VGA',
      'vmware' => 'vmware-svga',
      'virtio' => 'virtio-vga',
@@ -208,7 +208,7 @@ index 0df3bda0..700dda73 100644
      }
      my $vgamem_mb = $vga->{memory};
  
-@@ -1835,7 +1870,7 @@ sub print_vga_device {
+@@ -1842,7 +1877,7 @@ sub print_vga_device {
      }
  
      if ($vga->{type} eq 'virtio-gl') {
@@ -217,7 +217,7 @@ index 0df3bda0..700dda73 100644
  	die "missing libraries for '$vga->{type}' detected! Please install 'libgl1' and 'libegl1'\n"
  	    if !-e "${base}EGL.so.1" || !-e "${base}GL.so.1";
  
-@@ -3159,7 +3194,14 @@ sub add_tpm_device {
+@@ -3185,7 +3220,14 @@ sub add_tpm_device {
  
      push @$devices, "-chardev", "socket,id=tpmchar,path=$paths->{socket}";
      push @$devices, "-tpmdev", "emulator,id=tpmdev,chardev=tpmchar";
@@ -232,7 +232,7 @@ index 0df3bda0..700dda73 100644
  }
  
  sub start_swtpm {
-@@ -3255,6 +3297,8 @@ sub get_vm_arch {
+@@ -3281,6 +3323,8 @@ sub get_vm_arch {
  my $default_machines = {
      x86_64 => 'pc',
      aarch64 => 'virt',
@@ -241,7 +241,7 @@ index 0df3bda0..700dda73 100644
  };
  
  sub get_installed_machine_version {
-@@ -3300,7 +3344,7 @@ sub get_vm_machine {
+@@ -3326,7 +3370,7 @@ sub get_vm_machine {
  	if (windows_version($conf->{ostype})) {
  	    $machine = windows_get_pinned_machine_version($machine, '5.1', $kvmversion);
  	}
@@ -250,7 +250,7 @@ index 0df3bda0..700dda73 100644
  	$machine ||= $default_machines->{$arch};
  	if ($add_pve_version) {
  	    my $pvever = PVE::QemuServer::Machine::get_pve_version($kvmversion);
-@@ -3329,13 +3373,9 @@ sub get_ovmf_files($$$) {
+@@ -3355,13 +3399,9 @@ sub get_ovmf_files($$$) {
  	or die "no OVMF images known for architecture '$arch'\n";
  
      my $type = 'default';
@@ -267,7 +267,7 @@ index 0df3bda0..700dda73 100644
      }
  
      my ($ovmf_code, $ovmf_vars) = $types->{$type}->@*;
-@@ -3348,6 +3388,8 @@ sub get_ovmf_files($$$) {
+@@ -3374,6 +3414,8 @@ sub get_ovmf_files($$$) {
  my $Arch2Qemu = {
      aarch64 => '/usr/bin/qemu-system-aarch64',
      x86_64 => '/usr/bin/qemu-system-x86_64',
@@ -276,7 +276,7 @@ index 0df3bda0..700dda73 100644
  };
  sub get_command_for_arch($) {
      my ($arch) = @_;
-@@ -3388,8 +3430,8 @@ sub query_supported_cpu_flags {
+@@ -3414,8 +3456,8 @@ sub query_supported_cpu_flags {
  
      # FIXME: Once this is merged, the code below should work for ARM as well:
      # https://lists.nongnu.org/archive/html/qemu-devel/2019-06/msg04947.html
@@ -287,7 +287,7 @@ index 0df3bda0..700dda73 100644
  
      my $kvm_supported = defined(kvm_version());
      my $qemu_cmd = get_command_for_arch($arch);
-@@ -3408,7 +3450,8 @@ sub query_supported_cpu_flags {
+@@ -3434,7 +3476,8 @@ sub query_supported_cpu_flags {
  	    '-chardev', "socket,id=qmp,path=/var/run/qemu-server/$fakevmid.qmp,server=on,wait=off",
  	    '-mon', 'chardev=qmp,mode=control',
  	    '-pidfile', $pidfile,
@@ -297,7 +297,7 @@ index 0df3bda0..700dda73 100644
  	];
  
  	if (!$kvm) {
-@@ -3536,7 +3579,7 @@ my sub get_vga_properties {
+@@ -3562,7 +3605,7 @@ my sub get_vga_properties {
      $vga->{type} = 'qxl' if $qxlnum;
  
      if (!$vga->{type}) {
@@ -306,7 +306,7 @@ index 0df3bda0..700dda73 100644
  	    $vga->{type} = 'virtio';
  	} elsif (min_version($machine_version, 2, 9)) {
  	    $vga->{type} = (!$winversion || $winversion >= 6) ? 'std' : 'cirrus';
-@@ -3696,8 +3739,16 @@ sub config_to_command {
+@@ -3722,8 +3765,16 @@ sub config_to_command {
  
  	my ($code_drive_str, $var_drive_str) =
  	    print_ovmf_drive_commandlines($conf, $storecfg, $vmid, $arch, $q35, $version_guard);
@@ -325,7 +325,7 @@ index 0df3bda0..700dda73 100644
      }
  
      if ($q35) { # tell QEMU to load q35 config early
-@@ -3709,11 +3760,12 @@ sub config_to_command {
+@@ -3735,11 +3786,12 @@ sub config_to_command {
  	}
      }
  
@@ -339,7 +339,7 @@ index 0df3bda0..700dda73 100644
  	push @$devices, '-device', 'vmgenid,guid='.$conf->{vmgenid};
      }
  
-@@ -3761,7 +3813,7 @@ sub config_to_command {
+@@ -3787,7 +3839,7 @@ sub config_to_command {
  	    # On aarch64, serial0 is the UART device. QEMU only allows
  	    # connecting UART devices via the '-serial' command line, as
  	    # the device has a fixed slot on the hardware...
@@ -348,7 +348,7 @@ index 0df3bda0..700dda73 100644
  		push @$devices, '-serial', "chardev:serial$i";
  	    } else {
  		push @$devices, '-device', "isa-serial,chardev=serial$i";
-@@ -3827,9 +3879,12 @@ sub config_to_command {
+@@ -3853,9 +3905,12 @@ sub config_to_command {
      push @$cmd, '-no-reboot' if  defined($conf->{reboot}) && $conf->{reboot} == 0;
  
      if ($vga->{type} && $vga->{type} !~ m/^serial\d+$/ && $vga->{type} ne 'none'){
@@ -364,7 +364,7 @@ index 0df3bda0..700dda73 100644
  	push @$cmd, '-display', 'egl-headless,gl=core' if $vga->{type} eq 'virtio-gl'; # VIRGL
  
  	my $socket = PVE::QemuServer::Helpers::vnc_socket($vmid);
-@@ -4125,14 +4180,19 @@ sub config_to_command {
+@@ -4151,14 +4206,19 @@ sub config_to_command {
  	if ($k == 2 && $legacy_igd) {
  	    $k_name = "$k-igd";
  	}
@@ -391,7 +391,7 @@ index 0df3bda0..700dda73 100644
      }
  
      if (!$kvm) {
-@@ -4146,19 +4206,15 @@ sub config_to_command {
+@@ -4172,20 +4232,18 @@ sub config_to_command {
  	$machine_type_min =~ s/\+pve\d+$//;
  	$machine_type_min .= "+pve$required_pve_version";
      }
@@ -414,11 +414,14 @@ index 0df3bda0..700dda73 100644
 +    }else{
 +       push @$machineFlags, "type=${machine_type_min}";
      }
--
-     push @$cmd, @$devices;
-     push @$cmd, '-rtc', join(',', @$rtcFlags) if scalar(@$rtcFlags);
-     push @$cmd, '-machine', join(',', @$machineFlags) if scalar(@$machineFlags);
-@@ -5018,10 +5074,10 @@ sub vmconfig_hotplug_pending {
+ 
+-    if ($conf->{'amd-sev'}) {
++	# This method is prevented from being executed on the Port branch.
++    if ( ($conf->{'amd-sev'} )&& ($arch eq 'x86_64')) {
+ 	push @$devices, '-object', get_amd_sev_object($conf->{'amd-sev'}, $conf->{bios});
+ 	push @$machineFlags, 'confidential-guest-support=sev0';
+     }
+@@ -5049,10 +5107,10 @@ sub vmconfig_hotplug_pending {
  		if ($defaults->{tablet}) {
  		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
  		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
@@ -431,7 +434,7 @@ index 0df3bda0..700dda73 100644
  		}
  	    } elsif ($opt =~ m/^usb(\d+)$/) {
  		my $index = $1;
-@@ -5083,10 +5139,10 @@ sub vmconfig_hotplug_pending {
+@@ -5114,10 +5172,10 @@ sub vmconfig_hotplug_pending {
  		if ($value == 1) {
  		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
  		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
@@ -445,10 +448,10 @@ index 0df3bda0..700dda73 100644
  	    } elsif ($opt =~ m/^usb(\d+)$/) {
  		my $index = $1;
 diff --git a/PVE/QemuServer/CPUConfig.pm b/PVE/QemuServer/CPUConfig.pm
-index 33f7524f..51602d46 100644
+index e65d8c26..8432e6f6 100644
 --- a/PVE/QemuServer/CPUConfig.pm
 +++ b/PVE/QemuServer/CPUConfig.pm
-@@ -36,22 +36,22 @@ sub load_custom_model_conf {
+@@ -39,22 +39,22 @@ sub load_custom_model_conf {
  
  #builtin models : reported-model is mandatory
  my $builtin_models = {
@@ -487,7 +490,7 @@ index 33f7524f..51602d46 100644
  };
  
  my $depreacated_cpu_map = {
-@@ -73,100 +73,100 @@ my $cputypes_32bit = {
+@@ -76,100 +76,100 @@ my $cputypes_32bit = {
  
  my $cpu_vendor_list = {
      # Intel CPUs
@@ -679,7 +682,7 @@ index 33f7524f..51602d46 100644
      'aes'
  );
  my $cpu_flag_supported_re = qr/([+-])(@{[join('|', @supported_cpu_flags)]})/;
-@@ -188,7 +188,7 @@ my $cpu_fmt = {
+@@ -191,7 +191,7 @@ my $cpu_fmt = {
  	    ." Only valid for custom CPU model definitions, default models will always report themselves to the guest OS.",
  	type => 'string',
  	enum => [ sort { lc("$a") cmp lc("$b") } keys %$cpu_vendor_list ],
@@ -688,7 +691,7 @@ index 33f7524f..51602d46 100644
  	optional => 1,
      },
      hidden => {
-@@ -599,7 +599,7 @@ sub get_cpu_options {
+@@ -633,7 +633,7 @@ sub get_cpu_options {
  	$pve_forced_flags->{'vendor'} = {
  	    value => $cpu_vendor,
  	} if $cpu_vendor ne 'default';
@@ -697,7 +700,7 @@ index 33f7524f..51602d46 100644
  	die "internal error"; # should not happen
      }
  
-@@ -736,7 +736,10 @@ sub get_default_cpu_type {
+@@ -770,7 +770,10 @@ sub get_default_cpu_type {
      my ($arch, $kvm) = @_;
  
      my $cputype = $kvm ? 'kvm64' : 'qemu64';
@@ -709,7 +712,7 @@ index 33f7524f..51602d46 100644
  
      return $cputype;
  }
-@@ -768,7 +771,9 @@ sub get_cpu_bitness {
+@@ -802,7 +805,9 @@ sub get_cpu_bitness {
      }
  
      return $cputypes_32bit->{$cputype} ? 32 : 64 if $arch eq 'x86_64';
@@ -721,7 +724,7 @@ index 33f7524f..51602d46 100644
      die "unsupported architecture '$arch'\n";
  }
 diff --git a/PVE/QemuServer/PCI.pm b/PVE/QemuServer/PCI.pm
-index 75eac134..7c2da255 100644
+index 491ba078..98141516 100644
 --- a/PVE/QemuServer/PCI.pm
 +++ b/PVE/QemuServer/PCI.pm
 @@ -14,6 +14,7 @@ our @EXPORT_OK = qw(
@@ -1216,10 +1219,10 @@ index 017ef9c0..4e900d79 100644
  	push @$devices, '-readconfig', '/usr/share/qemu-server/pve-usb.cfg';
      }
 diff --git a/debian/changelog b/debian/changelog
-index 1c6e9893..76f2b64f 100644
+index e686bac4..9e7f8d2c 100644
 --- a/debian/changelog
 +++ b/debian/changelog
-@@ -139,6 +139,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
+@@ -195,6 +195,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Fri, 19 Apr 2024 16:09:18 +0200
  
@@ -1240,7 +1243,7 @@ index 1c6e9893..76f2b64f 100644
  qemu-server (8.1.1) bookworm; urgency=medium
  
    * config: pending network: avoid undef-warning on old/new comparison
-@@ -191,6 +205,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
+@@ -247,6 +261,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Fri, 08 Mar 2024 15:00:25 +0100
  
@@ -1253,7 +1256,7 @@ index 1c6e9893..76f2b64f 100644
  qemu-server (8.0.10) bookworm; urgency=medium
  
    * sdn: pass vmid and hostname to allow requesting a new mapping
-@@ -209,6 +229,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
+@@ -265,6 +285,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Tue, 21 Nov 2023 15:40:27 +0100
  
@@ -1271,10 +1274,10 @@ index 1c6e9893..76f2b64f 100644
  
    * fix #2816: restore: remove timeout when allocating disks
 diff --git a/debian/control b/debian/control
-index aa5f4c6d..c37c130f 100644
+index 0dcd3b30..7e79ee09 100644
 --- a/debian/control
 +++ b/debian/control
-@@ -21,6 +21,7 @@ Build-Depends: debhelper-compat (= 13),
+@@ -20,6 +20,7 @@ Build-Depends: debhelper-compat (= 13),
                 pve-cluster,
                 pve-doc-generator (>= 6.2-5),
                 pve-edk2-firmware,
@@ -1282,7 +1285,7 @@ index aa5f4c6d..c37c130f 100644
                 pve-firewall,
                 pve-ha-manager <!nocheck>,
                 pve-qemu-kvm (>= 7.1~),
-@@ -51,6 +52,7 @@ Depends: dbus,
+@@ -49,6 +50,7 @@ Depends: dbus,
  # TODO: make legacy edk2 optional (suggests) for PVE 9 and warn explicitly about it
           pve-edk2-firmware-legacy | pve-edk2-firmware (<< 4~),
           pve-edk2-firmware-ovmf | pve-edk2-firmware (>= 3.20210831-1),
@@ -1362,20 +1365,30 @@ index 00000000..2d13bc63
 +  addr = "1.0"
 +  chassis_nr = "1"
 +
-diff --git a/debian/changelog b/debian/changelog
-index e686bac4..0f6cf6be 100644
---- a/debian/changelog
-+++ b/debian/changelog
-@@ -54,6 +54,12 @@ qemu-server (8.2.6) bookworm; urgency=medium
+diff --git a/query-machine-capabilities/query-machine-capabilities.c b/query-machine-capabilities/query-machine-capabilities.c
+index 0c522afc..3c375770 100644
+--- a/query-machine-capabilities/query-machine-capabilities.c
++++ b/query-machine-capabilities/query-machine-capabilities.c
+@@ -21,6 +21,7 @@ typedef struct {
+ } cpu_caps_t;
  
-  -- Proxmox Support Team <support@proxmox.com>  Mon, 11 Nov 2024 20:38:25 +0100
+ void query_cpu_capabilities(cpu_caps_t *res) {
++    #if defined(__x86_64__) || defined(__i386__)
+     uint32_t eax, ebx, ecx, edx;
  
-+qemu-server (8.2.5+port1) bookworm; urgency=medium
-+
-+  * Optimize pcie addr
-+
-+ -- Jiangcuo <jiangcuo@bingsin.com>  Tue, 26 Nov 2024 12:52:36 +0800
-+
- qemu-server (8.2.5) bookworm; urgency=medium
+     // query Encrypted Memory Capabilities, see:
+@@ -37,6 +38,14 @@ void query_cpu_capabilities(cpu_caps_t *res) {
  
-   * remote migration: fix online migration via API clients
+     res->cbitpos = ebx & 0x3f;
+     res->reduced_phys_bits = (ebx >> 6) & 0x3f;
++    #else
++    res->sev_support = 0;
++    res->sev_es_support = 0;
++    res->sev_snp_support = 0;
++    res->cbitpos = 0;
++    res->reduced_phys_bits = 0;
++    printf("CPUID not supported on this architecture.\n");
++    #endif
+ }
+ 
+ int prepare_output_directory() {
