@@ -9,12 +9,12 @@ errlog(){
 
 exec_build(){
         apt update
-        apt install lsb-base -y
-        yes |mk-build-deps --install --remove smartmontools/debian/control
+        yes |mk-build-deps --install --remove
         echo "clean "
         make clean || echo ok
         echo "build deb in `pwd` "
 	cd $SH_DIR/$PKGNAME
+	make dsc || echo ok
         make deb|| echo "ok"
 }
 
