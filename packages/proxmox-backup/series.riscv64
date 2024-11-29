@@ -1,1 +1,2 @@
 patches/other/001-add-riscv64-build.patch
+patches/other/002-add-riscv-source.patch
