@@ -41,10 +41,17 @@ echo  "This is Proxmox-Port package build scripts"
 echo  "Package is $PKGNAME"
 echo  "Docker build is $BUILDERNAME"
 echo  "Package dir is $PKG_LOCATION_PATH/$PKGNAME"
+
 if [ -n "$DEB_BUILD_OPTIONS" ];
 then
 	echo "DEB_BUILD_OPTIONS = $DEB_BUILD_OPTIONS"
 fi
+
+if [ -n "$SKIP_UPLOAD" ];
+then
+	echo "SKIP_UPLOAD is set!"
+fi
+
 echo  "--------------start-----------------"
 
 dockerbuild(){
@@ -59,12 +66,10 @@ dockerbuild(){
 upload_pkg(){
 	rm  $PKG_LOCATION_PATH/$PKGNAME -rf
 	mkdir $PKG_LOCATION_PATH/$PKGNAME -p
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.deb" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.buildinfo" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.changes" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.dsc" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
-	find "$SH_PATH/packages/$PKGNAME/$PKGNAME" -name "*.tar*" -exec cp {} $PKG_LOCATION_PATH/$PKGNAME \;
-	ls $PKG_LOCATION_PATH/$PKGNAME/
+
+	cd $SH_PATH/packages/$PKGNAME/$PKGNAME
+	cp *.deb *.buildinfo *.changes *.dsc *.tar* $PKG_LOCATION_PATH/$PKGNAME ||true
+
 	for i in `ls $PKG_LOCATION_PATH/$PKGNAME/*.deb`;
 		do
 		md5sum $i > $i.md5
@@ -124,5 +129,7 @@ fi
 cd $SH_PATH
 
 dockerbuild
-upload_pkg || errlog "upload pkg failed"
 
+if [ ! -n $SKIP_UPLOAD ];then
+	upload_pkg || errlog "upload pkg failed"
+fi
