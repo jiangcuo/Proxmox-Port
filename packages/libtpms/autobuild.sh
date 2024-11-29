@@ -11,4 +11,4 @@ SH_DIR=$(dirname $SH_PATH)
 
 copy_dir
 exec_build_dpkg
-cp  /build/*.changes /build/*.buildinfo /build/*.deb /build/*.tar.* /build/*.dsc $SH_DIR/$PKGNAME
+cp -r /build/*.changes /build/*.buildinfo /build/*.deb /build/*.tar.* /build/*.dsc $SH_DIR/$PKGNAME ||true
