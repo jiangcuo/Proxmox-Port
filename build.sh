@@ -130,6 +130,6 @@ cd $SH_PATH
 
 dockerbuild
 
-if [ ! -n $SKIP_UPLOAD ];then
+if [ ! -n "$SKIP_UPLOAD" ];then
 	upload_pkg || errlog "upload pkg failed"
 fi
