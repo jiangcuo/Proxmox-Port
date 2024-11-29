@@ -4,21 +4,18 @@ I forked a kernel project:
 
  `https://github.com/jiangcuo/pve-port-kernel.git`
 
-The pre-build kernel file of this project is stored in the repo:
-
-`deb https://global.mirrors.apqa.cn/proxmox/debian/kernel sid port`
-
 Currently, there are two architectures: LoongArch64 and ARM64.
 
 The config in the kernel selects all arm64 devices and can theoretically be used for all.
+
+* Please note that if you are using  loongarch64 machine, you need to use a 4k kernel. The 4k kernel is already integrated into the ISO, so this is just a reminder.
+
 
 ## 1. How to install the kernel
 
 ### 1.1 Use apt
 
 ```bash
-#add repo
-$ echo "deb https://global.mirrors.apqa.cn/proxmox/debian/kernel sid port" >>  /etc/apt/sources.list.d/pveport.list
 
 #fresh 
 $ apt update
@@ -44,49 +41,7 @@ If you encounter a failure with a new kernel ,reboot to grub, select Advanced, a
 
 ### 1.3 uboot devices
 
-The uboot device will  read the  `/{boot_partition}/extlinux/extlinux.conf` file on the boot.
-
-```bash
-# if your boot_partition is /dev/mmcblk0p3
-$ mount /dev/mmcblk0p3 /opt
-# if pve kernel vmlinuz is vmlinuz-6.1.60-generic
-$ cp /boot/vmlinuz-6.1.60-generic /opt
-$ sync
-```
-
-
-You can edit your extlinux.conf.
-```bash
-$ nano /opt/extlinux/extlinux.conf
-```
-```
-default l0
-menu title QuartzPro64 Boot Menu
-prompt 0
-timeout 50
-
-# create a new item with new kernel.
-label l0
-menu label Boot Linux Kernel SDMMC
-linux /vmlinuz-6.1.60-generic
-fdt /rk3588-quartzpro64.dtb
-append earlycon=uart8250,mmio32,0xfeb50000 console=ttyS2,1500000n8 root=/dev/mmcblk1p5 rw rootwait
-
-# backup old boot item
-label 20
-menu label Boot Linux Kernel SDMMC Backup
-linux /Image
-fdt /rk3588-quartzpro64.dtb
-append earlycon=uart8250,mmio32,0xfeb50000 console=ttyS2,1500000n8 root=/dev/mmcblk1p5 rw rootwait
-```
-
-The kernel package has compiled the DTB file, if you need it, you can go to the "/boot/dtbs/{kernel_version}/" folder.
-
-!!! NOTE
-
-*** Make sure you can access your device using the serial port. If your changes are wrong, you may not be able to boot the system, so you have a serial port that you can debug again. ***
-
-
+***Not support!***
 
 ## 2. Manual build
 
