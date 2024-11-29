@@ -6,7 +6,7 @@ index 7bedc3cc..8d81bf6b 100644
  proxmox-backup-server: mail-transport-agent-dependency-does-not-specify-default-mta
 -proxmox-backup-server: package-installs-apt-sources [etc/apt/sources.list.d/pbs-enterprise.list]
 +proxmox-backup-server: package-installs-apt-sources [etc/apt/sources.list.d/pbs-port.list]
- proxmox-backup-server: elevated-privileges 4755 root/root [usr/lib/loongarch64-linux-gnu/proxmox-backup/sg-tape-cmd]
+ proxmox-backup-server: elevated-privileges 4755 root/root [usr/lib/riscv64-linux-gnu/proxmox-backup/sg-tape-cmd]
  proxmox-backup-server: systemd-service-file-refers-to-unusual-wantedby-target getty.target [lib/systemd/system/proxmox-backup-banner.service]
  proxmox-backup-server: uses-dpkg-database-directly [usr/lib/loongarch64-linux-gnu/proxmox-backup/proxmox-backup-api]
 diff --git a/debian/proxmox-backup-server.install b/debian/proxmox-backup-server.install
