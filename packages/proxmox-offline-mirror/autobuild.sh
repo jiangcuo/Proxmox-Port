@@ -9,7 +9,7 @@ errlog(){
 
 exec_build(){
         apt update
-        apt install librust-proxmox-router-dev=2.2.4-1 librust-proxmox-router-2+cli-dev=2.2.4-1 -y
+        apt install librust-proxmox-router-dev=2.2.4-1 librust-proxmox-router-2+cli-dev=2.2.4-1 librust-proxmox-subscription-0.4+api-types-dev=0.4.6-1 librust-proxmox-subscription-dev=0.4.6-1 -y
         yes |mk-build-deps --install --remove
         echo "clean "
         make clean || echo ok
