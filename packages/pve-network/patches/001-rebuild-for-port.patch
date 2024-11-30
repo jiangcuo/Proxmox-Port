@@ -40,3 +40,17 @@ index 687bbd7..92d84c5 100644
  Depends: libpve-common-perl (>= 5.0-45),
           pve-cluster (>= 8.0.9),
           libpve-network-perl (= ${binary:Version}),
+diff --git a/debian/changelog b/debian/changelog
+index 96aab84..f941944 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++libpve-network-perl (0.10.0+port) bookworm; urgency=medium
++
++  * Rebuild for port 
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Sat, 30 Nov 2024 13:54:24 +0800
++
+ libpve-network-perl (0.10.0) bookworm; urgency=medium
+ 
+   * d/postinst: do not break, if moving either ipam state or cache file fails
