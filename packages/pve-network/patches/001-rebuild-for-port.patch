@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index ac1f823..3a3c11b 100644
+index ac1f823..1550c42 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,12 +1,13 @@
@@ -11,8 +11,9 @@ index ac1f823..3a3c11b 100644
  BUILDDIR ?= $(PACKAGE)-$(DEB_VERSION_UPSTREAM)
  
  DEBS=\
-       $(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb \
+-      $(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb \
 -      libpve-network-api-perl_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb \
++      $(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_$(ARCH).deb \
 +      libpve-network-api-perl_$(DEB_VERSION_UPSTREAM_REVISION)_$(ARCH).deb \
  
  DSC=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION).dsc
