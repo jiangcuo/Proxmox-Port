@@ -43,13 +43,27 @@ index faca6ed..9ae2558 100644
  DSC=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION).dsc
  
  UPSTREAM=eslint
+diff --git a/debian/links b/debian/links
+deleted file mode 100644
+index 0a1546f..0000000
+--- a/debian/links
++++ /dev/null
+@@ -1 +0,0 @@
+-usr/share/nodejs/pve-eslint/bin/app.js usr/bin/pve-eslint
 diff --git a/debian/rules b/debian/rules
-index b4c4090..9a632ad 100755
+index b4c4090..830042a 100755
 --- a/debian/rules
 +++ b/debian/rules
-@@ -4,4 +4,4 @@
+@@ -1,7 +1,11 @@
+ #!/usr/bin/make -f
++MULTIARCH := $(shell dpkg-architecture -qDEB_BUILD_MULTIARCH)
+ 
+ %:
  	dh $@ --with nodejs
  
  execute_after_dh_fixperms:
 -	chmod --recursive a+x -- debian/*/usr/share/nodejs/pve-eslint/bin/*
-+	chmod --recursive a+x -- debian/*/usr/lib/*/nodejs/pve-eslint/bin/*
++	chmod --recursive a+x -- debian/*/usr/lib/$(MULTIARCH)/nodejs/pve-eslint/bin/*
++
++override_dh_link:
++	dh_link /usr/lib/$(MULTIARCH)/nodejs/pve-eslint/bin/app.js /usr/bin/pve-eslint
