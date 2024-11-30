@@ -1,0 +1,32 @@
+diff --git a/Makefile b/Makefile
+index ac1f823..3a3c11b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,13 @@
+ include /usr/share/dpkg/pkg-info.mk
+ 
+ PACKAGE=libpve-network-perl
++ARCH:=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ 
+ BUILDDIR ?= $(PACKAGE)-$(DEB_VERSION_UPSTREAM)
+ 
+ DEBS=\
+       $(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb \
+-      libpve-network-api-perl_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb \
++      libpve-network-api-perl_$(DEB_VERSION_UPSTREAM_REVISION)_$(ARCH).deb \
+ 
+ DSC=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION).dsc
+ 
+diff --git a/debian/control b/debian/control
+index 687bbd7..cbd89f3 100644
+--- a/debian/control
++++ b/debian/control
+@@ -15,7 +15,7 @@ Standards-Version: 4.6.1
+ Homepage: https://www.proxmox.com
+ 
+ Package: libpve-network-perl
+-Architecture: all
++Architecture: any
+ Depends: libpve-common-perl (>= 5.0-45),
+          pve-cluster (>= 8.0.9),
+          libnet-subnet-perl,
