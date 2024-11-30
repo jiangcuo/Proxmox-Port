@@ -1,0 +1,55 @@
+diff --git a/debian/changelog b/debian/changelog
+index 309e8cd..e4a08fa 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++pve-eslint (8.41.0-3+port) bookworm; urgency=medium
++
++  * Rebuild for any Architecture
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Sat, 30 Nov 2024 13:01:07 +0800
++
+ pve-eslint (8.41.0-3) bookworm; urgency=medium
+ 
+   * change binary name from 'eslint' to 'pve-eslint' to avoid breaking
+diff --git a/debian/control b/debian/control
+index 0742b0c..fcd5689 100644
+--- a/debian/control
++++ b/debian/control
+@@ -10,7 +10,7 @@ Standards-Version: 4.3.0
+ Homepage: http://www.proxmox.com
+ 
+ Package: pve-eslint
+-Architecture: all
++Architecture: any
+ Depends: node-commander, node-colors, nodejs (>= ${nodejs:Version}), ${misc:Depends},
+ Provides: ${nodejs:Provides}
+ Description: ESLint for Proxmox Virtual Environment development
+diff --git a/Makefile b/Makefile
+index faca6ed..9ae2558 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,11 +2,12 @@ include /usr/share/dpkg/pkg-info.mk
+ 
+ PACKAGE=pve-eslint
+ 
++ARCH:=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ GITVERSION:=$(shell git rev-parse HEAD)
+ BUILDDIR ?= $(PACKAGE)-$(DEB_VERSION_UPSTREAM)
+ ORIG_SRC_TAR=$(PACKAGE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz
+ 
+-DEB=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_all.deb
++DEB=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION)_$(ARCH).deb
+ DSC=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION).dsc
+ 
+ UPSTREAM=eslint
+diff --git a/debian/rules b/debian/rules
+index b4c4090..9a632ad 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -4,4 +4,4 @@
+ 	dh $@ --with nodejs
+ 
+ execute_after_dh_fixperms:
+-	chmod --recursive a+x -- debian/*/usr/share/nodejs/pve-eslint/bin/*
++	chmod --recursive a+x -- debian/*/usr/lib/*/nodejs/pve-eslint/bin/*
