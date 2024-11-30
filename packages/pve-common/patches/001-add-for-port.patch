@@ -24,3 +24,29 @@ index bd305bd..2aab9e2 100644
  }
  
  sub fchownat($$$$$) {
+diff --git a/Makefile b/Makefile
+index 637cd49..835f6b2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@ include /usr/share/dpkg/pkg-info.mk
+ 
+ PACKAGE=libpve-common-perl
+ 
+-ARCH=all
++ARCH:=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ 
+ BUILDDIR ?= $(PACKAGE)-$(DEB_VERSION_UPSTREAM)
+ 
+diff --git a/debian/control b/debian/control
+index ac4cd66..f04e287 100644
+--- a/debian/control
++++ b/debian/control
+@@ -19,7 +19,7 @@ Build-Depends: debhelper-compat (= 13),
+ Standards-Version: 4.6.2
+ 
+ Package: libpve-common-perl
+-Architecture: all
++Architecture: any
+ Depends: libanyevent-perl,
+          libclone-perl,
+          libcrypt-openssl-random-perl,
