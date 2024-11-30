@@ -19,7 +19,7 @@ index ac1f823..1550c42 100644
  DSC=$(PACKAGE)_$(DEB_VERSION_UPSTREAM_REVISION).dsc
  
 diff --git a/debian/control b/debian/control
-index 687bbd7..cbd89f3 100644
+index 687bbd7..92d84c5 100644
 --- a/debian/control
 +++ b/debian/control
 @@ -15,7 +15,7 @@ Standards-Version: 4.6.1
@@ -31,3 +31,12 @@ index 687bbd7..cbd89f3 100644
  Depends: libpve-common-perl (>= 5.0-45),
           pve-cluster (>= 8.0.9),
           libnet-subnet-perl,
+@@ -30,7 +30,7 @@ Description: Proxmox VE's SDN (Software Defined Network) stack
+  implementation for Proxmox VE.
+ 
+ Package: libpve-network-api-perl
+-Architecture: all
++Architecture: any
+ Depends: libpve-common-perl (>= 5.0-45),
+          pve-cluster (>= 8.0.9),
+          libpve-network-perl (= ${binary:Version}),
