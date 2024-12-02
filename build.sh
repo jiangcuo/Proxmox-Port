@@ -105,10 +105,14 @@ upload_pkg(){
 update_submodues(){
 	rm $SH_PATH/packages/$PKGNAME/$PKGNAME/ -rf
 	mkdir $SH_PATH/packages/$PKGNAME/$PKGNAME/
-	# qemu is currently using Zeex/subhook, but Zeex/subhook is corrupted 
-	if [ "$PKGNAME" == "pve-qemu" ];then
-		SKIP_SUBMODULE=1
-	fi
+	# qemu is currently using Zeex/subhook, but Zeex/subhook is corrupted
+	SKIP_SUBMODULE_PKG=("pve-qemu" "proxmox-backup-restore-image")
+	for name in "${SKIP_SUBMODULE_PKG[@]}"; do
+		if [ "$PKGNAME" == "$name" ]; then
+		        SKIP_SUBMODULE=1
+        		break
+    		fi
+	done
 	if [ -n "$SKIP_SUBMODULE"  ];then
 		git submodule update --init "$SH_PATH/packages/$PKGNAME/$PKGNAME"
 	else
