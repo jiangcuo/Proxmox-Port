@@ -27,7 +27,7 @@ index 00000000..635f88c7
 --- /dev/null
 +++ b/configs/pveport.list
 @@ -0,0 +1 @@
-+deb https://mirrors.apqa.cn/proxmox/debian/pve bookworm port
++deb https://mirrors.lierfang.com/proxmox/debian/pve sid port
 \ No newline at end of file
 diff --git a/debian/lintian-overrides b/debian/lintian-overrides
 index fb9cc49d..f9731f49 100644

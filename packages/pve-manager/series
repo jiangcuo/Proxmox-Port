@@ -7,3 +7,4 @@ patches/007-remove-amd64-config.patch
 patches/008-add-arm64-config.patch
 patches/009-remove-other-ostype.patch
 patches/changelog/004-add-changelog-8.1.3+pve1.patch
+patches/010-set-architecture-to-any.patch
