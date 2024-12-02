@@ -6,28 +6,23 @@ PKGNAME=$(basename $SH_DIR)
 #  zfsurl="https://gitea.lierfang.com/proxmox-mirrors/mirror_zfs"
 #  ubuntukernelurl="https://gitea.lierfang.com/Proxmox-Port/linux-openeuler"
 
-errlog(){
-        echo $1
-        exit 1
-
-}
 
 update_submodule(){
 	cd $SH_DIR/$PKGNAME
 	echo "init submodule"
 	if [ -f "$SH_DIR/submodule.list" ];then
 		source $SH_DIR/submodule.list
-		git submodule set-url src/submodules/ubuntu-kernel "$zfsurl"
-		git submodule set-url src/submodules/zfsonlinux  "$ubuntukernelurl"
+		git submodule set-url src/submodules/ubuntu-kernel  "$ubuntukernelurl" || errlog "failed to update kernel"
+		git submodule set-url submodules/zfsonlinux  "$zfsurl" || errlog "failed to update zfs"
 	fi
 	git submodule update --init --recursive --depth=1
 }
 
 echo "This is $PKGNAME build scripts"
 
-update_submodule
-
 . $SH_DIR/../common.sh
 
+update_submodule
+
 cd $SH_DIR/$PKGNAME
-exec_build_dpkg
+exec_build_make
