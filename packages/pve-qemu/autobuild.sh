@@ -7,6 +7,17 @@ errlog(){
 
 }
 
+update_submodule(){
+	cd $SH_DIR/$PKGNAME
+	echo "init submodule"
+	git submodule update --init --depth=1
+	# replace Zeex/subhook
+	echo "set submodule url"
+	cd  qemu/roms/edk2/
+	git submodule set-url UnitTestFrameworkPkg/Library/SubhookLib/subhook https://github.com/tianocore/edk2-subhook
+	git submodule update --init --recursive --depth=1
+}
+
 exec_build(){
         apt update
         apt install libpve-access-control librados2  librados-dev -y
@@ -27,5 +38,6 @@ echo "This is $PKGNAME build scripts"
 SH_PATH=$(realpath "$0")
 SH_DIR=$(dirname $SH_PATH)
 
+update_submodule
 cd $SH_DIR/$PKGNAME
 exec_build

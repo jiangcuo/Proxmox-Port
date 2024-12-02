@@ -59,7 +59,7 @@ dockerbuild(){
 	if [ -n "$BUILDERNAME"  ];then
 		docker run -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm $BUILDERNAME || errlog "builderror"
 	else
-		docker run -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder|| errlog "builderror"
+		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder bash|| errlog "builderror"
 	fi
 }
 
@@ -105,7 +105,15 @@ upload_pkg(){
 update_submodues(){
 	rm $SH_PATH/packages/$PKGNAME/$PKGNAME/ -rf
 	mkdir $SH_PATH/packages/$PKGNAME/$PKGNAME/
-	git submodule update --init --recursive "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+	# qemu is currently using Zeex/subhook, but Zeex/subhook is corrupted 
+	if [ "$PKGNAME" == "pve-qemu" ];then
+		SKIP_SUBMODULE=1
+	fi
+	if [ -n "$SKIP_SUBMODULE"  ];then
+		git submodule update --init "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+	else
+		git submodule update --init --recursive "$SH_PATH/packages/$PKGNAME/$PKGNAME"
+	fi
 }
 
 update_submodues || errlog  "Failed to update submodule"
