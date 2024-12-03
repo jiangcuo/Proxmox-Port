@@ -203,3 +203,6 @@
 [submodule "packages/proxmox-mail-forward/proxmox-mail-forward"]
 	path = packages/proxmox-mail-forward/proxmox-mail-forward
 	url = https://git.proxmox.com/git/proxmox-mail-forward.git
+[submodule "packages/proxmox-websocket-tunnel/proxmox-websocket-tunnel"]
+	path = packages/proxmox-websocket-tunnel/proxmox-websocket-tunnel
+	url = https://git.proxmox.com/git/proxmox-websocket-tunnel.git
