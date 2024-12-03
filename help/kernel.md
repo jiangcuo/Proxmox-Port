@@ -36,7 +36,7 @@ download kernel package form project releases or repo, use
 
 A PC booted with  should automatically  set the latest kernel as the first boot kernel. You just need reboot to apply.
 
-If you encounter a failure with a new kernel ,reboot to grub, select Advanced, and in the next options, select the previous kernel.
+If you encounter a failure with a new kernel, reboot to grub, select Advanced, and in the next options, select the previous kernel.
 
 
 ### 1.3 uboot devices
