@@ -1,0 +1,273 @@
+From d50b115f8ce42bc77c0f66c8c8ff14de7053c0fa Mon Sep 17 00:00:00 2001
+From: Wenlong Zhang <zhangwenlong@loongson.cn>
+Date: Tue, 29 Oct 2024 09:18:13 +0800
+Subject: [PATCH] add supprot for loongarch64
+
+---
+ CMakeLists.txt                                       |  2 +-
+ src/arrow/cpp/cmake_modules/SetupCxxFlags.cmake      |  2 ++
+ .../cpp/src/arrow/vendored/double-conversion/utils.h |  2 +-
+ .../cpp/src/arrow/vendored/fast_float/float_common.h |  2 +-
+ src/boost/boost/predef/architecture.h                |  1 +
+ src/boost/boostcpp.jam                               |  5 +++--
+ .../libs/config/checks/architecture/Jamfile.jam      |  1 +
+ .../libs/config/checks/architecture/loongarch.cpp    | 12 ++++++++++++
+ src/common/Cycles.h                                  |  4 ++++
+ src/jaegertracing/opentelemetry-cpp/CMakeLists.txt   |  2 ++
+ .../third_party/benchmark/src/cycleclock.h           |  2 +-
+ .../tools/vcpkg/ports/halide/CONTROL                 |  6 +++++-
+ .../tools/vcpkg/ports/halide/portfile.cmake          |  1 +
+ .../tools/vcpkg/ports/llvm/portfile.cmake            |  1 +
+ .../tools/vcpkg/ports/llvm/vcpkg.json                |  4 ++++
+ .../range/range_tree/lib/portability/toku_time.h     |  4 ++++
+ 16 files changed, 44 insertions(+), 7 deletions(-)
+ create mode 100644 src/boost/libs/config/checks/architecture/loongarch.cpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 884135cd8..c955d55c7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -275,7 +275,7 @@ if(WITH_BLUESTORE_PMEM)
+ endif()
+ 
+ CMAKE_DEPENDENT_OPTION(WITH_SPDK "Enable SPDK" OFF
+-  "CMAKE_SYSTEM_PROCESSOR MATCHES i386|i686|amd64|x86_64|AMD64|aarch64" OFF)
++  "CMAKE_SYSTEM_PROCESSOR MATCHES i386|i686|amd64|x86_64|AMD64|aarch64|loongarch64" OFF)
+ if(WITH_SPDK)
+   if(NOT WITH_BLUESTORE)
+     message(SEND_ERROR "Please enable WITH_BLUESTORE for using SPDK")
+diff --git a/src/arrow/cpp/cmake_modules/SetupCxxFlags.cmake b/src/arrow/cpp/cmake_modules/SetupCxxFlags.cmake
+index c1a1ba043..e3367ca28 100644
+--- a/src/arrow/cpp/cmake_modules/SetupCxxFlags.cmake
++++ b/src/arrow/cpp/cmake_modules/SetupCxxFlags.cmake
+@@ -32,6 +32,8 @@ if(NOT DEFINED ARROW_CPU_FLAG)
+     set(ARROW_CPU_FLAG "ppc")
+   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "s390x")
+     set(ARROW_CPU_FLAG "s390x")
++  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "loongarch64")
++    set(ARROW_CPU_FLAG "loongarch")
+   else()
+     set(ARROW_CPU_FLAG "x86")
+   endif()
+diff --git a/src/arrow/cpp/src/arrow/vendored/double-conversion/utils.h b/src/arrow/cpp/src/arrow/vendored/double-conversion/utils.h
+index 4328344d7..b86276950 100644
+--- a/src/arrow/cpp/src/arrow/vendored/double-conversion/utils.h
++++ b/src/arrow/cpp/src/arrow/vendored/double-conversion/utils.h
+@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
+ #if defined(_M_X64) || defined(__x86_64__) || \
+     defined(__ARMEL__) || defined(__avr32__) || defined(_M_ARM) || defined(_M_ARM64) || \
+     defined(__hppa__) || defined(__ia64__) || \
+-    defined(__mips__) || \
++    defined(__mips__) || defined(__loongarch__) || \
+     defined(__powerpc__) || defined(__ppc__) || defined(__ppc64__) || \
+     defined(_POWER) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || \
+     defined(__sparc__) || defined(__sparc) || defined(__s390__) || \
+diff --git a/src/arrow/cpp/src/arrow/vendored/fast_float/float_common.h b/src/arrow/cpp/src/arrow/vendored/fast_float/float_common.h
+index f7b7662b9..8d11067f8 100644
+--- a/src/arrow/cpp/src/arrow/vendored/fast_float/float_common.h
++++ b/src/arrow/cpp/src/arrow/vendored/fast_float/float_common.h
+@@ -6,7 +6,7 @@
+ #include <cassert>
+ 
+ #if (defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)   \
+-       || defined(__amd64) || defined(__aarch64__) || defined(_M_ARM64) \
++       || defined(__amd64) || defined(__aarch64__) || defined(_M_ARM64) || defined(__loongarch__)\
+        || defined(__MINGW64__)                                          \
+        || defined(__s390x__)                                            \
+        || (defined(__ppc64__) || defined(__PPC64__) || defined(__ppc64le__) || defined(__PPC64LE__)) \
+diff --git a/src/boost/boost/predef/architecture.h b/src/boost/boost/predef/architecture.h
+index b131a8928..a6fd00c36 100644
+--- a/src/boost/boost/predef/architecture.h
++++ b/src/boost/boost/predef/architecture.h
+@@ -30,6 +30,7 @@ http://www.boost.org/LICENSE_1_0.txt)
+ #include <boost/predef/architecture/sys370.h>
+ #include <boost/predef/architecture/sys390.h>
+ #include <boost/predef/architecture/x86.h>
++#include <boost/predef/architecture/loongarch.h>
+ #include <boost/predef/architecture/z.h>
+ 
+ #endif
+diff --git a/src/boost/boostcpp.jam b/src/boost/boostcpp.jam
+index 082536e2a..28099d877 100644
+--- a/src/boost/boostcpp.jam
++++ b/src/boost/boostcpp.jam
+@@ -634,7 +634,7 @@ rule address-model ( )
+     return <conditional>@boostcpp.deduce-address-model ;
+ }
+ 
+-local deducable-architectures = arm mips1 power riscv s390x sparc x86 combined ;
++local deducable-architectures = arm mips1 power riscv s390x sparc x86 combined loongarch ;
+ feature.feature deduced-architecture : $(deducable-architectures) : propagated optional composite hidden ;
+ for a in $(deducable-architectures)
+ {
+@@ -645,7 +645,7 @@ rule deduce-architecture ( properties * )
+ {
+     local result ;
+     local filtered = [ toolset-properties $(properties) ] ;
+-    local names = arm mips1 power riscv s390x sparc x86 combined ;
++    local names = arm mips1 power riscv s390x sparc x86 loongarch combined ;
+     local idx = [ configure.find-builds "default architecture" : $(filtered)
+         : /boost/architecture//arm
+         : /boost/architecture//mips1
+@@ -654,6 +654,7 @@ rule deduce-architecture ( properties * )
+         : /boost/architecture//s390x
+         : /boost/architecture//sparc
+         : /boost/architecture//x86
++        : /boost/architecture//loongarch
+         : /boost/architecture//combined ] ;
+     result = $(names[$(idx)]) ;
+ 
+diff --git a/src/boost/libs/config/checks/architecture/Jamfile.jam b/src/boost/libs/config/checks/architecture/Jamfile.jam
+index 2ba54f9ad..faf57eb13 100644
+--- a/src/boost/libs/config/checks/architecture/Jamfile.jam
++++ b/src/boost/libs/config/checks/architecture/Jamfile.jam
+@@ -23,4 +23,5 @@ obj power    : power.cpp ;
+ obj riscv    : riscv.cpp ;
+ obj sparc    : sparc.cpp ;
+ obj x86      : x86.cpp ;
++obj loongarch      : loongarch.cpp ;
+ obj s390x    : s390x.cpp ;
+diff --git a/src/boost/libs/config/checks/architecture/loongarch.cpp b/src/boost/libs/config/checks/architecture/loongarch.cpp
+new file mode 100644
+index 000000000..ecd84e0a4
+--- /dev/null
++++ b/src/boost/libs/config/checks/architecture/loongarch.cpp
+@@ -0,0 +1,12 @@
++// loongarch.cpp
++//
++// Copyright (c) 2012 Steven Watanabe
++//
++// Distributed under the Boost Software License Version 1.0. (See
++// accompanying file LICENSE_1_0.txt or copy at
++// http://www.boost.org/LICENSE_1_0.txt)
++
++#if !defined(__loongarch) && !defined(__loongarch__) && !defined(__loongarch64__) \
++    && !defined(__loong) && !defined(__LOONGARCH__)
++#error "Not LOONGARCH"
++#endif
+diff --git a/src/common/Cycles.h b/src/common/Cycles.h
+index b546479c2..1bae9d616 100644
+--- a/src/common/Cycles.h
++++ b/src/common/Cycles.h
+@@ -84,6 +84,10 @@ class Cycles {
+     uint64_t tsc;
+     asm volatile("stck %0" : "=Q" (tsc) : : "cc");
+     return tsc;
++#elif defined(__loongarch__)
++  struct timeval tv;
++  gettimeofday(&tv, nullptr);
++  return static_cast<int64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
+ #else
+ #warning No high-precision counter available for your OS/arch
+     return 0;
+diff --git a/src/jaegertracing/opentelemetry-cpp/CMakeLists.txt b/src/jaegertracing/opentelemetry-cpp/CMakeLists.txt
+index 6d2b27435..46b54793e 100755
+--- a/src/jaegertracing/opentelemetry-cpp/CMakeLists.txt
++++ b/src/jaegertracing/opentelemetry-cpp/CMakeLists.txt
+@@ -64,6 +64,8 @@ else()
+     set(ARCH riscv)
+   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(s390x.*|S390X.*)")
+     set(ARCH s390x)
++  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(loongarch64.*|LOONGARCH64.*)")
++    set(ARCH loongarch)
+   else()
+     message(
+       FATAL_ERROR
+diff --git a/src/jaegertracing/opentelemetry-cpp/third_party/benchmark/src/cycleclock.h b/src/jaegertracing/opentelemetry-cpp/third_party/benchmark/src/cycleclock.h
+index 9bef594be..e7d523fea 100644
+--- a/src/jaegertracing/opentelemetry-cpp/third_party/benchmark/src/cycleclock.h
++++ b/src/jaegertracing/opentelemetry-cpp/third_party/benchmark/src/cycleclock.h
+@@ -204,7 +204,7 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
+   asm volatile("rdcycle %0" : "=r"(cycles));
+   return cycles;
+ #endif
+-#elif defined(__e2k__) || defined(__elbrus__)
++#elif defined(__e2k__) || defined(__elbrus__) || defined(__loongarch__)
+   struct timeval tv;
+   gettimeofday(&tv, nullptr);
+   return static_cast<int64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
+diff --git a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/CONTROL b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/CONTROL
+index 8ffcc93dd..512bfdf8c 100644
+--- a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/CONTROL
++++ b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/CONTROL
+@@ -12,7 +12,7 @@ Build-Depends: halide[core,target-x86] (x86|x64), halide[core,target-arm] (arm&!
+ 
+ Feature: target-all
+ Description: Include all targets
+-Build-Depends: halide[core,target-aarch64,target-amdgpu,target-arm,target-d3d12compute,target-hexagon,target-metal,target-mips,target-nvptx,target-opencl,target-opengl,target-powerpc,target-riscv,target-x86]
++Build-Depends: halide[core,target-aarch64,target-amdgpu,target-arm,target-d3d12compute,target-hexagon,target-metal,target-mips,target-nvptx,target-opencl,target-opengl,target-powerpc,target-riscv,target-x86,target-loongarch]
+ 
+ Feature: target-aarch64
+ Description: Include AArch64 target
+@@ -62,3 +62,7 @@ Feature: target-x86
+ Description: Include X86 target
+ Build-Depends: llvm[core,target-x86]
+ 
++Feature: target-loongarch
++Description: Include LOONGARCH target
++Build-Depends: llvm[core,target-loongarch]
++
+diff --git a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/portfile.cmake b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/portfile.cmake
+index b8e08adda..51e106739 100644
+--- a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/portfile.cmake
++++ b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/halide/portfile.cmake
+@@ -27,6 +27,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+     target-powerpc TARGET_POWERPC
+     target-riscv TARGET_RISCV
+     target-x86 TARGET_X86
++    target-loongarch TARGET_LOONGARCH
+ )
+ 
+ vcpkg_configure_cmake(
+diff --git a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/portfile.cmake b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/portfile.cmake
+index 356a25bf1..c793fceb4 100644
+--- a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/portfile.cmake
++++ b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/portfile.cmake
+@@ -181,6 +181,7 @@ set(known_llvm_targets
+     WebAssembly
+     X86
+     XCore
++    LOONGARCH
+ )
+ 
+ set(LLVM_TARGETS_TO_BUILD "")
+diff --git a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/vcpkg.json b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/vcpkg.json
+index 4590e5111..c34d78292 100644
+--- a/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/vcpkg.json
++++ b/src/jaegertracing/opentelemetry-cpp/tools/vcpkg/ports/llvm/vcpkg.json
+@@ -258,6 +258,7 @@
+             "target-systemz",
+             "target-webassembly",
+             "target-x86",
++            "target-loongarch",
+             "target-xcore"
+           ]
+         }
+@@ -308,6 +309,9 @@
+     "target-x86": {
+       "description": "Build with X86 backend."
+     },
++    "target-loongarch": {
++      "description": "Build with LOONGARCH backend."
++    },
+     "target-xcore": {
+       "description": "Build with XCore backend."
+     },
+diff --git a/src/rocksdb/utilities/transactions/lock/range/range_tree/lib/portability/toku_time.h b/src/rocksdb/utilities/transactions/lock/range/range_tree/lib/portability/toku_time.h
+index 46111e7f0..4555b8f71 100644
+--- a/src/rocksdb/utilities/transactions/lock/range/range_tree/lib/portability/toku_time.h
++++ b/src/rocksdb/utilities/transactions/lock/range/range_tree/lib/portability/toku_time.h
+@@ -154,6 +154,10 @@ static inline tokutime_t toku_time_now(void) {
+   uint64_t cycles;
+   asm volatile("rdcycle %0" : "=r"(cycles));
+   return cycles;
++#elif defined(__loongarch__)
++  struct timeval tv;
++  gettimeofday(&tv, nullptr);
++  return static_cast<int64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
+ #else
+ #error No timer implementation for this platform
+ #endif
+-- 
+2.43.0
+
