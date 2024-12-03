@@ -2,7 +2,7 @@
 
 ### Mirrors
 
-- Golbal: https://global.mirrors.apqa.cn (Cloudflare)
+- Global: https://global.mirrors.apqa.cn (Cloudflare)
 - Korea: https://mirrors.apqa.cn (Cloudflare)
 - ~~Hong Kong: https://hk.mirrors.apqa.cn (direct)~~
 - China: https://mirrors.lierfang.com (direct)
@@ -80,6 +80,6 @@ pve8
    ```bash
    deb https://mirrors.apqa.cn/proxmox/debian/kernel sid port
    ```
-kernel build form https://github.com/jiangcuo/pve-port-kernel and may not compatible all machine
+kernel build from https://github.com/jiangcuo/pve-port-kernel and may not be compatible with all machines
 
 * note! The kernel repository will be deactivated, and the kernels will be directly stored under the main repository path.
