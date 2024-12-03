@@ -29,7 +29,7 @@ Detailed: https://github.com/jiangcuo/Proxmox-Port/wiki/Support-List
 
 
 
-Due to the low performance of RISC-V and the  debians snapshot-mirrors is too slow to me, the process of building has been extremely challenging, which is why I haven't updated the RISC-V packages. If conditions permit, it is recommended to use a snapshot "202310?" release to start the building process.
+Due to the low performance of RISC-V and the debians snapshot-mirrors is too slow to me, the process of building has been extremely challenging, which is why I haven't updated the RISC-V packages. If conditions permit, it is recommended to use a snapshot "202310?" release to start the building process.
 
 
 ### loongarch64 
@@ -39,7 +39,7 @@ Due to the low performance of RISC-V and the  debians snapshot-mirrors is too sl
 
 ##  3. Installation
 
-If you are using server that supports EFI,you can install proxmox-ve with iso.
+If you are using server that supports EFI, you can install proxmox-ve with iso.
 
 https://mirrors.apqa.cn/proxmox/isos/
 
