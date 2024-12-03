@@ -194,3 +194,6 @@
 [submodule "packages/ceph-19/ceph-19"]
 	path = packages/ceph-19/ceph-19
 	url = https://git.proxmox.com/git/ceph.git
+[submodule "packages/novnc-pve/novnc-pve"]
+	path = packages/novnc-pve/novnc-pve
+	url = https://git.proxmox.com/git/novnc-pve.git
