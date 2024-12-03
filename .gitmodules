@@ -200,3 +200,6 @@
 [submodule "packages/pve-apiclient/pve-apiclient"]
 	path = packages/pve-apiclient/pve-apiclient
 	url = https://git.proxmox.com/git/pve-apiclient.git
+[submodule "packages/proxmox-mail-forward/proxmox-mail-forward"]
+	path = packages/proxmox-mail-forward/proxmox-mail-forward
+	url = https://git.proxmox.com/git/proxmox-mail-forward.git
