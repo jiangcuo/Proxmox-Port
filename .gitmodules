@@ -197,3 +197,6 @@
 [submodule "packages/novnc-pve/novnc-pve"]
 	path = packages/novnc-pve/novnc-pve
 	url = https://git.proxmox.com/git/novnc-pve.git
+[submodule "packages/pve-apiclient/pve-apiclient"]
+	path = packages/pve-apiclient/pve-apiclient
+	url = https://git.proxmox.com/git/pve-apiclient.git
