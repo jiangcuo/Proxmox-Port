@@ -1,0 +1,12 @@
+diff --git a/Makefile b/Makefile
+index 9c23cadc5..a5de911cf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -91,7 +91,6 @@ deb: ${DEBS} ${DBG_DEBS}
+ ${DEBS_REST} ${DBG_DEBS}: $(MAIN_DEB)
+ $(MAIN_DEB): ${BUILDSRC}
+ 	cd ${BUILDSRC}; dpkg-buildpackage -b -uc -us
+-	lintian ${DEBS}
+ 	@echo ${DEBS}
+ 
+ .PHONY: dsc
