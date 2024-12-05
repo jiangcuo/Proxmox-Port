@@ -206,3 +206,6 @@
 [submodule "packages/proxmox-websocket-tunnel/proxmox-websocket-tunnel"]
 	path = packages/proxmox-websocket-tunnel/proxmox-websocket-tunnel
 	url = https://git.proxmox.com/git/proxmox-websocket-tunnel.git
+[submodule "packages/pve-firmware/pve-firmware"]
+	path = packages/pve-firmware/pve-firmware
+	url = https://git.proxmox.com/git/pve-firmware.git
