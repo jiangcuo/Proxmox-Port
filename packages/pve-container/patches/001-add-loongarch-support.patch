@@ -1,5 +1,17 @@
+From 6c3157c3324c5e47cb0a8c3df0aaa59b753a2f2f Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Thu, 5 Dec 2024 11:31:29 +0800
+Subject: [PATCH] Add loongarch support
+
+---
+ src/PVE/LXC/Config.pm       |  2 +-
+ src/PVE/LXC/Setup.pm        | 11 ----------
+ src/PVE/LXC/Setup/Plugin.pm | 44 ++++++++++++++++++++++++++++++++++++-
+ src/PVE/LXC/Tools.pm        |  1 +
+ 4 files changed, 45 insertions(+), 13 deletions(-)
+
 diff --git a/src/PVE/LXC/Config.pm b/src/PVE/LXC/Config.pm
-index 1664a35..73f60f0 100644
+index 5cc37f7..0452d4a 100644
 --- a/src/PVE/LXC/Config.pm
 +++ b/src/PVE/LXC/Config.pm
 @@ -473,7 +473,7 @@ my $confdesc = {
@@ -12,10 +24,10 @@ index 1664a35..73f60f0 100644
  	default => 'amd64',
      },
 diff --git a/src/PVE/LXC/Setup.pm b/src/PVE/LXC/Setup.pm
-index 5c9114c..cae55b1 100644
+index dc58990..78272be 100644
 --- a/src/PVE/LXC/Setup.pm
 +++ b/src/PVE/LXC/Setup.pm
-@@ -135,17 +135,6 @@ sub new {
+@@ -141,17 +141,6 @@ sub new {
      if (!defined($conf->{arch})) {
  	my $arch = eval { $self->protected_call(sub { $plugin->detect_architecture() }) };
  
@@ -34,14 +46,14 @@ index 5c9114c..cae55b1 100644
      }
  
 diff --git a/src/PVE/LXC/Setup/Plugin.pm b/src/PVE/LXC/Setup/Plugin.pm
-index b9d9c2d..533afe0 100644
+index b9d9c2d..f413d91 100644
 --- a/src/PVE/LXC/Setup/Plugin.pm
 +++ b/src/PVE/LXC/Setup/Plugin.pm
 @@ -6,6 +6,7 @@ use strict;
  use warnings;
  
  use Carp;
-+use PVE::Tools;
++use PVE::Tools qw(get_host_arch);
  
  sub new {
      my ($class, $conf, $rootdir, $os_release) = @_;
@@ -84,8 +96,8 @@ index b9d9c2d..533afe0 100644
 +
 +    my $arch = eval { PVE::Tools::run_fork_with_timeout(5, $detect_arch) };
 +    if (my $err = $@) {
-+	    $arch = 'arm64';
-+	    print "Architecture detection failed: $err\nFalling back to loongarch64.\n" .
++	    $arch = get_host_arch();
++	    print "Architecture detection failed: $err\nFalling back to $arch.\n" .
 +	    "Use `pct set VMID --arch ARCH` to change.\n";
 +    } else {
 +	    print "Detected container architecture: $arch\n";
@@ -96,7 +108,7 @@ index b9d9c2d..533afe0 100644
  
  # hooks
 diff --git a/src/PVE/LXC/Tools.pm b/src/PVE/LXC/Tools.pm
-index 7e3e530..838327f 100644
+index 3380c62..a9aa942 100644
 --- a/src/PVE/LXC/Tools.pm
 +++ b/src/PVE/LXC/Tools.pm
 @@ -179,6 +179,7 @@ sub detect_elf_architecture {

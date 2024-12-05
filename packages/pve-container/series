@@ -1,1 +1,4 @@
 patches/001-add-loongarch-support.patch
+patches/002-add-anolis.patch
+patches/003-set-unknown-ostype-to-unmanaged.patch
+patches/changelog/001-bump-version-to-5.2.2+port1.patch
