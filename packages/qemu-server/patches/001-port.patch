@@ -63,7 +63,7 @@ index afb535c2..db6c3d80 100644
  	};
  	die "could not load supported machine versions - $@\n" if $@;
 diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
-index 2046a7c5..942c448d 100644
+index 2046a7c5..a958eb77 100644
 --- a/PVE/QemuServer.pm
 +++ b/PVE/QemuServer.pm
 @@ -98,11 +98,40 @@ my $OVMF = {
@@ -421,7 +421,18 @@ index 2046a7c5..942c448d 100644
  	push @$devices, '-object', get_amd_sev_object($conf->{'amd-sev'}, $conf->{bios});
  	push @$machineFlags, 'confidential-guest-support=sev0';
      }
-@@ -5049,10 +5107,10 @@ sub vmconfig_hotplug_pending {
+@@ -4359,6 +4417,10 @@ sub vm_deviceplug {
+ 
+ 	my $machine_type = PVE::QemuServer::Machine::qemu_machine_pxe($vmid, $conf);
+ 	my $machine_version = PVE::QemuServer::Machine::extract_version($machine_type);
++	#loongarch qemu is special, we get machine_version from the current qemu version
++	if ( $arch eq 'loongarch64'){
++		$machine_version = extract_version($machine_type, kvm_user_version());
++	}
+ 	my $use_old_bios_files = undef;
+ 	($use_old_bios_files, $machine_type) = qemu_use_old_bios_files($machine_type);
+ 
+@@ -5049,10 +5111,10 @@ sub vmconfig_hotplug_pending {
  		if ($defaults->{tablet}) {
  		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
  		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
@@ -434,7 +445,7 @@ index 2046a7c5..942c448d 100644
  		}
  	    } elsif ($opt =~ m/^usb(\d+)$/) {
  		my $index = $1;
-@@ -5114,10 +5172,10 @@ sub vmconfig_hotplug_pending {
+@@ -5114,10 +5176,10 @@ sub vmconfig_hotplug_pending {
  		if ($value == 1) {
  		    vm_deviceplug($storecfg, $conf, $vmid, 'tablet', $arch, $machine_type);
  		    vm_deviceplug($storecfg, $conf, $vmid, 'keyboard', $arch, $machine_type)
@@ -448,7 +459,7 @@ index 2046a7c5..942c448d 100644
  	    } elsif ($opt =~ m/^usb(\d+)$/) {
  		my $index = $1;
 diff --git a/PVE/QemuServer/CPUConfig.pm b/PVE/QemuServer/CPUConfig.pm
-index e65d8c26..8432e6f6 100644
+index e65d8c26..c229c35f 100644
 --- a/PVE/QemuServer/CPUConfig.pm
 +++ b/PVE/QemuServer/CPUConfig.pm
 @@ -39,22 +39,22 @@ sub load_custom_model_conf {
@@ -490,7 +501,7 @@ index e65d8c26..8432e6f6 100644
  };
  
  my $depreacated_cpu_map = {
-@@ -76,100 +76,100 @@ my $cputypes_32bit = {
+@@ -76,100 +76,101 @@ my $cputypes_32bit = {
  
  my $cpu_vendor_list = {
      # Intel CPUs
@@ -664,7 +675,8 @@ index e65d8c26..8432e6f6 100644
 +    'max' => 'default',
 +    'la464_loongarch_cpu' => 'default',
 +    'rv64' => 'default', 
-+
++    'la464' => 'default',
++    'la132' => 'default',
  };
  
  my @supported_cpu_flags = (
@@ -682,7 +694,7 @@ index e65d8c26..8432e6f6 100644
      'aes'
  );
  my $cpu_flag_supported_re = qr/([+-])(@{[join('|', @supported_cpu_flags)]})/;
-@@ -191,7 +191,7 @@ my $cpu_fmt = {
+@@ -191,7 +192,7 @@ my $cpu_fmt = {
  	    ." Only valid for custom CPU model definitions, default models will always report themselves to the guest OS.",
  	type => 'string',
  	enum => [ sort { lc("$a") cmp lc("$b") } keys %$cpu_vendor_list ],
@@ -691,7 +703,19 @@ index e65d8c26..8432e6f6 100644
  	optional => 1,
      },
      hidden => {
-@@ -633,7 +633,7 @@ sub get_cpu_options {
+@@ -576,6 +577,11 @@ sub get_cpu_options {
+ 	    or die "Cannot parse cpu description: $cpu_prop_str\n";
+ 
+ 	$cputype = $cpu->{cputype};
++
++	if ( $cputype eq 'la464_loongarch_cpu' ) {
++		$cputype = 'la464';
++	}
++
+ 	if (my $model = $builtin_models->{$cputype}) {
+ 	    $cputype = $model->{'reported-model'};
+ 	    $builtin_cpu->{flags} = $model->{'flags'};
+@@ -633,7 +639,7 @@ sub get_cpu_options {
  	$pve_forced_flags->{'vendor'} = {
  	    value => $cpu_vendor,
  	} if $cpu_vendor ne 'default';
@@ -700,7 +724,7 @@ index e65d8c26..8432e6f6 100644
  	die "internal error"; # should not happen
      }
  
-@@ -770,7 +770,10 @@ sub get_default_cpu_type {
+@@ -770,7 +776,10 @@ sub get_default_cpu_type {
      my ($arch, $kvm) = @_;
  
      my $cputype = $kvm ? 'kvm64' : 'qemu64';
@@ -712,7 +736,7 @@ index e65d8c26..8432e6f6 100644
  
      return $cputype;
  }
-@@ -802,7 +805,9 @@ sub get_cpu_bitness {
+@@ -802,7 +811,9 @@ sub get_cpu_bitness {
      }
  
      return $cputypes_32bit->{$cputype} ? 32 : 64 if $arch eq 'x86_64';
