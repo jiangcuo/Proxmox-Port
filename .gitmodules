@@ -215,3 +215,6 @@
 [submodule "packages/chrony/chrony"]
 	path = packages/chrony/chrony
 	url = https://salsa.debian.org/debian/chrony.git
+[submodule "packages/rustc/rustc"]
+	path = packages/rustc/rustc
+	url = https://gitea.lierfang.com/proxmox-mirrors/rustc.git
