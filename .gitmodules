@@ -218,3 +218,6 @@
 [submodule "packages/rustc/rustc"]
 	path = packages/rustc/rustc
 	url = https://gitea.lierfang.com/proxmox-mirrors/rustc.git
+[submodule "packages/wasi-libc/wasi-libc"]
+	path = packages/wasi-libc/wasi-libc
+	url = http://gitea.lierfang.com/proxmox-mirrors/wasi-libc
