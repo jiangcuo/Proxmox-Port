@@ -1,7 +1,0 @@
-diff --git a/debian/proxmox-firewall.install b/debian/proxmox-firewall.install
-index 8eb376c..5e5c5f0 100644
---- a/debian/proxmox-firewall.install
-+++ b/debian/proxmox-firewall.install
-@@ -1 +1 @@
--target/x86_64-unknown-linux-gnu/release/proxmox-firewall usr/libexec/proxmox
-+target/loongarch64-unknown-linux-gnu/release/proxmox-firewall usr/libexec/proxmox
