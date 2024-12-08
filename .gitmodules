@@ -209,3 +209,9 @@
 [submodule "packages/pve-firmware/pve-firmware"]
 	path = packages/pve-firmware/pve-firmware
 	url = https://git.proxmox.com/git/pve-firmware.git
+[submodule "packages/libseccomp/libseccomp"]
+	path = packages/libseccomp/libseccomp
+	url = https://salsa.debian.org/debian/libseccomp.git
+[submodule "packages/chrony/chrony"]
+	path = packages/chrony/chrony
+	url = https://salsa.debian.org/debian/chrony.git
