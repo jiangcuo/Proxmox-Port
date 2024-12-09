@@ -1,2 +1,4 @@
 patches/001-port.patch
 patches/changelog/001-update-to8.3.0+port1.patch
+patches/002-fix-usb-hotplug.patch
+patches/changelog/002-update-to8.3.0+port2.patch

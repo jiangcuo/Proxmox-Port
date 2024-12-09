@@ -1,0 +1,25 @@
+From 5dd2dcf088141ac471037dfcf0607b5968742b8d Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 9 Dec 2024 16:33:51 +0800
+Subject: [PATCH] fix usb hotplug issue
+
+https://github.com/jiangcuo/Proxmox-Port/issues/135
+---
+ PVE/QemuServer/USB.pm | 22 +++++++++++++++++-----
+ debian/changelog      |  6 ++++++
+ 2 files changed, 23 insertions(+), 5 deletions(-)
+
+diff --git a/debian/changelog b/debian/changelog
+index 39ee0d12..4e9a4824 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++qemu-server (8.3.0+port2) bookworm; urgency=medium
++
++  * Fix usb hotplug error
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Mon, 09 Dec 2024 16:30:48 +0800
++
+ qemu-server (8.3.0+port1) bookworm; urgency=medium
+ 
+   * Fix cpu type on loongarch64
