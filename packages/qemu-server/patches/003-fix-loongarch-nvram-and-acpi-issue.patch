@@ -1,0 +1,106 @@
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index a958eb77..514d52ec 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -124,12 +124,45 @@ my $OVMF = {
+ 		"$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
+ 		"$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
+ 	],
++	'4m-no-smm' =>      [
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
++        ],
++	'4m-no-smm-ms' =>      [
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
++        ],
++	'4m' =>      [
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
++        ],
++	'4m-ms' =>      [
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/LOONGARCH64_VIRT_VARS.fd",
++        ],
+ 	},
+ 	riscv64 => {
+ 	default =>	[
+ 		"$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
+ 		"$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
+ 	],
++        '4m-no-smm' =>      [
++                "$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
++        ],
++        '4m-no-smm-ms' =>      [
++                "$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
++        ],
++        '4m' =>      [
++                "$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
++        ],
++        '4m-ms' =>      [
++                "$EDK2_FW_BASE/RISCV_VIRT_CODE.fd",
++                "$EDK2_FW_BASE/RISCV_VIRT_VARS.fd",
++        ],
++
+ 	},
+ 
+ };
+@@ -3719,7 +3752,10 @@ sub config_to_command {
+ 
+     push @$cmd, '-name', "$vmname,debug-threads=on";
+ 
+-    push @$cmd, '-no-shutdown';
++    # fix nvram poweroff issue on loongarch
++    if ( $arch ne 'loongarch64'){
++        push @$cmd, '-no-shutdown';
++    }
+ 
+     my $use_virtio = 0;
+ 
+@@ -3765,16 +3801,8 @@ sub config_to_command {
+ 
+ 	my ($code_drive_str, $var_drive_str) =
+ 	    print_ovmf_drive_commandlines($conf, $storecfg, $vmid, $arch, $q35, $version_guard);
+-	if ($arch eq 'loongarch64') {
+-			push  $cmd->@*, '-bios','/usr/share/pve-edk2-firmware//LOONGARCH64_VIRT_CODE.fd';
+-		}elsif ($arch eq 'riscv64') {
+-			push @$cmd, '-bios','/usr/share/pve-edk2-firmware//fw_dynamic.bin';
+-			push @$cmd, '-drive', $code_drive_str;
+-        }else{
+-			push $cmd->@*, '-drive', $code_drive_str;
+-			push $cmd->@*, '-drive', $var_drive_str;
+-		}
+-
++	push $cmd->@*, '-drive', $code_drive_str;
++	push $cmd->@*, '-drive', $var_drive_str;
+     }
+ 
+     if ($q35) { # tell QEMU to load q35 config early
+@@ -3900,7 +3928,7 @@ sub config_to_command {
+ 
+     push @$cmd, '-boot', "menu=on,strict=on,reboot-timeout=1000,splash=/usr/share/qemu-server/bootsplash.jpg";
+ 
+-    push $machineFlags->@*, 'acpi=off' if defined($conf->{acpi}) && $conf->{acpi} == 0;
++    push $machineFlags->@*, 'acpi=off' if defined($conf->{acpi}) && $conf->{acpi} == 0 && $arch ne 'loongarch64';
+ 
+     push @$cmd, '-no-reboot' if  defined($conf->{reboot}) && $conf->{reboot} == 0;
+ 
+diff --git a/debian/control b/debian/control
+index 7e79ee09..94995a68 100644
+--- a/debian/control
++++ b/debian/control
+@@ -51,9 +51,10 @@ Depends: dbus,
+          pve-edk2-firmware-legacy | pve-edk2-firmware (<< 4~),
+          pve-edk2-firmware-ovmf | pve-edk2-firmware (>= 3.20210831-1),
+          pve-edk2-firmware-aarch64,
++	  pve-edk2-firmware-loongarch64 [loong64],
+          pve-firewall (>= 5.0.4),
+          pve-ha-manager (>= 3.0-9),
+-         pve-qemu-kvm (>= 7.1~),
++         pve-qemu-kvm (>= 9.0~),
+          socat,
+          swtpm,
+          swtpm-tools,

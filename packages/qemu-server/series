@@ -1,4 +1,6 @@
 patches/001-port.patch
-patches/changelog/001-update-to8.3.0+port1.patch
 patches/002-fix-usb-hotplug.patch
+patches/003-fix-loongarch-nvram-and-acpi-issue.patch
+patches/changelog/001-update-to8.3.0+port1.patch
 patches/changelog/002-update-to8.3.0+port2.patch
+patches/changelog/003-update-to8.3.0+port3.patch

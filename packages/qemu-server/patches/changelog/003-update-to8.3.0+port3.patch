@@ -1,0 +1,14 @@
+diff --git a/debian/changelog b/debian/changelog
+index 4e9a4824..f9f1f392 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++qemu-server (8.3.0+port3) bookworm; urgency=medium
++
++  * Add loongarch efi_vars support
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Wed, 11 Dec 2024 13:44:37 +0800
++
+ qemu-server (8.3.0+port2) bookworm; urgency=medium
+ 
+   * Fix usb hotplug error
