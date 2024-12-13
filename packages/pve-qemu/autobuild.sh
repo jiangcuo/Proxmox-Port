@@ -13,11 +13,6 @@ update_submodule(){
 	git submodule update --init --depth=1 || errlog "submodule update failed"
 	cd $SH_DIR/$PKGNAME/qemu
 	git submodule update --init --depth=1
-	# replace Zeex/subhook
-	echo "set submodule url for subhook"
-	cd  $SH_DIR/$PKGNAME/qemu/roms/edk2/
-	git submodule set-url UnitTestFrameworkPkg/Library/SubhookLib/subhook https://github.com/tianocore/edk2-subhook
-	git submodule update --init --recursive --depth=1
 }
 
 exec_build(){
