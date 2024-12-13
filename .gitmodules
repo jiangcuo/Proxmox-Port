@@ -221,3 +221,6 @@
 [submodule "packages/wasi-libc/wasi-libc"]
 	path = packages/wasi-libc/wasi-libc
 	url = http://gitea.lierfang.com/proxmox-mirrors/wasi-libc
+[submodule "packages/debhelper/debhelper"]
+	path = packages/debhelper/debhelper
+	url = https://salsa.debian.org/debian/debhelper
