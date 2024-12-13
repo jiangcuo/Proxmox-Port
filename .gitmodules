@@ -9,7 +9,7 @@
 	url = https://git.proxmox.com/git/zfsonlinux.git
 [submodule "packages/pve-qemu/pve-qemu"]
 	path = packages/pve-qemu/pve-qemu
-	url = https://git.proxmox.com/git/pve-qemu.git
+	url = https://github.com/jiangcuo/pve-qemu.git
 [submodule "packages/pve-common/pve-common"]
 	path = packages/pve-common/pve-common
 	url = https://git.proxmox.com/git/pve-common
