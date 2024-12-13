@@ -224,3 +224,6 @@
 [submodule "packages/debhelper/debhelper"]
 	path = packages/debhelper/debhelper
 	url = https://salsa.debian.org/debian/debhelper
+[submodule "packages/package-notes/package-notes"]
+	path = packages/package-notes/package-notes
+	url = https://github.com/systemd/package-notes.git
