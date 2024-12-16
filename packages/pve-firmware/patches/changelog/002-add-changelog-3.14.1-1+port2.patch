@@ -1,0 +1,16 @@
+diff --git a/debian/changelog b/debian/changelog
+index 2ed7c29..18b3e05 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,11 @@
++pve-firmware (3.14-1+port2) bookworm; urgency=medium
++
++  * Add Port 6.12 kenerl firmware
++
++  * Add Port 5.10 kenerl firmware
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Mon, 16 Dec 2024 18:04:51 +0800
++
+ pve-firmware (3.14-1+port1) bookworm; urgency=medium
+ 
+   * Add Port kenerl firmware

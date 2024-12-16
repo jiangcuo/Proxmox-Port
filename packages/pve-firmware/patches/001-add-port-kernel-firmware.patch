@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index bd38c95..cbf47f6 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -36,6 +36,11 @@ fw.list: fwlist-6.2.2-1-pve
+@@ -36,6 +36,13 @@ fw.list: fwlist-6.2.2-1-pve
  fw.list: fwlist-6.2.6-1-pve
  fw.list: fwlist-6.2.16-11-pve
  fw.list: fwlist-6.5.3-1-pve
@@ -11,6 +11,41 @@ index bd38c95..cbf47f6 100644
 +fw.list: fwlist-6.6-openeuler-loong64
 +fw.list: fwlist-6.6-phytium
 +fw.list: fwlist-6.11.0-loong64
++fw.list: fwlist-6.12.3-2-pve
++fw.list: fwlist-5.10-openeuler
  fw.list: fwlist-6.8.1-1-pve
  fw.list: fwlist-6.8.8-1-pve
  fw.list: fwlist-6.8.12-1-pve
+diff --git a/assemble-firmware.pl b/assemble-firmware.pl
+index 55d2cac..50c7697 100755
+--- a/assemble-firmware.pl
++++ b/assemble-firmware.pl
+@@ -448,6 +448,28 @@ iwlwifi-so-a0-jf-b0-89.ucode
+ iwlwifi-su-z0-43.ucode
+ iwlwifi-ty-a0-gf-a0-48.ucode
+ iwlwifi-ty-a0-gf-a0-50.ucode
++iwlwifi-bz-a0-fm4-b0-93.ucode
++iwlwifi-bz-a0-fm-b0-93.ucode
++iwlwifi-bz-a0-fm-c0-93.ucode
++iwlwifi-bz-a0-gf4-a0-93.ucode
++iwlwifi-bz-a0-gf-a0-93.ucode
++iwlwifi-bz-a0-hr-b0-93.ucode
++iwlwifi-gl-b0-fm-b0-93.ucode
++iwlwifi-gl-c0-fm-c0-93.ucode
++iwlwifi-sc2-a0-fm-c0-93.ucode
++iwlwifi-sc2-a0-wh-a0-93.ucode
++iwlwifi-sc2f-a0-fm-c0-93.ucode
++iwlwifi-sc2f-a0-wh-a0-93.ucode
++iwlwifi-sc-a0-fm-b0-93.ucode
++iwlwifi-sc-a0-fm-c0-93.ucode
++iwlwifi-sc-a0-gf4-a0-93.ucode
++iwlwifi-sc-a0-gf-a0-93.ucode
++iwlwifi-sc-a0-hr-b0-93.ucode
++iwlwifi-sc-a0-wh-a0-93.ucode
++qcom/a530_zap.b00
++qcom/a530_zap.b01
++qcom/a530_zap.b02
++qcom/a630_zap.mbn
+ iwmc3200wifi-calib-sdio.bin
+ iwmc3200wifi-lmac-sdio.bin
+ iwmc3200wifi-umac-sdio.bin
