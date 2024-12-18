@@ -227,3 +227,6 @@
 [submodule "packages/package-notes/package-notes"]
 	path = packages/package-notes/package-notes
 	url = https://github.com/systemd/package-notes.git
+[submodule "packages/openssh/openssh"]
+	path = packages/openssh/openssh
+	url = https://salsa.debian.org/ssh-team/openssh.git
