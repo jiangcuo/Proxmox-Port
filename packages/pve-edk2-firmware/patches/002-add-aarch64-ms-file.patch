@@ -1,7 +1,0 @@
-diff --git a/debian/pve-edk2-firmware-aarch64.links b/debian/pve-edk2-firmware-aarch64.links
-new file mode 100644
-index 0000000..5e90b10
---- /dev/null
-+++ b/debian/pve-edk2-firmware-aarch64.links
-@@ -0,0 +1 @@
-+usr/share/pve-edk2-firmware/AAVMF_CODE.fd usr/share/pve-edk2-firmware/AAVMF_CODE.ms.fd
