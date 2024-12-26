@@ -1,0 +1,53 @@
+diff --git a/PVE/API2/Qemu.pm b/PVE/API2/Qemu.pm
+index e1dc3e7e..d21fb6ed 100644
+--- a/PVE/API2/Qemu.pm
++++ b/PVE/API2/Qemu.pm
+@@ -684,6 +684,7 @@ my $generaloptions = {
+     'name' => 1,
+     'onboot' => 1,
+     'ostype' => 1,
++	'gicversion' =>1,
+     'protection' => 1,
+     'reboot' => 1,
+     'startdate' => 1,
+diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
+index 6f0d41fc..d351dfbc 100644
+--- a/PVE/QemuServer.pm
++++ b/PVE/QemuServer.pm
+@@ -420,6 +420,12 @@ my $confdesc = {
+ 	type => 'string',
+ 	description => "Memory properties.",
+ 	format => $PVE::QemuServer::Memory::memory_fmt
++    },
++	gicversion => {
++    optional => 1,
++    type => 'string',
++    description => "Set virt gic-version",
++    enum => [qw(host 2 3 4 max)],
+     },
+     'amd-sev' => {
+ 	description => "Secure Encrypted Virtualization (SEV) features by AMD CPUs",
+@@ -4279,14 +4285,17 @@ sub config_to_command {
+     my $machine_type_min = $machine_type;
+     $machine_type_min =~ s/\+pve\d+$//;
+     $machine_type_min .= "+pve$required_pve_version";
++
++
++	my $gicv = $kvm ? 'host' : 'max';
++    if ( $conf->{gicversion} ) {
++        $gicv = $conf->{gicversion};
++    } 
++
+     if ($arch eq 'aarch64'){
+-	if (!$kvm){
+-        push @$machineFlags, "type=${machine_type_min}";
+-	}else{
+-	 push @$machineFlags, "type=${machine_type_min},gic-version=host";
+-	}
++		push @$machineFlags, "type=${machine_type_min},gic-version=${gicv}";
+     }else{
+-       push @$machineFlags, "type=${machine_type_min}";
++    	push @$machineFlags, "type=${machine_type_min}";
+     }
+ 
+ 	# This method is prevented from being executed on the Port branch.
