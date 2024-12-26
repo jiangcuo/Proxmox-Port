@@ -1,3 +1,9 @@
 patches/001-init-for-port.patch
+patches/002-add-port-changelog.patch
 patches/003-set-default-bios-to-ovmf-when-vm-create.diff
 patches/004-add-Kunpeng-920-cpu-model.patch
+patches/005-bump-version-to-8.3.2.patch
+patches/006-bump-qemu-server-to-8.3.2+port.patch
+patches/007-bump-version-to-8.3.3+port.patch
+patches/009-add-gicversion-param.patch
+patches/010-bump-version-to-8.3.3+port2.patch

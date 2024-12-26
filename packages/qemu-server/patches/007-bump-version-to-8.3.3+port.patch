@@ -1,0 +1,23 @@
+diff --git a/debian/changelog b/debian/changelog
+index afdaaa98..87012a2a 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++qemu-server (8.3.3+port) bookworm; urgency=medium
++
++  * Add port version
++
++ -- Jiangcuo <Jiangcuo@lierfang.com>  Thu, 26 Dec 2024 12:13:33 +0800
++
+ qemu-server (8.3.3) bookworm; urgency=medium
+ 
+   * fix #5980: import disk: fix spurious warning if no target disk is defined
+@@ -14,7 +20,7 @@ qemu-server (8.3.3) bookworm; urgency=medium
+ 
+ qemu-server (8.3.2+port) bookworm; urgency=medium
+ 
+-  * Add port verison
++  * Add port version
+ 
+  -- Jiangcuo <Jiangcuo@lierfang.com>  Thu, 26 Dec 2024 11:28:33 +0800
+ 

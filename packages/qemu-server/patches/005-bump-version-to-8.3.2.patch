@@ -1,0 +1,19 @@
+diff --git a/debian/changelog b/debian/changelog
+index 0b93b9e8..dbb548be 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -18,6 +18,14 @@ qemu-server (8.3.2) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Mon, 09 Dec 2024 10:08:14 +0100
+ 
++qemu-server (8.3.1+port) bookworm; urgency=medium
++
++  * Set default bios type to ovmf when vm create
++   
++  * Add Kunpeng920 cpu model.
++
++ -- Jiangcuo <Jiangcuo@lierfang.com>  Thu, 26 Dec 2024 11:22:33 +0800
++
+ qemu-server (8.3.1) bookworm; urgency=medium
+ 
+   * api: clone vm: make error for unsupported volumes appear in a

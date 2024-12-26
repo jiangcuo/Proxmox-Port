@@ -1,0 +1,29 @@
+diff --git a/debian/changelog b/debian/changelog
+index 1439b7f3..0b93b9e8 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -27,6 +27,24 @@ qemu-server (8.3.1) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Thu, 05 Dec 2024 12:38:12 +0100
+ 
++qemu-server (8.3.0+port3) bookworm; urgency=medium
++
++  * Add loongarch efi_vars support
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Wed, 11 Dec 2024 13:44:37 +0800
++
++qemu-server (8.3.0+port2) bookworm; urgency=medium
++
++  * Fix usb hotplug error
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Mon, 09 Dec 2024 16:30:48 +0800
++
++qemu-server (8.3.0+port1) bookworm; urgency=medium
++
++  * Fix cpu type on loongarch64
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Thu, 05 Dec 2024 14:16:44 +0800
++
+ qemu-server (8.3.0) bookworm; urgency=medium
+ 
+   * api: import working storage: improve error message
