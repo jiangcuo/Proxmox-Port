@@ -1,0 +1,13 @@
+diff --git a/www/manager6/Utils.js b/www/manager6/Utils.js
+index bd5f2c89..dde4d24e 100644
+--- a/www/manager6/Utils.js
++++ b/www/manager6/Utils.js
+@@ -491,7 +491,7 @@ Ext.define('PVE.Utils', {
+ 
+     render_qemu_bios: function(value) {
+ 	if (!value) {
+-	    return Proxmox.Utils.defaultText + ' (SeaBIOS)';
++	    return "OVMF (UEFI)";
+ 	} else if (value === 'seabios') {
+ 	    return "SeaBIOS";
+ 	} else if (value === 'ovmf') {
