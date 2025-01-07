@@ -1,0 +1,39 @@
+diff --git a/debian/changelog b/debian/changelog
+index 0217ca2..f324a61 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++swtpm (0.9.0+port) bookworm; urgency=medium
++
++  * Add Proxmox supoort 
++
++ -- jiangcuo <jiangcuo@lierfang.com>  Tue, 07 Jan 2025 12:08:49 +0800
++
+ swtpm (0.9.0) RELEASED; urgency=medium
+ 
+   * Stable release
+diff --git a/debian/usr.bin.swtpm b/debian/usr.bin.swtpm
+index 0069f58..3038642 100644
+--- a/debian/usr.bin.swtpm
++++ b/debian/usr.bin.swtpm
+@@ -24,18 +24,6 @@ profile swtpm /usr/bin/swtpm {
+   unix (send, receive) type=stream addr=none peer=(label=libvirt-*),
+ 
+   /usr/bin/swtpm rm,
+-
+-  /run/libvirt/qemu/swtpm/*.pid rwk,
+-  /run/libvirt/qemu/swtpm/*.sock rwk,
+-  /tmp/** rwk,
+-
+-  owner /dev/vtpmx rw,
+-  owner /etc/nsswitch.conf r,
+-  owner /run/swtpm/sock rw,
+-  owner /run/user/[0-9]*/libvirt/qemu/run/swtpm/*.pid rwk,
+-  owner /run/user/[0-9]*/libvirt/qemu/run/swtpm/*.sock rwk,
+-  owner /var/lib/libvirt/swtpm/** rwk,
+-  owner /var/lib/swtpm/** rwk,
+-  owner /var/log/swtpm/libvirt/qemu/*.log rwk,
+-  owner @{HOME}/** rwk,
++  # Proxmox VE allow to save states on many possible locations, so allow everything for now.
++  /** rwk,
+ }
