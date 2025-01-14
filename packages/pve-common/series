@@ -1,2 +1,3 @@
 patches/001-add-for-port.patch
 patches/changelog/001-add-changlog.patch
+patches/002-add-cpuname-parse-on-arm64.patch
