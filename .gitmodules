@@ -230,3 +230,6 @@
 [submodule "packages/openssh/openssh"]
 	path = packages/openssh/openssh
 	url = https://salsa.debian.org/ssh-team/openssh.git
+[submodule "packages/dmidecode/dmidecode"]
+	path = packages/dmidecode/dmidecode
+	url = https://gitea.lierfang.com/Proxmox-Port/dmidecode
