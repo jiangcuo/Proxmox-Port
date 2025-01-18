@@ -7,3 +7,4 @@ patches/006-bump-qemu-server-to-8.3.2+port.patch
 patches/007-bump-version-to-8.3.3+port.patch
 patches/009-add-gicversion-param.patch
 patches/010-bump-version-to-8.3.3+port2.patch
+patches/011-Add-x86_64-cpu-for-compatible-with-x86-host.patch

@@ -7,7 +7,7 @@ index 87012a2a..caf93620 100644
 +
 +  * Add 'gicversion' param.
 +
-+ -- Jiangcuo <Jiangcuo@lierfang.com>  Thu, 26 Dec 2024 12:28:33 +0800
++ -- Jiangcuo <Jiangcuo@lierfang.com>  Thu, 26 Dec 2024 12:13:33 +0800
 +
  qemu-server (8.3.3+port) bookworm; urgency=medium
  
