@@ -1,0 +1,385 @@
+diff --git a/Makefile b/Makefile
+index 54601ee2..92fc0596 100644
+--- a/Makefile
++++ b/Makefile
+@@ -58,6 +58,8 @@ install: vzdump-hook-script.pl
+ 	install -d $(DESTDIR)/var/lib/vz/template/iso
+ 	install -m 0644 vzdump-hook-script.pl $(DOCDIR)/examples/vzdump-hook-script.pl
+ 	install -m 0644 spice-example-sh $(DOCDIR)/examples/spice-example-sh
++	install -d $(DESTDIR)/lib/udev/rules.d
++	install -m 0644 udev/99-query-machine-info.rules $(DESTDIR)/lib/udev/rules.d/99-query-machine-info.rules
+ 	set -e && for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
+ 
+ .PHONY: distclean
+diff --git a/bin/Makefile b/bin/Makefile
+index 82d5c633..0b9bd9f6 100644
+--- a/bin/Makefile
++++ b/bin/Makefile
+@@ -23,7 +23,8 @@ SCRIPTS =  			\
+ 	pveupgrade		\
+ 	pveupdate		\
+ 	pveperf			\
+-	pvereport
++	pvereport		\
++	query-machine-info
+ 
+ HELPERS =			\
+ 	pve-startall-delay	\
+diff --git a/bin/query-machine-info b/bin/query-machine-info
+new file mode 100755
+index 00000000..f62fc797
+--- /dev/null
++++ b/bin/query-machine-info
+@@ -0,0 +1,10 @@
++#!/bin/bash
++filename="/run/pve/query-machine-info"
++cpuname=$(lscpu|grep "BIOS Model name"|cut -d ":" -f2|xargs)
++if [ -z "$cpuname" ];then
++        cpuname=$(lscpu|grep "Model name"|grep -v 'BIOS'|cut -d ":" -f2|xargs)
++	if [ -z "$cpuname" ];then
++		cpuname="unknow"
++	fi
++fi
++dmidecode | jc --dmidecode | jq --arg cpu "$cpuname" '. += [{"cpu": $cpu}]' >$filename
+diff --git a/debian/control b/debian/control
+index 68333187..2a29d7ac 100644
+--- a/debian/control
++++ b/debian/control
+@@ -38,11 +38,14 @@ Architecture: any
+ Depends: apt (>= 1.5~),
+          ca-certificates,
+          cstream,
++	 dmidecode,
+          dtach,
+          fonts-font-awesome,
+          fonts-font-logos,
+          gdisk,
+          hdparm,
++	 jc,
++	 jq,
+          libapt-pkg-perl,
+          libcrypt-ssleay-perl,
+          libfile-readbackwards-perl,
+diff --git a/debian/postinst b/debian/postinst
+index aba39904..e0d3c6ec 100755
+--- a/debian/postinst
++++ b/debian/postinst
+@@ -140,6 +140,7 @@ case "$1" in
+     deb-systemd-invoke reload-or-try-restart pveproxy.service || true
+     deb-systemd-invoke reload-or-try-restart spiceproxy.service || true
+     deb-systemd-invoke reload-or-try-restart pvescheduler.service || true
++    deb-systemd-invoke reload-or-try-restart pve-query-machine-info.service || true
+ 
+     exit 0;;
+ 
+@@ -169,7 +170,7 @@ case "$1" in
+ 
+     # same as dh_systemd_enable (code copied)
+ 
+-    UNITS="pvedaemon.service pveproxy.service spiceproxy.service pvestatd.service pvebanner.service pvescheduler.service pve-daily-update.timer"
++    UNITS="pvedaemon.service pveproxy.service spiceproxy.service pvestatd.service pvebanner.service pvescheduler.service pve-daily-update.timer pve-query-machine-info.service"
+     NO_RESTART_UNITS="pvenetcommit.service pve-guests.service"
+ 
+     for unit in ${UNITS} ${NO_RESTART_UNITS}; do
+diff --git a/services/Makefile b/services/Makefile
+index 8a60fa9b..31e91363 100644
+--- a/services/Makefile
++++ b/services/Makefile
+@@ -13,7 +13,8 @@ SERVICES=			\
+ 	pve-storage.target	\
+ 	pve-daily-update.service\
+ 	pve-daily-update.timer	\
+-	pvescheduler.service
++	pvescheduler.service   \
++	pve-query-machine-info.service
+ 
+ .PHONY: install
+ install: $(SERVICES)
+diff --git a/services/pve-query-machine-info.service b/services/pve-query-machine-info.service
+new file mode 100644
+index 00000000..fcdc693a
+--- /dev/null
++++ b/services/pve-query-machine-info.service
+@@ -0,0 +1,13 @@
++[Unit]
++Description=PVE Query Machine Info
++RequiresMountsFor=/run
++Before=pvedaemon.service
++Before=pveproxy.service
++
++[Service]
++ExecStart=/usr/bin/query-machine-info
++Type=oneshot
++RemainAfterExit=yes
++
++[Install]
++WantedBy=multi-user.target
+diff --git a/udev/99-query-machine-info.rules b/udev/99-query-machine-info.rules
+new file mode 100644
+index 00000000..dc28d11b
+--- /dev/null
++++ b/udev/99-query-machine-info.rules
+@@ -0,0 +1,2 @@
++ACTION=="add", SUBSYSTEM=="*", RUN="/usr/bin/query-machine-info"
++ACTION=="remove", SUBSYSTEM=="*", RUN="/usr/bin/query-machine-info"
+diff --git a/www/manager6/Makefile b/www/manager6/Makefile
+index c94a5cdf..9b47c34e 100644
+--- a/www/manager6/Makefile
++++ b/www/manager6/Makefile
+@@ -232,6 +232,7 @@ JSSRC= 							\
+ 	pool/StatusView.js				\
+ 	pool/Summary.js					\
+ 	qemu/AgentIPView.js				\
++	qemu/ArchEdit.js				\
+ 	qemu/AudioEdit.js				\
+ 	qemu/BootOrderEdit.js				\
+ 	qemu/CDEdit.js					\
+diff --git a/www/manager6/Utils.js b/www/manager6/Utils.js
+index dde4d24e..4a7a5a9e 100644
+--- a/www/manager6/Utils.js
++++ b/www/manager6/Utils.js
+@@ -48,13 +48,23 @@ Ext.define('PVE.Utils', {
+     kvm_ostypes: {
+ 	'Linux': [
+ 	    { desc: '6.x - 2.6 Kernel', val: 'l26' },
++	    { desc: '2.4 Kernel - x86', val: 'l24' },
+ 	],
+ 	'Microsoft Windows': [
+ 	    { desc: '11/2022', val: 'win11' },
++	    { desc: '10/2016/2019 - x86', val: 'win10' },
++	    { desc: '8.x/2012/2012r2 - x86', val: 'win8' },
++	    { desc: '7/2008r2 - x86', val: 'win7' },
++	    { desc: 'Vista/2008 - x86', val: 'w2k8' },
++	    { desc: 'XP/2003 - x86', val: 'wxp' },
++	    { desc: '2000 - x86', val: 'w2k' },
+ 	],
+ 	'Other': [
+ 	    { desc: '-', val: 'other' },
+ 	],
++	'Solaris Kernel - x86': [
++	    { desc: '-', val: 'solaris' },
++	],
+     },
+ 
+     is_windows: function(ostype) {
+@@ -486,7 +496,7 @@ Ext.define('PVE.Utils', {
+     },
+ 
+     render_qemu_machine: function(value) {
+-	return value || Proxmox.Utils.defaultText + ' (virt)';
++	return value || Proxmox.Utils.defaultText;
+     },
+ 
+     render_qemu_bios: function(value) {
+@@ -1310,6 +1320,14 @@ Ext.define('PVE.Utils', {
+ 	return retVal.length < 1 ? value : retVal;
+     },
+ 
++    render_get_arch: function(value) {
++	if (!value){
++		return Proxmox.Utils.defaultText;
++	}else{
++		return value;
++	}
++    },
++
+     windowHostname: function() {
+ 	return window.location.hostname.replace(Proxmox.Utils.IP6_bracket_match,
+             function(m, addr, offset, original) { return addr; });
+diff --git a/www/manager6/form/CPUModelSelector.js b/www/manager6/form/CPUModelSelector.js
+index f1c40a31..407a7178 100644
+--- a/www/manager6/form/CPUModelSelector.js
++++ b/www/manager6/form/CPUModelSelector.js
+@@ -15,7 +15,7 @@ Ext.define('PVE.form.CPUModelSelector', {
+     valueField: 'name',
+     displayField: 'displayname',
+ 
+-    emptyText: Proxmox.Utils.defaultText + ' (host)',
++    emptyText: Proxmox.Utils.defaultText,
+     allowBlank: true,
+ 
+     editable: true,
+diff --git a/www/manager6/qemu/ArchEdit.js b/www/manager6/qemu/ArchEdit.js
+new file mode 100644
+index 00000000..c65ec7e9
+--- /dev/null
++++ b/www/manager6/qemu/ArchEdit.js
+@@ -0,0 +1,24 @@
++Ext.define('PVE.qemu.ArchEdit', {
++    extend: 'Proxmox.window.Edit',
++    alias: 'widget.pveQemuArchEdit',
++
++    subject: 'ARCH',
++    autoLoad: true,
++
++    items: {
++    xtype: 'proxmoxKVComboBox',
++	name: 'arch',
++	fieldLabel: gettext('Arch'),
++	defaultValue: '',
++	comboItems: [
++	    ['__default__', Proxmox.Utils.defaultText],
++	    ['x86_64', 'x86_64'],
++        ['riscv64', 'riscv64'],
++        ['loongarch64', 'loongarch64'],
++        ['aarch64', 'aarch64'],
++	],
++	bind: {
++	    value: '{arch}',
++	},
++    },
++});
+diff --git a/www/manager6/qemu/CreateWizard.js b/www/manager6/qemu/CreateWizard.js
+index 226209cb..6a61eacb 100644
+--- a/www/manager6/qemu/CreateWizard.js
++++ b/www/manager6/qemu/CreateWizard.js
+@@ -97,6 +97,22 @@ Ext.define('PVE.qemu.CreateWizard', {
+ 		    fieldLabel: gettext('Name'),
+ 		    allowBlank: true,
+ 		},
++		{
++			xtype: 'proxmoxKVComboBox',
++			name: 'arch',
++			fieldLabel: gettext('Arch'),
++			comboItems: [
++				['__default__', PVE.Utils.render_get_arch()],
++				['x86_64', 'x86_64'],
++				['riscv64', 'riscv64'],
++				['loongarch64', 'loongarch64'],
++				['aarch64', 'aarch64'],
++			],
++			bind: {
++				arch: '{arch}',
++			},
++			insideWizard: true,
++		},
+ 	    ],
+ 	    column2: [
+ 		{
+diff --git a/www/manager6/qemu/HDEfi.js b/www/manager6/qemu/HDEfi.js
+index a8ca8f56..fcee2e35 100644
+--- a/www/manager6/qemu/HDEfi.js
++++ b/www/manager6/qemu/HDEfi.js
+@@ -67,7 +67,7 @@ Ext.define('PVE.qemu.EFIDiskInputPanel', {
+ 	    {
+ 		xtype: 'proxmoxcheckbox',
+ 		name: 'preEnrolledKeys',
+-		checked: true,
++		checked: false,
+ 		fieldLabel: gettext("Pre-Enroll keys"),
+ 		disabled: me.disabled,
+ 		//boxLabel: '(e.g., Microsoft secure-boot keys')',
+diff --git a/www/manager6/qemu/MachineEdit.js b/www/manager6/qemu/MachineEdit.js
+index 3e5a5981..f8b3cb6a 100644
+--- a/www/manager6/qemu/MachineEdit.js
++++ b/www/manager6/qemu/MachineEdit.js
+@@ -24,7 +24,7 @@ Ext.define('PVE.qemu.MachineInputPanel', {
+ 	    let version = me.lookup('version');
+ 	    let store = version.getStore();
+ 	    let oldRec = store.findRecord('id', version.getValue(), 0, false, false, true);
+-	    let type = value === 'q35' ? 'q35' : 'virt';
++	    let type = value === 'q35' ? 'q35' : 'default';
+ 	    store.clearFilter();
+ 	    store.addFilter(val => val.data.id === 'latest' || val.data.type === type);
+ 	    if (!me.getView().isWindows) {
+@@ -102,6 +102,8 @@ Ext.define('PVE.qemu.MachineInputPanel', {
+ 	comboItems: [
+ 	    ['__default__', PVE.Utils.render_qemu_machine('')],
+ 	    ['q35', 'q35'],
++	    ['virt', 'virt'],
++	    ['pc', 'i440fx'],
+ 	],
+ 	bind: {
+ 	    value: '{type}',
+diff --git a/www/manager6/qemu/OSDefaults.js b/www/manager6/qemu/OSDefaults.js
+index d3ee4946..89e568c4 100644
+--- a/www/manager6/qemu/OSDefaults.js
++++ b/www/manager6/qemu/OSDefaults.js
+@@ -34,16 +34,15 @@ Ext.define('PVE.qemu.OSDefaults', {
+ 
+ 	// default values
+ 	me.generic = {
+-	    busType: 'ide',
+-	    networkCard: 'e1000',
++	    busType: 'scsi',
++	    networkCard: 'virtio',
+ 	    busPriority: {
+ 		    ide: 4,
+ 		    sata: 3,
+ 		    scsi: 2,
+ 		    virtio: 1,
+ 	    },
+-	    scsihw: 'virtio-scsi-single',
+-	    cputype: 'x86-64-v2-AES',
++	    scsihw: 'virtio-scsi-pci',
+ 	};
+ 
+        // virtio-net is in kernel since 2.6.25
+diff --git a/www/manager6/qemu/Options.js b/www/manager6/qemu/Options.js
+index cbe9e52b..ea5d500d 100644
+--- a/www/manager6/qemu/Options.js
++++ b/www/manager6/qemu/Options.js
+@@ -49,6 +49,12 @@ Ext.define('PVE.qemu.Options', {
+ 		    },
+ 		} : undefined,
+ 	    },
++	    arch: {
++		header: gettext('Arch'),
++		editor: caps.vms['VM.Config.HWType'] ? 'PVE.qemu.ArchEdit' : undefined,
++		defaultValue: '',
++		renderer: PVE.Utils.render_get_arch,
++	    },
+ 	    onboot: {
+ 		header: gettext('Start at boot'),
+ 		defaultValue: '',
+@@ -272,7 +278,7 @@ Ext.define('PVE.qemu.Options', {
+ 	    },
+ 	    agent: {
+ 		header: 'QEMU Guest Agent',
+-		defaultValue: false,
++		defaultValue: true,
+ 		renderer: PVE.Utils.render_qga_features,
+ 		editor: caps.vms['VM.Config.Options'] ? {
+ 		    xtype: 'proxmoxWindowEdit',
+diff --git a/www/manager6/qemu/SystemEdit.js b/www/manager6/qemu/SystemEdit.js
+index 592c88ee..9feefe09 100644
+--- a/www/manager6/qemu/SystemEdit.js
++++ b/www/manager6/qemu/SystemEdit.js
+@@ -65,11 +65,15 @@ Ext.define('PVE.qemu.SystemInputPanel', {
+ 	    let me = this;
+ 	    let vm = this.getViewModel();
+ 	    let ostype = vm.get('current.ostype');
++	    me.lookup('bios').setValue('ovmf');
+ 	    if (ostype === 'win11') {
+ 		me.lookup('machine').setValue('q35');
+-		me.lookup('bios').setValue('ovmf');
+ 		me.lookup('addtpmbox').setValue(true);
+ 	    }
++		let arch = vm.get('current.arch');
++		if (arch && arch !== 'x86_64') {
++			me.lookup('machine').setValue('virt');
++		}
+ 	},
+     },
+ 
+@@ -91,6 +95,8 @@ Ext.define('PVE.qemu.SystemInputPanel', {
+ 	    comboItems: [
+ 		['__default__', PVE.Utils.render_qemu_machine('')],
+ 		['q35', 'q35'],
++		['virt', 'virt'],
++		['pc', 'i440fx'],
+ 	    ],
+ 	},
+ 	{
+@@ -147,9 +153,9 @@ Ext.define('PVE.qemu.SystemInputPanel', {
+ 	    xtype: 'proxmoxcheckbox',
+ 	    name: 'agent',
+ 	    uncheckedValue: 0,
+-	    defaultValue: 0,
+-	    deleteDefaultValue: true,
++	    defaultValue: 1,
+ 	    fieldLabel: gettext('Qemu Agent'),
++	    checked: true,
+ 	},
+ 	{
+ 	    // fake for spacing
