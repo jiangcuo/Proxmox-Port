@@ -1,0 +1,27 @@
+diff --git a/PVE/API2/Qemu.pm b/PVE/API2/Qemu.pm
+index 30489608..03ba56d5 100644
+--- a/PVE/API2/Qemu.pm
++++ b/PVE/API2/Qemu.pm
+@@ -1254,13 +1254,20 @@ __PACKAGE__->register_method({
+ 
+ 		    my $machine_conf = PVE::QemuServer::Machine::parse_machine($conf->{machine});
+ 		    my $machine = $machine_conf->{type};
+-		    if (!$machine || $machine =~ m/^(?:pc|q35|virt)$/) {
++		    if (!$machine){
++			    if ($conf->{arch} eq 'x86_64'){
++					$machine = 'pc';
++			    }else{
++					$machine = 'virt';
++			    }
++		    }
++
+ 			# always pin Windows' machine version on create, they get to easily confused
+ 			if (PVE::QemuServer::Helpers::windows_version($conf->{ostype})) {
+ 			    $machine_conf->{type} = PVE::QemuServer::windows_get_pinned_machine_version($machine);
+ 			    $conf->{machine} = PVE::QemuServer::Machine::print_machine($machine_conf);
+ 			}
+-		    }
++
+ 		    PVE::QemuServer::Machine::assert_valid_machine_property($conf, $machine_conf);
+ 
+ 		    $conf->{lock} = 'import' if $live_import_mapping;

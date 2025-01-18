@@ -8,3 +8,8 @@ patches/007-bump-version-to-8.3.3+port.patch
 patches/009-add-gicversion-param.patch
 patches/010-bump-version-to-8.3.3+port2.patch
 patches/011-Add-x86_64-cpu-for-compatible-with-x86-host.patch
+patches/012-Add-i440fx-and-use-new-machine-versions.json.patch
+patches/013-Add-vm-arch-when-create-and-cli-show.patch
+patches/015-Set-the-default-machine-according-to-the-different-architecture.patch
+patches/016-Optimizes-the-get_default_cpu_type-function.patch
+patches/017-kvm-machine-check-when-vm-create.patch
