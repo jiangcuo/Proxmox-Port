@@ -9,4 +9,5 @@ patches/010-set-architecture-to-any.patch
 patches/changelog/004-add-changelog-8.3.2+port.patch
 patches/011-set-default-bios-type-to-OVMF.patch
 patches/012-Add-more-compatibility-for-hybrid-cluster.patch
+patches/0013-Remove-incorrect-udev-rules.patch
 patches/changelog/013-add-changelog-8.3.2+port1.patch
