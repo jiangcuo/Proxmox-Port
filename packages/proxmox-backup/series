@@ -1,1 +1,2 @@
 patches/002-fix-qemu-cmdline.patch
+patches/004-Optimize-the-qemu-command-line.patch

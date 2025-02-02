@@ -1,0 +1,41 @@
+diff --git a/proxmox-file-restore/src/qemu_helper.rs b/proxmox-file-restore/src/qemu_helper.rs
+index b9ae95b5..3c6bea60 100644
+--- a/proxmox-file-restore/src/qemu_helper.rs
++++ b/proxmox-file-restore/src/qemu_helper.rs
+@@ -254,7 +254,6 @@ pub async fn start_vm(
+         "chardev:log",
+         "-vnc",
+         "none",
+-        "-enable-kvm",
+         "-kernel",
+         &pbs_buildcfg::PROXMOX_BACKUP_KERNEL_FN(),
+         "-initrd",
+@@ -308,16 +307,9 @@ pub async fn start_vm(
+         drives.push("-device".to_owned());
+         // drive serial is used by VM to map .fidx files to /dev paths
+         let serial = file.strip_suffix(".img.fidx").unwrap_or(&file);
+-        if arch == "x86_64" {
+-            drives.push(format!(
+-                "virtio-blk-pci,drive=drive{id},serial={serial},bus=bridge{bus}"
+-            ));
+-        } else {
+-            drives.push(format!(
+-                // We use virtio-blk-device because QEMU will automatically assigns PCI addresses.
+-                "virtio-blk-device,drive=drive{id},serial={serial}"
+-            ));
+-        }
++        drives.push(format!(
++ 	       "virtio-blk-pci,drive=drive{id},serial={serial}"
++        ));
+         id += 1;
+     }
+ 
+@@ -382,6 +374,8 @@ pub async fn start_vm(
+ 	    qemu_cmd.arg("-bios");
+ 	    qemu_cmd.arg(format!("{}",edk2_path));
+         }
++	qemu_cmd.arg("-accel");
++	qemu_cmd.arg("kvm");
+ 
+         if debug {
+             let debug_args = [
