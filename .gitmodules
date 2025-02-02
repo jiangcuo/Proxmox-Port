@@ -15,7 +15,7 @@
 	url = https://git.proxmox.com/git/pve-common
 [submodule "packages/pve-installer/pve-installer"]
 	path = packages/pve-installer/pve-installer
-	url = https://git.proxmox.com/git/pve-installer.git
+	url = https://github.com/jiangcuo/pve-installer
 [submodule "packages/pve-container/pve-container"]
 	path = packages/pve-container/pve-container
 	url = https://git.proxmox.com/git/pve-container.git

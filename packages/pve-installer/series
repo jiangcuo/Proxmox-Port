@@ -1,7 +1,0 @@
-patches/001-add-port-support.patch
-patches/001-remove-kvm-check.patch
-patches/002-add-some-depends-for-pve-installer.patch
-patches/003-add-mmc-check-in-pve-installer.patch
-patches/004-add-rockchip-dtb.patch
-patches/005-remove-lintain.patch
-patches/006-remove-kernel-check-on-posthook.patch
