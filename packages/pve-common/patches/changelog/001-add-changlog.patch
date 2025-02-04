@@ -1,9 +1,15 @@
 diff --git a/debian/changelog b/debian/changelog
-index a149814..f20031c 100644
+index a149814..c4aeec8 100644
 --- a/debian/changelog
 +++ b/debian/changelog
-@@ -1,3 +1,9 @@
-+libpve-common-perl (8.2.9+port) UNRELEASED; urgency=medium
+@@ -1,3 +1,15 @@
++libpve-common-perl (8.2.9+port1) bookworm; urgency=medium
++
++  * Add cpuname parse on arm64 
++
++ -- Jiangcuo <jiangcuo@bingsin.com>  Tue, 04 Feb 2025 12:30:54 +0800
++
++libpve-common-perl (8.2.9+port) bookworm; urgency=medium
 +
 +  * Rebuild for port
 +
@@ -12,7 +18,7 @@ index a149814..f20031c 100644
  libpve-common-perl (8.2.9) bookworm; urgency=medium
  
    * tools: run fork: allow running code in parent after fork
-@@ -237,6 +243,12 @@ libpve-common-perl (8.0.2) bookworm; urgency=medium
+@@ -237,6 +249,12 @@ libpve-common-perl (8.0.2) bookworm; urgency=medium
    * remove unused SysFSTools::pci_cleanup_mdev_device
  
   -- Proxmox Support Team <support@proxmox.com>  Wed, 07 Jun 2023 13:12:18 +0200
