@@ -1,8 +1,37 @@
 diff --git a/debian/changelog b/debian/changelog
-index f290c69e..782af9b6 100644
+index 545ec76e..1c4c21ba 100644
 --- a/debian/changelog
 +++ b/debian/changelog
-@@ -1,3 +1,9 @@
+@@ -6,6 +6,38 @@ pve-manager (8.3.3) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Mon, 20 Jan 2025 11:37:32 +0100
+ 
++pve-manager (8.3.2+port1) bookworm; urgency=medium
++  
++  * ui: add arch select when vm create and edit
++
++  * api: add query machine info support
++ 
++  * ui: Add more compatibility
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Sat, 18 Jan 2025 13:17:28 +0800
++
++pve-manager (8.3.2+port) bookworm; urgency=medium
++
++  * ui: ovmf as default bios
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Fri, 27 Dec 2024 05:23:21 +0800
++
++pve-manager (8.3.2+port1) bookworm; urgency=medium
++  
++  * ui: add arch select when vm create and edit
++
++  * api: add query machine info support
++ 
++  * ui: Add more compatibility
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Sat, 18 Jan 2025 13:17:28 +0800
++
 +pve-manager (8.3.2+port) bookworm; urgency=medium
 +
 +  * ui: ovmf as default bios
@@ -12,7 +41,7 @@ index f290c69e..782af9b6 100644
  pve-manager (8.3.2) bookworm; urgency=medium
  
    * api: network: add return schema for interface listing
-@@ -15,6 +21,12 @@ pve-manager (8.3.2) bookworm; urgency=medium
+@@ -23,6 +55,12 @@ pve-manager (8.3.2) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Mon, 16 Dec 2024 17:52:29 +0100
  
@@ -25,7 +54,7 @@ index f290c69e..782af9b6 100644
  pve-manager (8.3.1) bookworm; urgency=medium
  
    * ui: sdn firewall: add online help reference
-@@ -514,6 +526,14 @@ pve-manager (8.1.4) bookworm; urgency=medium
+@@ -522,6 +560,14 @@ pve-manager (8.1.4) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Thu, 14 Dec 2023 15:20:06 +0100
  
