@@ -1,3 +1,12 @@
+From dd7de9d78cb4d12f50a6481abd513f77375e5bcc Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 13:55:03 +0800
+Subject: [PATCH 4/9] fix query-machine-capabilities on port
+
+---
+ query-machine-capabilities/query-machine-capabilities.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
 diff --git a/query-machine-capabilities/query-machine-capabilities.c b/query-machine-capabilities/query-machine-capabilities.c
 index 0c522afc..3c375770 100644
 --- a/query-machine-capabilities/query-machine-capabilities.c
@@ -25,3 +34,6 @@ index 0c522afc..3c375770 100644
  }
  
  int prepare_output_directory() {
+-- 
+2.39.5
+

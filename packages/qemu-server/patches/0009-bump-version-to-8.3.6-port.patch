@@ -1,8 +1,20 @@
+From 94c99b8c369887856767383105fe5f2a94e9a555 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 16:20:25 +0800
+Subject: [PATCH 9/9] bump version to 8.3.6+port
+
+---
+ debian/changelog | 88 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+
 diff --git a/debian/changelog b/debian/changelog
-index 7d440810..6ca7dd0f 100644
+index 90f24779..45c55312 100644
 --- a/debian/changelog
 +++ b/debian/changelog
-@@ -1,3 +1,11 @@
+@@ -7,6 +7,14 @@ qemu-server (8.3.7) bookworm; urgency=medium
+ 
+  -- Proxmox Support Team <support@proxmox.com>  Tue, 04 Feb 2025 17:12:25 +0100
+ 
 +qemu-server (8.3.6+port) bookworm; urgency=medium
 +
 +  * Update to Port version
@@ -14,7 +26,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.3.6) bookworm; urgency=medium
  
    * api: do not set an empty machine option when pinning
-@@ -34,6 +42,24 @@ qemu-server (8.3.4) bookworm; urgency=medium
+@@ -43,6 +51,24 @@ qemu-server (8.3.4) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Fri, 17 Jan 2025 19:32:17 +0100
  
@@ -39,7 +51,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.3.3) bookworm; urgency=medium
  
    * fix #5980: import disk: fix spurious warning if no target disk is defined
-@@ -48,12 +74,26 @@ qemu-server (8.3.3) bookworm; urgency=medium
+@@ -57,12 +83,26 @@ qemu-server (8.3.3) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Sun, 15 Dec 2024 14:26:32 +0100
  
@@ -66,7 +78,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.3.1) bookworm; urgency=medium
  
    * api: clone vm: make error for unsupported volumes appear in a
-@@ -63,6 +103,24 @@ qemu-server (8.3.1) bookworm; urgency=medium
+@@ -72,6 +112,24 @@ qemu-server (8.3.1) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Thu, 05 Dec 2024 12:38:12 +0100
  
@@ -91,7 +103,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.3.0) bookworm; urgency=medium
  
    * api: import working storage: improve error message
-@@ -260,6 +318,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
+@@ -269,6 +327,20 @@ qemu-server (8.1.2) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Fri, 19 Apr 2024 16:09:18 +0200
  
@@ -112,7 +124,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.1.1) bookworm; urgency=medium
  
    * config: pending network: avoid undef-warning on old/new comparison
-@@ -312,6 +384,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
+@@ -321,6 +393,12 @@ qemu-server (8.1.0) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Fri, 08 Mar 2024 15:00:25 +0100
  
@@ -125,7 +137,7 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.0.10) bookworm; urgency=medium
  
    * sdn: pass vmid and hostname to allow requesting a new mapping
-@@ -330,6 +408,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
+@@ -339,6 +417,16 @@ qemu-server (8.0.9) bookworm; urgency=medium
  
   -- Proxmox Support Team <support@proxmox.com>  Tue, 21 Nov 2023 15:40:27 +0100
  
@@ -142,3 +154,6 @@ index 7d440810..6ca7dd0f 100644
  qemu-server (8.0.8) bookworm; urgency=medium
  
    * fix #2816: restore: remove timeout when allocating disks
+-- 
+2.39.5
+

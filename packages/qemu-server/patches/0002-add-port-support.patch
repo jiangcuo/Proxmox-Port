@@ -1,5 +1,19 @@
+From d129754b2c456da7d53822024690ef19e10f3a35 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 13:52:51 +0800
+Subject: [PATCH 2/9] add port support
+
+---
+ PVE/API2/Qemu.pm            |  41 ++++++++-
+ PVE/API2/Qemu/Machine.pm    |   4 +-
+ PVE/QemuServer.pm           | 178 +++++++++++++++++++++++++++++-------
+ PVE/QemuServer/CPUConfig.pm |  56 +++++++++---
+ PVE/QemuServer/Helpers.pm   |   2 +
+ PVE/QemuServer/Machine.pm   |   6 +-
+ 6 files changed, 234 insertions(+), 53 deletions(-)
+
 diff --git a/PVE/API2/Qemu.pm b/PVE/API2/Qemu.pm
-index 45fe6ea6..877bcba8 100644
+index 295260e7..43a91b80 100644
 --- a/PVE/API2/Qemu.pm
 +++ b/PVE/API2/Qemu.pm
 @@ -17,7 +17,7 @@ use PVE::CGroup;
@@ -17,10 +31,10 @@ index 45fe6ea6..877bcba8 100644
  use PVE::QemuServer::Cloudinit;
 -use PVE::QemuServer::CPUConfig;
 +use PVE::QemuServer::CPUConfig qw(get_default_cpu_type);
- use PVE::QemuServer::Drive qw(checked_parse_volname);
+ use PVE::QemuServer::Drive qw(checked_volume_format checked_parse_volname);
  use PVE::QemuServer::Helpers;
  use PVE::QemuServer::ImportDisk;
-@@ -663,6 +663,7 @@ my $memoryoptions = {
+@@ -664,6 +664,7 @@ my $memoryoptions = {
  
  my $hwtypeoptions = {
      'acpi' => 1,
@@ -28,7 +42,7 @@ index 45fe6ea6..877bcba8 100644
      'hotplug' => 1,
      'kvm' => 1,
      'machine' => 1,
-@@ -686,6 +687,7 @@ my $generaloptions = {
+@@ -687,6 +688,7 @@ my $generaloptions = {
      'name' => 1,
      'onboot' => 1,
      'ostype' => 1,
@@ -36,7 +50,7 @@ index 45fe6ea6..877bcba8 100644
      'protection' => 1,
      'reboot' => 1,
      'startdate' => 1,
-@@ -1238,10 +1240,43 @@ __PACKAGE__->register_method({
+@@ -1239,10 +1241,43 @@ __PACKAGE__->register_method({
  			$conf->{smbios1} = PVE::QemuServer::generate_smbios1_uuid();
  		    }
  
@@ -658,3 +672,6 @@ index f1acde8f..33ed1756 100644
  	$machine ||= default_machine_for_arch($arch);
  	my $pvever = get_pve_version($kvmversion);
  	$machine .= "+pve$pvever";
+-- 
+2.39.5
+

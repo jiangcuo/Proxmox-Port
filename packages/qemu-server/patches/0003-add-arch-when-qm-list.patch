@@ -1,3 +1,12 @@
+From aef90f1371569e58995a9bf2cde4d83a0dbc4d84 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 13:53:52 +0800
+Subject: [PATCH 3/9] add arch when qm list
+
+---
+ PVE/CLI/qm.pm | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
 diff --git a/PVE/CLI/qm.pm b/PVE/CLI/qm.pm
 index 4214a7ca..18ab3326 100755
 --- a/PVE/CLI/qm.pm
@@ -17,3 +26,6 @@ index 4214a7ca..18ab3326 100755
  	        $rec->{qmpstatus} || $rec->{status},
  	        ($rec->{maxmem} || 0)/(1024*1024),
  	        ($rec->{maxdisk} || 0)/(1024*1024*1024),
+-- 
+2.39.5
+

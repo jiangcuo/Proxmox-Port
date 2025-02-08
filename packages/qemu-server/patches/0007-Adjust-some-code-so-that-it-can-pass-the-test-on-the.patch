@@ -1,3 +1,15 @@
+From 180c33f9c88bab26a0faea298f06c0c54cf6e652 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 15:07:03 +0800
+Subject: [PATCH 7/9] Adjust some code so that it can pass the test on the
+ x86_64 platform.
+
+---
+ PVE/QemuServer.pm           |  27 +++---
+ PVE/QemuServer/CPUConfig.pm |  19 ++--
+ PVE/QemuServer/PCI.pm       | 170 ++++++++++++++++++------------------
+ 3 files changed, 108 insertions(+), 108 deletions(-)
+
 diff --git a/PVE/QemuServer.pm b/PVE/QemuServer.pm
 index 56ecb1cd..d45db7a9 100644
 --- a/PVE/QemuServer.pm
@@ -282,3 +294,6 @@ index 15c18691..c4efd943 100644
  			'scsihw2' => { bus => 4, addr => 1 },
  			'scsihw3' => { bus => 4, addr => 2 },
  			'scsihw4' => { bus => 4, addr => 3 },
+-- 
+2.39.5
+

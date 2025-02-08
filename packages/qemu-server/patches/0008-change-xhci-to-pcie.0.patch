@@ -1,3 +1,12 @@
+From 196109494d4f18ad4cafd55e4b01633381b978b0 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 16:18:43 +0800
+Subject: [PATCH 8/9] change xhci to pcie.0
+
+---
+ PVE/QemuServer/PCI.pm | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/PVE/QemuServer/PCI.pm b/PVE/QemuServer/PCI.pm
 index c4efd943..85e50eff 100644
 --- a/PVE/QemuServer/PCI.pm
@@ -18,3 +27,6 @@ index c4efd943..85e50eff 100644
  			# 'net0' => { bus => 1, addr => 3 }, This support net0 hotplug
  			'net1' => { bus => 1, addr => 4 },
  			'net2' => { bus => 1, addr => 5 },
+-- 
+2.39.5
+

@@ -1,3 +1,81 @@
+From 61c0acf3cd0248098333d231eb2f8e08db7f1821 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Mon, 3 Feb 2025 15:00:50 +0800
+Subject: [PATCH 5/9] fix test for port
+
+---
+ test/cfg2cmd/bootorder-empty.conf                          | 1 +
+ test/cfg2cmd/bootorder-empty.conf.cmd                      | 2 +-
+ test/cfg2cmd/bootorder-legacy.conf                         | 1 +
+ test/cfg2cmd/bootorder-legacy.conf.cmd                     | 2 +-
+ test/cfg2cmd/bootorder.conf                                | 1 +
+ test/cfg2cmd/bootorder.conf.cmd                            | 2 +-
+ test/cfg2cmd/cputype-icelake-client-deprecation.conf       | 1 +
+ test/cfg2cmd/custom-cpu-model-defaults.conf                | 1 +
+ test/cfg2cmd/custom-cpu-model-host-phys-bits.conf          | 1 +
+ test/cfg2cmd/custom-cpu-model.conf                         | 1 +
+ test/cfg2cmd/efi-raw-old.conf                              | 1 +
+ test/cfg2cmd/efi-raw-template.conf                         | 1 +
+ test/cfg2cmd/efi-raw-template.conf.cmd                     | 2 +-
+ test/cfg2cmd/efi-raw.conf                                  | 1 +
+ test/cfg2cmd/efi-raw.conf.cmd                              | 2 +-
+ test/cfg2cmd/efi-secboot-and-tpm-q35.conf                  | 1 +
+ test/cfg2cmd/efi-secboot-and-tpm.conf                      | 1 +
+ test/cfg2cmd/efidisk-on-rbd.conf                           | 1 +
+ test/cfg2cmd/efidisk-on-rbd.conf.cmd                       | 2 +-
+ test/cfg2cmd/i440fx-viommu-intel.conf                      | 1 +
+ test/cfg2cmd/i440fx-viommu-virtio.conf                     | 1 +
+ test/cfg2cmd/i440fx-win10-hostpci.conf                     | 1 +
+ test/cfg2cmd/ide.conf                                      | 1 +
+ test/cfg2cmd/memory-hotplug-hugepages.conf                 | 1 +
+ test/cfg2cmd/memory-hotplug.conf                           | 1 +
+ test/cfg2cmd/memory-hugepages-1g.conf                      | 1 +
+ test/cfg2cmd/memory-hugepages-2m.conf                      | 1 +
+ test/cfg2cmd/minimal-defaults-to-new-machine.conf          | 1 +
+ test/cfg2cmd/minimal-defaults-unsupported-pve-version.conf | 1 +
+ test/cfg2cmd/minimal-defaults.conf                         | 1 +
+ test/cfg2cmd/netdev-7.0-multiqueues.conf                   | 1 +
+ test/cfg2cmd/netdev-7.1-multiqueues.conf                   | 1 +
+ test/cfg2cmd/netdev-7.1.conf                               | 1 +
+ test/cfg2cmd/netdev.conf                                   | 1 +
+ test/cfg2cmd/old-qemu.conf                                 | 1 +
+ test/cfg2cmd/ostype-usb13-error.conf                       | 1 +
+ test/cfg2cmd/pinned-version-pxe-pve.conf                   | 1 +
+ test/cfg2cmd/pinned-version-pxe.conf                       | 1 +
+ test/cfg2cmd/pinned-version.conf                           | 1 +
+ test/cfg2cmd/q35-ide.conf                                  | 1 +
+ test/cfg2cmd/q35-linux-hostpci-mapping.conf                | 1 +
+ test/cfg2cmd/q35-linux-hostpci-multifunction.conf          | 1 +
+ test/cfg2cmd/q35-linux-hostpci-template.conf               | 1 +
+ test/cfg2cmd/q35-linux-hostpci-x-pci-overrides.conf        | 1 +
+ test/cfg2cmd/q35-linux-hostpci.conf                        | 1 +
+ test/cfg2cmd/q35-simple-6.0.conf                           | 1 +
+ test/cfg2cmd/q35-simple-7.0.conf                           | 1 +
+ test/cfg2cmd/q35-simple-pinned-6.1.conf                    | 1 +
+ test/cfg2cmd/q35-simple.conf                               | 1 +
+ test/cfg2cmd/q35-usb13-error.conf                          | 1 +
+ test/cfg2cmd/q35-usb2.conf                                 | 1 +
+ test/cfg2cmd/q35-usb3.conf                                 | 1 +
+ test/cfg2cmd/q35-viommu-intel.conf                         | 1 +
+ test/cfg2cmd/q35-viommu-virtio.conf                        | 1 +
+ test/cfg2cmd/q35-win10-hostpci.conf                        | 1 +
+ test/cfg2cmd/qemu-xhci-7.1.conf                            | 1 +
+ test/cfg2cmd/qemu-xhci-q35-7.1.conf                        | 1 +
+ test/cfg2cmd/seabios_serial.conf                           | 1 +
+ test/cfg2cmd/simple-balloon-free-page-reporting.conf       | 1 +
+ test/cfg2cmd/simple-btrfs.conf                             | 1 +
+ test/cfg2cmd/simple-virtio-blk.conf                        | 1 +
+ test/cfg2cmd/simple1-template.conf                         | 1 +
+ test/cfg2cmd/simple1.conf                                  | 1 +
+ test/cfg2cmd/spice-enhancments.conf                        | 1 +
+ test/cfg2cmd/spice-linux-4.1.conf                          | 1 +
+ test/cfg2cmd/spice-usb3.conf                               | 1 +
+ test/cfg2cmd/spice-win.conf                                | 1 +
+ test/cfg2cmd/usb13-error.conf                              | 1 +
+ test/cfg2cmd/vnc-clipboard-spice.conf                      | 1 +
+ test/cfg2cmd/vnc-clipboard-std.conf                        | 1 +
+ 70 files changed, 70 insertions(+), 6 deletions(-)
+
 diff --git a/test/cfg2cmd/bootorder-empty.conf b/test/cfg2cmd/bootorder-empty.conf
 index ccfadb9f..1cd6ee18 100644
 --- a/test/cfg2cmd/bootorder-empty.conf
@@ -642,3 +720,6 @@ index 1474766b..97e67630 100644
  # TEST: Test for a VNC clipboard with a std display
  vga: std,clipboard=vnc
 +arch: x86_64
+-- 
+2.39.5
+
