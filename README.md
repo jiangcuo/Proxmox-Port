@@ -65,13 +65,13 @@ Our source code is hosted in other branches of the repository.
 jiangcuo edited this page on Sep 11, 2024 · 1 revision
 Thanks for supporting this project
 
-波比龙(qq165515893)
-  -  3A6000 motherboard
-程序猿(qq2046628900)
-  - 500 RMB
-德玛西亚
-  - 66 RMB
-I don't have statistics on some older donations. If anyone sees it, please contact me and I can add it to the list.
+- 波比龙(qq165515893)
+- 程序猿(qq2046628900)
+- 德玛西亚
+
+
+https://github.com/jiangcuo/Proxmox-Port/wiki/Donation-list
+
 
 
 ## 6. Star History
