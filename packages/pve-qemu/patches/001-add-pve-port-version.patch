@@ -10,8 +10,22 @@ index f23b041..f79ce78 100644
  
  BLOB_PURGE_SED_CMDS = $(foreach FILE,$(PC_BIOS_FW_PURGE_LIST_IN),-e "/$(FILE)/d")
  BLOB_PURGE_FILTER = $(foreach FILE,$(PC_BIOS_FW_PURGE_LIST_IN),-e "$(FILE)")
+diff --git a/debian/changelog b/debian/changelog
+index acb2720..807ab1f 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,9 @@
++pve-qemu-kvm (9.2.0-2) bookworm; urgency=medium
++
++  * Build for port
++
++ -- Jiangcuo <jiangcuo@lierfang.com>  Sat, 08 Feb 2025 13:20:03 +0800
++
+ pve-qemu-kvm (9.2.0-1) bookworm; urgency=medium
+ 
+   * update submodule and patches to QEMU 9.2.0
 diff --git a/debian/control b/debian/control
-index b228c00..4a6b057 100644
+index b228c00..6dd0ead 100644
 --- a/debian/control
 +++ b/debian/control
 @@ -13,6 +13,7 @@ Build-Depends: debhelper-compat (= 13),
@@ -31,7 +45,7 @@ index b228c00..4a6b057 100644
           iproute2,
           libgfapi0 | glusterfs-common (>= 5.6),
           libgfchangelog0 | glusterfs-common (>= 5.6),
-@@ -54,7 +55,7 @@ Depends: ceph-common (>= 0.48),
+@@ -54,12 +55,13 @@ Depends: ceph-common (>= 0.48),
           libgfxdr0 | glusterfs-common (>= 5.6),
           libglusterfs-dev | glusterfs-common (>= 5.6),
           libglusterfs0 | glusterfs-common (>= 5.6),
@@ -40,91 +54,43 @@ index b228c00..4a6b057 100644
           libjpeg62-turbo,
           libspice-server1 (>= 0.14.0~),
           libusb-1.0-0 (>= 1.0.17-1),
-diff --git a/debian/parse-machines-aarch64.pl b/debian/parse-machines-aarch64.pl
-new file mode 100755
-index 0000000..e179f9b
---- /dev/null
-+++ b/debian/parse-machines-aarch64.pl
-@@ -0,0 +1,28 @@
-+#!/usr/bin/perl
-+
-+use warnings;
-+use strict;
-+
-+use JSON;
-+
-+my $machines = [];
-+
-+while (<STDIN>) {
-+    if (/^\s*Supported machines are:/) {
-+	next;
+          libusbredirparser1 (>= 0.6-2),
+          libuuid1,
++	 qemu-server (>= 8.3.7),
+          ${misc:Depends},
+          ${shlibs:Depends},
+ Recommends: numactl,
+diff --git a/debian/parse-machines.pl b/debian/parse-machines.pl
+index a0f449c..c45bb88 100755
+--- a/debian/parse-machines.pl
++++ b/debian/parse-machines.pl
+@@ -14,12 +14,20 @@ while (<STDIN>) {
+ 
+     s/^\s+//;
+     my @machine = split(/\s+/);
+-    next if $machine[0] !~ m/^pc-(i440fx|q35)-(.+)$/;
+-    push @$machines, {
+-        'id' => $machine[0],
+-        'type' => $1,
+-        'version' => $2,
+-    };
++    if ($machine[0] =~ m/^pc-(i440fx|q35)-(.+)$/) {
++        push @$machines, {
++            'id' => $machine[0],
++            'type' => $1,
++            'version' => $2,
++        };
 +    }
-+
-+    s/^\s+//;
-+    my @machine = split(/\s+/);
-+    next if $machine[0] !~ m/^virt-(.+)$/;
-+    push @$machines, {
-+        'id' => $machine[0],
-+        'type' => 'virt',
-+        'version' => $1,
-+    };
-+}
-+
-+die "no QEMU machine types detected from STDIN input" if scalar (@$machines) <= 0;
-+
-+print to_json($machines, { utf8 => 1, canonical => 1 })
-+    or die "failed to encode detected machines as JSON - $!\n";
-diff --git a/debian/parse-machines-loongarch64.pl b/debian/parse-machines-loongarch64.pl
-new file mode 100755
-index 0000000..e19fa71
---- /dev/null
-+++ b/debian/parse-machines-loongarch64.pl
-@@ -0,0 +1,11 @@
-+#!/usr/bin/perl
-+
-+use warnings;
-+use strict;
-+
-+use JSON;
-+
-+my $machines = [];
-+
-+print to_json($machines, { utf8 => 1, canonical => 1 })
-+    or die "failed to encode detected machines as JSON - $!\n";
-diff --git a/debian/parse-machines-x86_64.pl b/debian/parse-machines-x86_64.pl
-new file mode 100755
-index 0000000..e179f9b
---- /dev/null
-+++ b/debian/parse-machines-x86_64.pl
-@@ -0,0 +1,28 @@
-+#!/usr/bin/perl
-+
-+use warnings;
-+use strict;
-+
-+use JSON;
-+
-+my $machines = [];
-+
-+while (<STDIN>) {
-+    if (/^\s*Supported machines are:/) {
-+	next;
++    elsif ($machine[0] =~ m/^virt-(.+)$/) {
++        push @$machines, {
++            'id' => $machine[0],
++            'type' => 'virt',
++            'version' => $1,
++        };
 +    }
-+
-+    s/^\s+//;
-+    my @machine = split(/\s+/);
-+    next if $machine[0] !~ m/^virt-(.+)$/;
-+    push @$machines, {
-+        'id' => $machine[0],
-+        'type' => 'virt',
-+        'version' => $1,
-+    };
-+}
-+
-+die "no QEMU machine types detected from STDIN input" if scalar (@$machines) <= 0;
-+
-+print to_json($machines, { utf8 => 1, canonical => 1 })
-+    or die "failed to encode detected machines as JSON - $!\n";
+ }
+ 
+ die "no QEMU machine types detected from STDIN input" if scalar (@$machines) <= 0;
 diff --git a/debian/pve-qemu-kvm.links b/debian/pve-qemu-kvm.links
 index 7314aa4..2c4b8e1 100644
 --- a/debian/pve-qemu-kvm.links
@@ -137,7 +103,7 @@ index 7314aa4..2c4b8e1 100644
  usr/bin/qemu-system-x86_64 usr/bin/qemu-system-i386
  # upstream provides a qemu man page,
 diff --git a/debian/rules b/debian/rules
-index 51f56c5..024e5ba 100755
+index 51f56c5..b226967 100755
 --- a/debian/rules
 +++ b/debian/rules
 @@ -12,7 +12,7 @@ PACKAGE=pve-qemu-kvm
@@ -145,7 +111,7 @@ index 51f56c5..024e5ba 100755
  
  flagfile := $(destdir)/usr/share/kvm/recognized-CPUID-flags-x86_64
 -machinefile := $(destdir)/usr/share/kvm/machine-versions-x86_64.json
-+machinefile := $(destdir)/usr/share/kvm/machine-versions-${HOST_CPU}.json
++machinefile := $(destdir)/usr/share/kvm/machine-versions.json
  
  # default QEMU out-of-tree build directory is ./build
  BUILDDIR=build
@@ -174,12 +140,14 @@ index 51f56c5..024e5ba 100755
  	    --disable-guest-agent \
  	    --disable-guest-agent-msi \
  	    --disable-libnfs \
-@@ -121,7 +120,7 @@ install: build
+@@ -121,7 +120,9 @@ install: build
  
  	# CPU flags are static for QEMU version, allows avoiding more costly checks
  	$(destdir)/usr/bin/qemu-system-x86_64 -cpu help | ./debian/parse-cpu-flags.pl > $(flagfile)
 -	$(destdir)/usr/bin/qemu-system-x86_64 -machine help | ./debian/parse-machines.pl > $(machinefile)
-+	$(destdir)/usr/bin/qemu-system-${HOST_CPU} -machine help | ./debian/parse-machines-${HOST_CPU}.pl > $(machinefile)
++	$(destdir)/usr/bin/qemu-system-x86_64 -machine help > $(CURDIR)/machine.list
++	$(destdir)/usr/bin/qemu-system-aarch64 -machine help >> $(CURDIR)/machine.list
++	cat $(CURDIR)/machine.list | ./debian/parse-machines.pl > $(machinefile)
  
  # Build architecture-independent files here.
  binary-indep: build install
