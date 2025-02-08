@@ -1,0 +1,27 @@
+diff --git a/query-machine-capabilities/query-machine-capabilities.c b/query-machine-capabilities/query-machine-capabilities.c
+index 0c522afc..3c375770 100644
+--- a/query-machine-capabilities/query-machine-capabilities.c
++++ b/query-machine-capabilities/query-machine-capabilities.c
+@@ -21,6 +21,7 @@ typedef struct {
+ } cpu_caps_t;
+ 
+ void query_cpu_capabilities(cpu_caps_t *res) {
++    #if defined(__x86_64__) || defined(__i386__)
+     uint32_t eax, ebx, ecx, edx;
+ 
+     // query Encrypted Memory Capabilities, see:
+@@ -37,6 +38,14 @@ void query_cpu_capabilities(cpu_caps_t *res) {
+ 
+     res->cbitpos = ebx & 0x3f;
+     res->reduced_phys_bits = (ebx >> 6) & 0x3f;
++    #else
++    res->sev_support = 0;
++    res->sev_es_support = 0;
++    res->sev_snp_support = 0;
++    res->cbitpos = 0;
++    res->reduced_phys_bits = 0;
++    printf("CPUID not supported on this architecture.\n");
++    #endif
+ }
+ 
+ int prepare_output_directory() {
