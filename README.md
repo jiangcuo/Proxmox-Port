@@ -60,7 +60,21 @@ Head to the wiki page to learn more.
 
 Our source code is hosted in other branches of the repository.
 
-## Star History
+## 5. Donation list
+ 
+jiangcuo edited this page on Sep 11, 2024 · 1 revision
+Thanks for supporting this project
+
+波比龙(qq165515893)
+  -  3A6000 motherboard
+程序猿(qq2046628900)
+  - 500 RMB
+德玛西亚
+  - 66 RMB
+I don't have statistics on some older donations. If anyone sees it, please contact me and I can add it to the list.
+
+
+## 6. Star History
 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=jiangcuo/Proxmox-Arm64,jiangcuo/Proxmox-Port&type=Date)](https://star-history.com/#jiangcuo/Proxmox-Arm64&jiangcuo/Proxmox-Port&Date)
