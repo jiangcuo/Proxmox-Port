@@ -62,12 +62,13 @@ Our source code is hosted in other branches of the repository.
 
 ## 5. Donation list
  
-jiangcuo edited this page on Sep 11, 2024 · 1 revision
 Thanks for supporting this project
 
 - 波比龙(qq165515893)
 - 程序猿(qq2046628900)
-- 德玛西亚
+- 德玛西亚(qq11477723)
+- Type α(qq1042067182)
+
 
 
 https://github.com/jiangcuo/Proxmox-Port/wiki/Donation-list
