@@ -1,9 +1,0 @@
-patches/0001-remap-pcie-addr-on-port.patch
-patches/0002-add-port-support.patch
-patches/0003-add-arch-when-qm-list.patch
-patches/0004-fix-query-machine-capabilities-on-port.patch
-patches/0005-fix-test-for-port.patch
-patches/0006-remove-test-when-build.patch
-patches/0007-Adjust-some-code-so-that-it-can-pass-the-test-on-the.patch
-patches/0008-change-xhci-to-pcie.0.patch
-patches/0009-bump-version-to-8.3.6-port.patch
