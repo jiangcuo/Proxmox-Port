@@ -87,7 +87,7 @@
 	url = https://git.proxmox.com/git/lxc
 [submodule "packages/proxmox-kernel-helper/proxmox-kernel-helper"]
 	path = packages/proxmox-kernel-helper/proxmox-kernel-helper
-	url = https://git.proxmox.com/git/proxmox-kernel-helper
+	url = https://github.com/jiangcuo/proxmox-kernel-helper
 [submodule "packages/fonts-font-logos/fonts-font-logos"]
 	path = packages/fonts-font-logos/fonts-font-logos
 	url = https://git.proxmox.com/git/fonts-font-logos
