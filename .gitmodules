@@ -1,15 +1,15 @@
 [submodule "packages/pve-manager/pve-manager"]
 	path = packages/pve-manager/pve-manager
-	url = https://git.proxmox.com/git/pve-manager.git
+	url = https://github.com/jiangcuo/pve-manager.git
 [submodule "packages/qemu-server/qemu-server"]
 	path = packages/qemu-server/qemu-server
-	url = https://git.proxmox.com/git/qemu-server.git
+	url = https://github.com/jiangcuo/qemu-server.git
 [submodule "packages/zfsonlinux/zfsonlinux"]
 	path = packages/zfsonlinux/zfsonlinux
 	url = https://git.proxmox.com/git/zfsonlinux.git
 [submodule "packages/pve-qemu/pve-qemu"]
 	path = packages/pve-qemu/pve-qemu
-	url = https://git.proxmox.com/git/pve-qemu.git
+	url = https://github.com/jiangcuo/pve-qemu.git
 [submodule "packages/pve-common/pve-common"]
 	path = packages/pve-common/pve-common
 	url = https://git.proxmox.com/git/pve-common
@@ -27,7 +27,7 @@
 	url = https://git.proxmox.com/git/proxmox-ve.git
 [submodule "packages/pve-storage/pve-storage"]
 	path = packages/pve-storage/pve-storage
-	url = https://git.proxmox.com/git/pve-storage.git
+	url = https://github.com/jiangcuo/pve-storage.git
 [submodule "packages/proxmox-mini-journalreader/proxmox-mini-journalreader"]
 	path = packages/proxmox-mini-journalreader/proxmox-mini-journalreader
 	url = https://git.proxmox.com/git/proxmox-mini-journalreader.git
@@ -39,13 +39,13 @@
 	url = https://git.proxmox.com/git/proxmox-i18n
 [submodule "packages/proxmox-widget-toolkit/proxmox-widget-toolkit"]
 	path = packages/proxmox-widget-toolkit/proxmox-widget-toolkit
-	url = https://git.proxmox.com/git/proxmox-widget-toolkit
+	url = https://github.com/jiangcuo/proxmox-widget-toolkit
 [submodule "packages/pve-http-server/pve-http-server"]
 	path = packages/pve-http-server/pve-http-server
 	url = https://git.proxmox.com/git/pve-http-server
 [submodule "packages/pve-docs/pve-docs"]
 	path = packages/pve-docs/pve-docs
-	url = https://git.proxmox.com/git/pve-docs
+	url = https://github.com/jiangcuo/pve-docs
 [submodule "packages/libgit2/libgit2"]
 	path = packages/libgit2/libgit2
 	url = https://git.proxmox.com/git/libgit2
@@ -57,7 +57,7 @@
 	url = https://git.proxmox.com/git/pve-xtermjs
 [submodule "packages/pve-access-control/pve-access-control"]
 	path = packages/pve-access-control/pve-access-control
-	url = https://git.proxmox.com/git/pve-access-control
+	url = https://github.com/jiangcuo/pve-access-control
 [submodule "packages/ifupdown2/ifupdown2"]
 	path = packages/ifupdown2/ifupdown2
 	url = https://git.proxmox.com/git/ifupdown2
