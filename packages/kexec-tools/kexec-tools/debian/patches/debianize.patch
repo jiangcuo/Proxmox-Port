@@ -1,0 +1,21 @@
+Description: Fix up upstream files to be Denian compliant
+	Upstream installs files in locations not compliant with debian
+	standard. This patch fixes upstream Makefile to make it
+	compliant.
+Author: Khalid Aziz <khalid@debian.org>
+Origin: other
+Bug: https://bugs.debiab.org
+Last-Update: 2023-09-28
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -93,7 +93,7 @@ SHAREDSTATEDIR=$(BUILD_PREFIX)/com
+ LOCALSTATEDIR=$(BUILD_PREFIX)/var
+ LIBDIR=$(BUILD_PREFIX)/lib
+ INFODIR=$(BUILD_PREFIX)/info
+-MANDIR=$(BUILD_PREFIX)/man
++MANDIR=$(BUILD_PREFIX)/share/man
+ MAN1DIR=$(MANDIR)/man1
+ MAN2DIR=$(MANDIR)/man2
+ MAN3DIR=$(MANDIR)/man3

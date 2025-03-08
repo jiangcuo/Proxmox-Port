@@ -1,0 +1,88 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -181,9 +181,11 @@
+ SRCS:= $(dist)
+ 
+ MAN_PAGES:=$(KEXEC_MANPAGE) $(VMCORE_DMESG_MANPAGE)
++MAN_PAGES+=$(MANDIR)/man8/coldreboot.8
+ BINARIES_i386:=$(KEXEC_TEST)
+ BINARIES_x86_64:=$(KEXEC_TEST)
+ BINARIES:=$(KEXEC) $(VMCORE_DMESG) $(BINARIES_$(ARCH))
++SCRIPTS:=$(SBINDIR)/coldreboot
+ 
+ UNINSTALL_KDUMP = $(sbindir)/kdump
+ UNINSTALL_KDUMP_MANPAGE = $(mandir)/man8/kdump.8
+@@ -193,7 +195,7 @@
+ UNINSTALL_VMCORE_DMESG = $(sbindir)/vmcore-dmesg
+ UNINSTALL_VMCORE_DMESG_MANPAGE = $(mandir)/man8/vmcore-dmesg.8
+ 
+-TARGETS:=$(BINARIES) $(MAN_PAGES)
++TARGETS:=$(BINARIES) $(MAN_PAGES) $(SCRIPTS)
+ targets: $(TARGETS)
+ 
+ UNINSTALL_TARGETS_i386:=$(UNINSTALL_KEXEC_TEST)
+--- a/kexec/Makefile
++++ b/kexec/Makefile
+@@ -105,6 +105,8 @@
+ 
+ KEXEC = $(SBINDIR)/kexec
+ KEXEC_MANPAGE = $(MANDIR)/man8/kexec.8
++KEXEC_COLDREBOOT=$(SBINDIR)/coldreboot
++KEXEC_COLDREBOOT_MANPAGE=$(MANDIR)/man8/coldreboot.8
+ 
+ -include $(KEXEC_DEPS)
+ 
+@@ -119,6 +121,16 @@
+ $(KEXEC_MANPAGE): kexec/kexec.8
+ 	@$(MKDIR) -p     $(MANDIR)/man8
+ 	cp $^ $(KEXEC_MANPAGE)
++
++$(KEXEC_COLDREBOOT): kexec/coldreboot
++	@$(MKDIR) -p     $(@D)
++	cp kexec/coldreboot $(KEXEC_COLDREBOOT)
++	/bin/chmod 755 $(KEXEC_COLDREBOOT)
++
++$(KEXEC_COLDREBOOT_MANPAGE): kexec/coldreboot.8
++	@$(MKDIR) -p     $(MANDIR)/man8
++	cp kexec/coldreboot.8 $(KEXEC_COLDREBOOT_MANPAGE)
++
+ echo::
+ 	@echo "KEXEC_SRCS $(KEXEC_SRCS)"
+ 	@echo "KEXEC_DEPS $(KEXEC_DEPS)"
+--- /dev/null
++++ b/kexec/coldreboot
+@@ -0,0 +1,6 @@
++#!/bin/sh
++NOKEXECFILE=/no-kexec-reboot
++
++/bin/rm -f $NOKEXECFILE
++touch $NOKEXECFILE
++/sbin/reboot $*
+--- /dev/null
++++ b/kexec/coldreboot.8
+@@ -0,0 +1,25 @@
++.\" Process this file with
++.\" groff -man -Tascii coldreboot.8
++.\"
++.TH kexec 8 "April 2006" Linux "User Manuals"
++.SH NAME
++coldreboot \- Force a cold reboot bypassing kexec-tools default
++.SH SYNOPSIS
++.B /sbin/coldreboot
++.B [reboot options]
++
++.SH DESCRIPTION
++.B coldreboot
++is a script that forces a cold reboot regardless of whether kexec is enabled
++or not in /etc/default/kexec.
++.B coldreboot
++takes the same arguments as /sbin/reboot and passes them on to /sbin/reboot
++later.
++
++.SH NOTES
++.PP
++.B coldreboot
++prevents a kexec kernel from being loaded automatically and thus
++forces a cold reboot. If the user loads a kexec kernel by hand,
++.B coldreboot
++will still result in a kexec reboot.

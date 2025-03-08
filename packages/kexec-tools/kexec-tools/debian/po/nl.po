@@ -1,0 +1,50 @@
+# Dutch translation of kexec-tools debconf templates.
+# Copyright (C) 2011 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+# Jeroen Schot <schot@a-eskwadraat.nl>, 2011.
+# Frans Spiesschaert <Frans.Spiesschaert@yucom.be>, 2016, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools 1:2.0.2-3\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2021-07-22 21:36+0200\n"
+"Last-Translator: Frans Spiesschaert <Frans.Spiesschaert@yucom.be>\n"
+"Language-Team: Debian Dutch l10n Team <debian-l10n-dutch@lists.debian.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.1\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Het configuratiebestand van GRUB uitlezen om de kernel te laden?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Als u deze optie kiest, zal kexec het configuratiebestand van GRUB lezen om "
+"te bepalen welke kernel en opties geladen moeten worden voor een reboot met "
+"kexec, in tegenstelling tot wat er in /etc/default/kexec staat."
+
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Moet kexec-tools reboots afhandelen?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Als u deze optie kiest, zal een herstart van het systeem leiden tot een "
+#~ "herstart met een kernel die geladen wordt door kexec in plaats van het "
+#~ "doorlopen van het volledige bootloader-proces van het systeem."

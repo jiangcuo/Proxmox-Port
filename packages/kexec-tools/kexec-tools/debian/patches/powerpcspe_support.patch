@@ -1,0 +1,11 @@
+--- a/kexec/arch/ppc/ppc-setup-dol.S
++++ b/kexec/arch/ppc/ppc-setup-dol.S
+@@ -80,7 +80,7 @@ setup_dol_start:
+ 	isync
+ 
+ /* AFAIK, this is not strictly needed, although seems sane */
+-#if 1
++#ifndef __NO_FPRS__
+ 	li      r9, 0
+ 
+ 	/* page table pointer */

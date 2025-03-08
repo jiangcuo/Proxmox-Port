@@ -1,0 +1,2 @@
+rm_conffile /etc/init.d/kexec 1:2.0.27-1~ kexec-tools
+rm_conffile /etc/init.d/kexec-load 1:2.0.27-1~ kexec-tools

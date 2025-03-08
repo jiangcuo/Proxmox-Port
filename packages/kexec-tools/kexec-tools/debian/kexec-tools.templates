@@ -1,0 +1,16 @@
+# These templates have been reviewed by the debian-l10n-english
+# team
+#
+# If modifications/additions/rewording are needed, please ask
+# debian-l10n-english@lists.debian.org for advice.
+#
+# Even minor modifications require translation updates and such
+# changes should be coordinated with translators and reviewers.
+
+Template: kexec-tools/use_grub_config
+Type: boolean
+Default: false
+_Description: Read GRUB configuration file to load the kernel?
+ If you choose this option, kexec will read the GRUB configuration file to
+ determine which kernel and options to load for kexec reboot, as opposed
+ to what is in /etc/default/kexec.

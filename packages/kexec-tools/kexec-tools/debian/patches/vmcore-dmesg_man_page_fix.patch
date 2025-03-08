@@ -1,0 +1,11 @@
+--- a/vmcore-dmesg/vmcore-dmesg.8
++++ b/vmcore-dmesg/vmcore-dmesg.8
+@@ -16,7 +16,7 @@
+ .\" .sp <n>    insert n+1 empty lines
+ .\" for manpage-specific macros, see man(7)
+ .SH NAME
+-vmcore-dmesg
++vmcore-dmesg \- extract the dmesg from a vmcore
+ .SH SYNOPSIS
+ .B vmcore-dmesg
+ .RI " vmcore"

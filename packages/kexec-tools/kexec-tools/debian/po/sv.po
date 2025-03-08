@@ -1,0 +1,50 @@
+# Translation of kexec-tools debconf template to Swedish
+# Copyright (C) 2022 Martin Bagge <brother@persilja.net>
+# This file is distributed under the same license as the kexec-tools package.
+#
+# Martin Bagge <brother@persilja.net>, 2008, 2011, 2022
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2022-05-20 08:55+0200\n"
+"Last-Translator: Martin Bagge / brother <brother@bsnet.se>\n"
+"Language-Team: swedish <debian-l10n-swedish@lists.debian.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: Sweden\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Ska inställningsfilen för GRUB läsas för att ladda kärnan?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Detta val innebär att kexec kommer att läsa inställningsfilen för GRUB för "
+"att utröna vilken kärna och vilka flaggor som ska användas vid kexec-"
+"omstarten, till skillnad från vad som är angivet i /etc/default/kexec."
+
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Ska kexec-tools hantera omstarter?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Om du väljer detta alternativ så kommer en omstart av systemet innebära "
+#~ "att kexec laddar en kärna istället för att köra hela systemets "
+#~ "uppstartsprocess."

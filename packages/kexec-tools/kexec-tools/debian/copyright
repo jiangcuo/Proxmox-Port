@@ -1,0 +1,744 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kexec-tools
+Upstream-Contact: Simon Horman <horms@kernel.org>
+Source: <https://mirrors.edge.kernel.org/pub/linux/utils/kernel/kexec/>
+
+Files:     *
+Copyright: 2003-2010 Eric Biederman (ebiederm@xmission.com)
+           2004 Adam Litke (agl@us.ibm.com)
+           2004 Albert Herranz
+           2004 IBM Corp.
+           2004 Khalid Aziz <khalid.aziz@hp.com> Hewlett Packard Co
+           2004 Silicon Graphics, Inc. Jesse Barnes <jbarnes@sgi.com>
+           2004-2005 Milton D Miller II, IBM Corporation
+           2005 IBM Corporation,
+           2005 R Sharada (sharada@in.ibm.com)
+           2005 R Sharada (sharada@in.ibm.com), IBM Corporation
+           2005-2006 Zou Nan hai (nanhai.zou@intel.com)
+           2005-2006 Zou Nan hai <nanhai.zou@intel.com> Intel Corp
+           2006 Mohan Kumar M (mohan@in.ibm.com)
+           2006 Mohan Kumar M (mohan@in.ibm.com), IBM Corporation
+           2008 SUSE LINUX Products GmbH,
+           2004-2005 Albert Herranz
+           2004-2005 kogiidena@eggplant.ddo.jp
+           2008 AXIS Communications AB  Edgar E. Iglesias
+           2013 Geert Uytterhoeven
+           2019 Sven Schnelle <svens@stackframe.org>
+           2022 Loongson Technology Corporation Limited.
+           2022 Loongson Technology Corporation Limited. Youling Tang <tangyouling@loongson.cn>
+           2003- Various
+License:   GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+
+Files:     kexec/libfdt/fdt.c
+           kexec/libfdt/fdt_ro.c
+           kexec/libfdt/fdt_rw.c
+           kexec/libfdt/fdt_strerror.c
+           kexec/libfdt/fdt_sw.c
+           kexec/libfdt/fdt_wip.c
+           kexec/libfdt/libfdt.h
+           kexec/libfdt/libfdt_internal.h
+Copyright: 2006 David Gibson, IBM Corporation.
+License:   GPL-2 or BSD-2-clause
+ libfdt is dual licensed: you can use it either under the terms of
+ the GPL, or the BSD license, at your option.
+ .
+ a) This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this library; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ MA 02110-1301 USA
+ .
+ Alternatively,
+ .
+ b) Redistribution and use in source and binary forms, with or
+ without modification, are permitted provided that the following
+ conditions are met:
+ .
+ 1. Redistributions of source code must retain the above
+ copyright notice, this list of conditions and the following
+ disclaimer.
+ 2. Redistributions in binary form must reproduce the above
+ copyright notice, this list of conditions and the following
+ disclaimer in the documentation and/or other materials
+ provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Files:     kexec/arch/s390/crashdump-s390.c
+           purgatory/arch/s390/console-s390.c
+           purgatory/arch/s390/purgatory-s390.c
+           purgatory/arch/s390/setup-s390.S
+Copyright: 2011 IBM Corp.
+License:   __UNKNOWN__
+ Author(s): Michael Holzheu <holzheu@linux.vnet.ibm.com>
+
+Files:     kexec/arch/arm64/crashdump-arm64.c
+           kexec/arch/arm64/crashdump-arm64.h
+Copyright: 2014-2017 Linaro Limited
+License:   GPL-2.0
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/cris/kexec-elf-rel-cris.c
+           kexec/arch/mips/kexec-elf-rel-mips.c
+Copyright: 2007 Francesco Chiechi, Alessandro Rubini
+           2007 Tvblob s.r.l.
+           2008 AXIS Communications AB  Edgar E. Iglesias
+License:   GPL-2.0
+ derived from ../ppc/kexec-elf-rel-ppc.c
+ Copyright (C) 2004 Albert Herranz
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/ppc/include/page.h
+           purgatory/arch/ppc64/hvCall.S
+Copyright: 2001 PPC64 Team, IBM Corp
+           __NO_COPYRIGHT__ in: purgatory/arch/ppc64/hvCall.S
+License:   GPL-2.0+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version
+ 2 of the License, or (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/i386/x86-linux-setup.c
+           kexec/arch/ppc64/fdt.c
+Copyright: 2003-2004 Eric Biederman (ebiederm@xmission.com)
+           2015 Freescale Semiconductor, Inc.
+License:   __UNKNOWN__
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+Files:     purgatory/arch/i386/stack.S
+           purgatory/arch/x86_64/stack.S
+Copyright: 2003-2004 Eric Biederman (ebiederm@xmission.com)
+License:   __UNKNOWN__
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+ .
+ A stack for the loaded kernel.
+ Seperate and in the data section so it can be prepopulated.
+
+Files:     kexec/arch/cris/kexec-elf-cris.c
+           kexec/arch/sh/kexec-elf-sh.c
+Copyright: 2008 AXIS Communications AB  Edgar E. Iglesias
+           2008 Magnus Damm
+License:   __UNKNOWN__
+ Based on x86 implementation,
+ Copyright (C) 2003-2005  Eric Biederman (ebiederm@xmission.com)
+ .
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+
+Files:     config/config.guess
+           config/config.sub
+Copyright: 1992-2020 Free Software Foundation, Inc.
+License:   __AUTO_PERMISSIVE__
+ Autogenerated files with permissive licenses.
+
+Files:     include/x86/multiboot2.h
+Copyright: 1999-2010 Free Software Foundation, Inc.
+License:   MIT
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL ANY
+ DEVELOPER OR DISTRIBUTOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+Files:     kexec/arch/ppc/ppc-setup-simple.S
+Copyright: 2004 Albert Herranz
+License:   GPL-2.0
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ Only suitable for platforms booting with MMU turned off.
+ -- Albert Herranz
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/loongarch/crashdump-loongarch.c
+Copyright: 2022 Loongson Technology Corporation Limited. Youling Tang <tangyouling@loongson.cn>
+License:   GPL-2.0
+ derived from crashdump-arm64.c
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/sh/kexec-elf-rel-sh.c
+Copyright: 2003-2008 Kaz Kojima & Paul Mundt
+           2008 Paul Mundt
+License:   GPL-2.0
+ Based on the SHcompact module loader (arch/sh/kernel/module.c) in the
+ Linux kernel, which is written by:
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/sh/crashdump-sh.c
+Copyright: 2008 Magnus Damm
+License:   GPL-2.0
+ Based on x86 and ppc64 implementation, written by
+ Vivek Goyal (vgoyal@in.ibm.com), R Sharada (sharada@in.ibm.com)
+ Copyright (C) IBM Corporation, 2005.
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/ppc/ops.h
+Copyright: __NO_COPYRIGHT__ in: kexec/arch/ppc/ops.h
+License:   GPL-2.0
+ 2006 (c) MontaVista Software, Inc.  This file is licensed under
+ the terms of the GNU General Public License version 2.  This program
+ is licensed "as is" without any warranty of any kind, whether express
+ or implied.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/mips/kexec-mips.c
+Copyright: 2007 Francesco Chiechi, Alessandro Rubini
+           2007 Tvblob s.r.l.
+License:   GPL-2.0
+ derived from ../ppc/kexec-ppc.c
+ Copyright (C) 2004, 2005 Albert Herranz
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/loongarch/kexec-pei-loongarch.c
+Copyright: 2022 Loongson Technology Corporation Limited. Youling Tang <tangyouling@loongson.cn>
+License:   GPL-2.0
+ derived from kexec-image-arm64.c
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/mips/kexec-elf-mips.c
+Copyright: 2007 Francesco Chiechi, Alessandro Rubini
+           2007 Tvblob s.r.l.
+License:   GPL-2.0
+ derived from ../ppc/kexec-elf-ppc.c
+ Copyright (C) 2004 Albert Herranz
+ .
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     include/x86/mb_header.h
+Copyright: 2000 Free Software Foundation, Inc.
+License:   GPL-2.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+ .
+ MultiBoot Header description
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     include/image.h
+Copyright: 2000-2005 Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+License:   GPL-2.0+
+ See file CREDITS for list of people who contributed to this
+ project.
+ .
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of
+ the License, or (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA
+ .
+ NOTE: This header file defines an interface to U-Boot. Including
+ this (unmodified) header file in another file is considered normal
+ use of U-Boot, and does *not* fall under the heading of "derived
+ work".
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/i386/kexec-multiboot-x86.c
+Copyright: 2003 Tim Deegan (tjd21 at cl.cam.ac.uk)
+License:   GPL-2.0+
+ Parts based on GNU GRUB, Copyright (C) 2000  Free Software Foundation, Inc
+ Parts copied from kexec-elf32-x86.c, written by Eric Biederman
+ .
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301, USA
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/i386/kexec-mb2-x86.c
+Copyright: 2019 Varad Gautam (vrd at amazon.de), Amazon.com, Inc. or its affiliates.
+License:   GPL-2.0+
+ Parts based on GNU GRUB, Copyright (C) 2000  Free Software Foundation, Inc
+ Parts taken from kexec-multiboot-x86.c, Eric Biederman (ebiederm@xmission.com)
+ .
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301, USA
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     include/x86/mb_info.h
+Copyright: 2000 Free Software Foundation, Inc.
+License:   GPL-2.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     purgatory/arch/ppc/misc.S
+Copyright: 1995-1996 Gary Thomas (gdt@linuxppc.org)
+License:   GPL-2.0+
+ Largely rewritten by Cort Dougan (cort@cs.nmt.edu)
+ and Paul Mackerras.
+ .
+ Rewrittten to work with /sbin/kexec 20 December 2004 Eric Biederman
+ .
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version
+ 2 of the License, or (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/ppc/libfdt-wrapper.c
+Copyright: 2007 David Gibson, IBM Corporation.
+License:   GPL-2.0+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ 02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     util_lib/sha256.c
+Copyright: 2001-2003 Christophe Devine
+License:   GPL-2.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301, USA
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     kexec/arch/i386/kexec-beoboot-x86.c
+Copyright: 2000 Scyld Computing Corporation
+License:   GPL-2.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     include/elf.h
+Copyright: 1995-1999 Free Software Foundation, Inc.
+License:   LGPL-2.0+
+ This file is part of the GNU C Library.
+ Contributed by Ian Lance Taylor <ian@cygnus.com>.
+ .
+ The GNU C Library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ The GNU C Library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public
+ License along with the GNU C Library; see the file COPYING.LIB.  If not,
+ write to the Free Software Foundation, Inc.,51 Franklin Street,
+ Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+ 12 April 2002 Modified by Eric Biederman <ebiederm@xmission.com> so
+ it can be used outside of glibc.
+ .
+ On Debian systems, the complete text of the GNU Library General Public License
+ Version 2 can be found in `/usr/share/common-licenses/LGPL-2'.
+
+Files:     kexec/arch/ia64/kexec-elf-rel-ia64.c
+Copyright: 2005-2006 Zou Nan hai (nanhai.zou@intel.com)
+License:   __UNKNOWN__
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+ .
+ pugatory relocation code
+ Most of the code in this file is
+ based on arch/ia64/kernel/module.c in Linux kernel
+ .
+ Most of the code in this file is
+ based on arch/ia64/kernel/module.c in Linux kernel
+
+Files:     kexec/arch/s390/kexec-image.c
+Copyright: 2005 IBM Corp.
+License:   __UNKNOWN__
+ Author(s): Rolf Adelsberger <adelsberger@de.ibm.com>
+ Heiko Carstens <heiko.carstens@de.ibm.com>
+
+Files:     kexec/kexec.c
+Copyright: 2003-2005 Eric Biederman (ebiederm@xmission.com)
+License:   __UNKNOWN__
+ Modified (2007-05-15) by Francesco Chiechi to rudely handle mips platform
+ .
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+
+Files:     kexec/arch/arm/crashdump-arm.c
+Copyright: 2010 Nokia Corporation,
+License:   __UNKNOWN__
+ Based on x86 implementation
+ Copyright (C) IBM Corporation, 2005.
+ .
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+
+Files:     kexec/arch/s390/kexec-s390.h
+Copyright: 2005 IBM Corp.
+License:   __UNKNOWN__
+ Author(s): Rolf Adelsberger <adelsberger@de.ibm.com>
+
+Files:     purgatory/arch/ppc/v2wrap_32.S
+Copyright: 2004-2005 Milton D Miller II, IBM Corporation
+           2006 Mohan Kumar M (mohan@in.ibm.com), IBM Corporation
+License:   __UNKNOWN__
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation (version 2 of the License).
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+ .
+ v2wrap.S
+ a wrapper to call purgatory code to backup first
+ 32kB of first kernel into the backup region
+ reserved by kexec-tools.
+ Invokes powerpc kernel with the expected arguments
+ of kernel(device-tree, phys-offset, 0)
+ .
+ calling convention:
+
+Files:     kexec/arch/s390/kexec-elf-rel-s390.c
+Copyright: 2005-2011 IBM Corp.
+License:   __UNKNOWN__
+ Author(s): Heiko Carstens <heiko.carstens@de.ibm.com>
+
+Files:     kexec/arch/s390/kexec-s390.c
+Copyright: 2005-2011 IBM Corp.
+License:   __UNKNOWN__
+ Author(s): Rolf Adelsberger <adelsberger@de.ibm.com>
+ Michael Holzheu <holzheu@linux.vnet.ibm.com>
+
+
+Files:     purgatory/arch/ppc64/misc.S
+Copyright: 1995-2001 Free Software Foundation, Inc.
+           2008 Freescale Semiconductor, Inc.  Michael Meissner
+License:   GPL-2+ with exception *** check multiple exceptions ***
+ Based on gcc/config/rs6000/crtsavres.asm from gcc
+ 64 bit additions from reading the PPC elf64abi document.
+ .
+ This file is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation; either version 2, or (at your option) any
+ later version.
+ .
+ In addition to the permissions in the GNU General Public License, the
+ Free Software Foundation gives you unlimited permission to link the
+ compiled version of this file with other programs, and to distribute
+ those programs without any restriction coming from the use of this
+ file.  (The General Public License restrictions do apply in other
+ respects; for example, they cover modification of the file, and
+ distribution when not linked into another program.)
+ .
+ This file is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; see the file COPYING.  If not, write to
+ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+ Boston, MA 02110-1301, USA.
+ .
+ As a special exception, if you link this library with files
+ compiled with GCC to produce an executable, this does not cause
+ the resulting executable to be covered by the GNU General Public License.
+ This exception does not however invalidate any other reasons why
+ the executable file might be covered by the GNU General Public License.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+ .
+#----------------------------------------------------------------------------
+# xml and html files (skipped):
+#         doc/multiboot.html
+ .
+#----------------------------------------------------------------------------
+# Files marked as NO_LICENSE_TEXT_FOUND may be covered by the following
+# license/copyright files.
+ .
+#----------------------------------------------------------------------------
+# License file: COPYING
+ .
+                       GNU GENERAL PUBLIC LICENSE
+                        Version 2, June 1991
+ .
+  Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+             51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+  Everyone is permitted to copy and distribute verbatim copies
+  of this license document, but changing it is not allowed.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files:     debian/*
+Copyright: Khalid Aziz <khalid@debian.org>
+           2008 Kai Wasserbäch <debian@carbon-project.org>
+           2010 Software in the Public Interest
+           2011-2021 Helge Kreutzmann <debian@helgefjell.de>
+           2016 Debian French l10n team <debian-l10n-french@lists.debian.org>
+           2016 kexec-tools & nedenstående oversættere.
+           2022 Martin Bagge <brother@persilja.net>
+           Various
+License:   GPL-2.0
+ This source code is licensed under the GNU General Public License,
+ Version 2.  See the file COPYING for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ Version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+

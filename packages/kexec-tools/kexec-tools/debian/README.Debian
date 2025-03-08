@@ -1,0 +1,14 @@
+This kexec-tools package was built from kexec-tools git repository at 
+<git://git.kernel.org/pub/scm/linux/kernel/git/horms/kexec-tools.git>. 
+
+Installing this package also installs two init scripts under /etc/init.d
+- kexec-load and kexec. On sysvinit syustems, kexec-load is called upon
+reboot to load a new kexec kernel if kexec is enabled in
+/etc/default/kexec. kexec script is called just before reboot script. It
+checks if kexec is enabled and a kexec'able kernel is loaded. If yes, it
+kexecs a new kernel instead of reboot. As a result, kexec is
+automatically enabled upon installation of kexec-tools package if kexec
+is enabled in /etc/default/kexec through debconf option.
+
+"reboot" command with ystemd will by default do a cold reboot. To kexec
+a new kernel with systemd, use "systemctl kexec".

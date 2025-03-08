@@ -1,0 +1,47 @@
+# Czech translation of kexec-tools debconf messages.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+# Miroslav Kure <kurem@debian.cz>, 2008, 2011
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2011-09-03 15:12+0200\n"
+"Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
+"Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Použít pro zavedení jádra konfigurační souboru GRUBu?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Zvolíte-li tuto možnost, kexec nepoužije pro restart parametry jádra zadané "
+"v /etc/default/kexec, ale zjistí si je z konfiguračního souboru GRUBu."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Mají se kexec-tools starat o restarty?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Zvolíte-li tuto možnost, nebude se při restartu systému provádět celá "
+#~ "zaváděcí sekvence, ale restartuje se do jádra zavedeného přes kexec."

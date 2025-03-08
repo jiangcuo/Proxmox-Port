@@ -1,0 +1,52 @@
+# Slovak translations for kexec-tools package
+# Slovenské preklady pre balík kexec-tools.
+# Copyright (C) 2011 THE kexec-tools'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+# Automatically generated, 2011.
+# Slavko <linux@slavino.sk>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools 1:2.0.2-3\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2011-08-25 21:13+0200\n"
+"Last-Translator: Slavko <linux@slavino.sk>\n"
+"Language-Team: Slovak <debian-l10n-slovak@lists.debian.org>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Čítať na určenie jadra konfiguračný súbor GRUB?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Ak zvolíte túto možnosť, určí kexec jadro a parametre, ktoré má načítať na "
+"reštart pomocou kexec z konfiguračného súboru GRUB, namiesto údajov v /etc/"
+"default/kexec."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Majú reštarty obsluhovať nástroje kexec?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Ak zvolíte túto možnosť, reštart systému vyvolá reštart do jadra "
+#~ "načítaného pomocou kexec, namiesto vykonania úplného procesu reštartu "
+#~ "systému pomocou zavádzača."

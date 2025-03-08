@@ -1,0 +1,61 @@
+# translation of ru.po to Russian
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+#
+# Yuri Kozlov <kozlov.y@gmail.com>, 2008.
+# Yuri Kozlov <yuray@komyakino.ru>, 2011.
+# Lev Lamberov <dogsleg@debian.org>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools 1:2.0.2-3\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2017-12-09 15:28+0500\n"
+"Last-Translator: Lev Lamberov <dogsleg@debian.org>\n"
+"Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Использовать файл настройки GRUB для загрузки ядра?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Если вы ответите утвердительно, то при перезагрузке системы kexec будет "
+"использовать ядро и параметры из файла настройки GRUB, а не из файла /etc/"
+"default/kexec."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots (sysvinit only)?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr ""
+#~ "Использовать kexec-tools для обработки команды на перезагрузку (только "
+#~ "для sysvinit)?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Если вы ответите утвердительно, то при перезагрузке системы будет "
+#~ "выполнен перезапуск в ядро, загруженное с помощью kexec, а не как обычно, "
+#~ "с полным перезапуском системы с использованием системного загрузчика."
+
+#~ msgid "Should kexec-tools e grub2 config file to load kernel?"
+#~ msgstr ""
+#~ "Должен ли kexec-tools использовать файл настройки grub2 для выбора "
+#~ "загружаемого ядра?"

@@ -1,0 +1,10 @@
+debianize.patch
+static_binary_warning.patch
+distclean_fix.patch
+add_debian_readme.patch
+coldreboot.patch
+linker-option.patch
+powerpcspe_support.patch
+vmcore-dmesg_man_page_fix.patch
+systemd-support.patch
+fix_error_message.patch

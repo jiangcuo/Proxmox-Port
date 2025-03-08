@@ -1,0 +1,135 @@
+#! /bin/sh
+# postinst script for kexec-tools
+#
+# see: dh_installdeb(1)
+
+set -e
+
+update_param() {                                                               
+        eval old=\"'$'$1\"
+        eval new=\"'$'new_$1\"
+
+        if test "$old" = "$new"; then
+                return
+        fi
+
+        if test -z "$old"; then
+                grep -Eq "^ *$1=" "$INITCONFFILE" || echo "$1=" \
+                       >> "$INITCONFFILE"
+        fi
+
+	sed -e "s/^ *$1=.*/$1=$new/" < $INITCONFFILE > $INITCONFFILE.$$
+	mv -f $INITCONFFILE.$$ $INITCONFFILE
+}
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+#
+
+# Handle debconf
+. /usr/share/debconf/confmodule
+
+INITCONFFILE=/etc/default/kexec
+ 
+# We generate several files during the postinst, and we don't want
+#       them to be readable only by root.
+umask 022
+
+case "$1" in
+    configure)
+    ;;
+
+    install|upgrade)
+    ;;
+
+    upgrade)
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    exit 0	
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+# Generate configuration file if it does not exist, using
+# default values.
+[ -r "${INITCONFFILE}" ] || {
+	echo Generating ${INITCONFFILE}... >&2
+	cat >${INITCONFFILE} <<'EOFMAGICNUMBER1234'
+# Defaults for kexec-tools
+
+# Kernel and initrd image
+KERNEL_IMAGE="/vmlinuz"
+INITRD="/initrd.img"
+
+# If empty, use current /proc/cmdline
+APPEND=""
+
+# Load the default kernel from grub config (true/false)
+USE_GRUB_CONFIG=false
+EOFMAGICNUMBER1234
+}
+
+# Add USE_GRUB_CONFIG parameter to config file if it does not exist
+. ${INITCONFFILE}
+if test -z "$USE_GRUB_CONFIG" ; then
+	echo "" >> ${INITCONFFILE}
+	echo "# Load the default kernel from grub config (true/false)" >> ${INITCONFFILE}
+	echo "USE_GRUB_CONFIG=" >> ${INITCONFFILE}
+fi
+
+# Remove discontinued LOAD_KEXEC option
+if test -n "$LOAD_KEXEC" ; then
+	sed -i "s/Defaults for kexec initscript/Defaults for kexec-tools/" ${INITCONFFILE}
+	sed -i "/sourced by/d" ${INITCONFFILE}
+	sed -i "/Load a kexec kernel/d" ${INITCONFFILE}
+	sed -i "/LOAD_KEXEC/d" ${INITCONFFILE}
+	sed -i '/^$/N;/^\n$/D' ${INITCONFFILE}
+fi
+
+# Detect if system is configured to place kernel link under /boot instead of /
+# If yes, update kernel and initrd image locations in config file
+if [ -f /etc/kernel-img.conf ]; then
+	LINK_IN_BOOT=`grep link_in_boot /etc/kernel-img.conf | cut -f2 -d= | tr -d '[:blank:]'`
+	if [ "$LINK_IN_BOOT" = "yes" ]; then
+		sed -e "s/KERNEL_IMAGE=\"\/vmlinuz\"/KERNEL_IMAGE=\"\/boot\/vmlinuz\"/" < ${INITCONFFILE} > ${INITCONFFILE}.$$
+		mv -f ${INITCONFFILE}.$$ $INITCONFFILE
+		sed -e "s/INITRD=\"\/initrd.img\"/INITRD=\"\/boot\/initrd.img\"/" < ${INITCONFFILE} > ${INITCONFFILE}.$$
+		mv -f ${INITCONFFILE}.$$ $INITCONFFILE
+	else
+		sed -e "s/KERNEL_IMAGE=\"\/boot\/vmlinuz\"/KERNEL_IMAGE=\"\/vmlinuz\"/" < ${INITCONFFILE} > ${INITCONFFILE}.$$
+		mv -f ${INITCONFFILE}.$$ $INITCONFFILE
+		sed -e "s/INITRD=\"\/boot\/initrd.img\"/INITRD=\"\/initrd.img\"/" < ${INITCONFFILE} > ${INITCONFFILE}.$$
+		mv -f ${INITCONFFILE}.$$ $INITCONFFILE
+	fi
+fi
+
+# ------------------------- Debconf questions start ---------------------
+
+if [ -d /boot/grub ]
+then
+	db_get kexec-tools/use_grub_config
+	new_USE_GRUB_CONFIG="${RET}"
+else
+	new_USE_GRUB_CONFIG="false"
+	db_set kexec-tools/use_grub_config "false"
+fi
+update_param USE_GRUB_CONFIG
+                                                                                                                              
+# ------------------------- Debconf questions end ---------------------
+
+#DEBHELPER#
+
+exit 0

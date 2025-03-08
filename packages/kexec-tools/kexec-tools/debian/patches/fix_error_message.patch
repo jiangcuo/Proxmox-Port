@@ -1,0 +1,11 @@
+--- a/kexec/kexec.c
++++ b/kexec/kexec.c
+@@ -585,7 +585,7 @@
+ 		}
+ 	}
+ 	if ((use_mmap && (buf == MAP_FAILED)) || (!use_mmap && (buf == NULL)))
+-		die("Cannot read %s", filename);
++		die("Cannot read %s\n", filename);
+ 
+ 	if (nread != size)
+ 		die("Read on %s ended before stat said it should\n", filename);

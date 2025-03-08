@@ -1,0 +1,413 @@
+.\" Process this file with
+.\" groff -man -Tascii kexec.8
+.\"
+.TH kexec 8 "April 2006" Linux "User Manuals"
+.SH NAME
+kexec \- directly boot into a new kernel
+.SH SYNOPSIS
+.B /sbin/kexec
+.B [-v (\-\-version)] [-f (\-\-force)] [-x (\-\-no-ifdown)] [-y (\-\-no-sync)] [-l (\-\-load)] [-p (\-\-load-panic)] [-u (\-\-unload)] [-e (\-\-exec)] [-t (\-\-type)]
+.BI [\-\-mem\-min= addr ]
+.BI [\-\-mem\-max= addr ]
+
+.SH DESCRIPTION
+.B kexec
+is a system call that enables you to load and boot into another
+kernel from the currently running kernel.
+.B kexec
+performs the function of the boot loader from within the kernel. The
+primary difference between a standard system boot and a
+.B kexec
+boot is that the hardware initialization normally performed by the BIOS
+or firmware (depending on architecture) is not performed during a
+.B kexec
+boot. This has the effect of reducing the time required for a reboot.
+.PP
+Make sure you have selected
+.B CONFIG_KEXEC=y
+when configuring the kernel. The
+.B CONFIG_KEXEC
+option enables the
+.B kexec
+system call.
+.SH USAGE
+Using
+.B kexec
+consists of
+
+.RS
+(1) loading the kernel to be rebooted to into memory, and
+.RE
+.RS
+(2) actually rebooting to the pre-loaded kernel.
+.RE
+.PP
+To load a kernel, the syntax is as follows:
+
+.RS
+.B kexec
+.RI \-l\  kernel-image
+.RI "\-\-append=" command\-line\-options
+.RI "\-\-initrd=" initrd\-image
+.RE
+
+where
+.I kernel\-image
+is the kernel file that you intend to reboot to.
+.PP
+Insert the command-line parameters that must be passed to the new
+kernel into
+.IR command\-line\-options .
+Passing the exact contents of /proc/cmdline into
+.I command\-line\-options
+is the safest way to ensure that correct values are passed to the
+rebooting kernel.
+.PP
+The optional
+.I initrd-image
+is the initrd image to be used during boot.
+.PP
+It's also possible to invoke
+.B kexec
+without an option parameter. In that case, kexec loads the specified
+kernel and then invokes
+.BR shutdown (8).
+If the shutdown scripts of your Linux distribution support
+kexec-based rebooting, they then call
+.B kexec
+.I -e
+just before actually rebooting the machine. That way, the machine does
+a clean shutdown including all shutdown scripts.
+
+.SH EXAMPLE
+.PP
+For example, if the kernel image you want to reboot to is
+.BR /boot/vmlinux ,
+the contents of /proc/cmdline is
+.BR "root\=/dev/hda1" ,
+and the path to the initrd is
+.BR /boot/initrd ,
+then you would use the following command to load the kernel:
+
+.RS
+.B kexec
+.RB \-l\  /boot/vmlinux
+.RB "\-\-append=" "root=/dev/hda1" "\ \-\-initrd=" /boot/initrd
+.RE
+.PP
+After this kernel is loaded, assuming the user-space supports kexec-based
+rebooting, it can be booted to, with a clean shutdown, using the command:
+
+.RS
+.BR reboot
+.RE
+.PP
+Alternatively, it can also be booted to, without calling shutdown(8), with
+the command:
+
+.RS
+.BR kexec \ \-e
+.RE
+
+.SH OPTIONS
+.TP
+.B \-d\ (\-\-debug)
+Enable debugging messages.
+.TP
+.B \-S\ (\-\-status)
+Return 1 if the type (by default crash) is loaded, 0 if not. Can be used in
+conjuction with -l or -p to toggle the type. Note this option supersedes other
+options and it will
+.BR not\ load\ or\ unload\ the\ kernel.
+.TP
+.B \-e\ (\-\-exec)
+Run the currently loaded kernel. Note that it will reboot into the loaded kernel without calling shutdown(8).
+.TP
+.B \-f\ (\-\-force)
+Force an immediate
+.B kexec
+call, do not call
+.BR shutdown (8)
+(contrary to the default action without any option parameter). This option
+performs the same actions like executing
+.IR -l
+and
+.IR -e
+in one call.
+.TP
+.B \-h\ (\-\-help)
+Open a help file for
+.BR kexec .
+.TP
+.B \-\-hotplug
+Setup kexec segments such that kernel can safely update them on CPU/Memory
+hot add/remove events. If this option is enabled, kernel does in-kernel
+update of kexec segments on CPU/Memory hot add/remove events, thus avoiding
+the need to reload kdump kernel.
+.TP
+.B \-i\ (\-\-no-checks)
+Fast reboot, no memory integrity checks.
+.TP
+.BI \-l\ (\-\-load) \ kernel
+Load the specified
+.I kernel
+into the current kernel.
+.TP
+.B \-p\ (\-\-load\-panic)
+Load the new kernel for use on panic.
+.TP
+.BI \-t\ (\-\-type= type )
+Specify that the new kernel is of this
+.I type.
+.TP
+.BI \-s\ (\-\-kexec-file-syscall)
+Specify that the new KEXEC_FILE_LOAD syscall should be used exclusively.
+Ignored on XEN.
+.TP
+.BI \-c\ (\-\-kexec-syscall)
+Specify that the old KEXEC_LOAD syscall should be used exclusively.
+.TP
+.BI \-a\ (\-\-kexec-syscall-auto)
+Try the new KEXEC_FILE_LOAD syscall first and when it is not supported or the
+kernel does not understand the supplied image fall back to the old KEXEC_LOAD
+interface.
+
+There is no one single interface that always works, so this is the default.
+
+KEXEC_FILE_LOAD is required on systems that use locked-down secure boot to
+verify the kernel signature.  KEXEC_LOAD may be also disabled in the kernel
+configuration.
+
+KEXEC_LOAD is required for some kernel image formats and on architectures that
+do not implement KEXEC_FILE_LOAD.
+.TP
+.B \-u\ (\-\-unload)
+Unload the current
+.B kexec
+target kernel. If a capture kernel is being unloaded then specify -p with -u.
+.TP
+.B \-v\ (\-\-version)
+Return the version number of the installed utility.
+.TP
+.B \-x\ (\-\-no\-ifdown)
+Shut down the running kernel, but restore the interface on reload.
+.TP
+.B \-y\ (\-\-no\-sync)
+Shut down the running kernel, but skip syncing the filesystems.
+.TP
+.BI \-\-mem\-min= addr
+Specify the lowest memory address
+.I addr
+to load code into.
+.TP
+.BI \-\-mem\-max= addr
+Specify the highest memory address
+.I addr
+to load code into.
+.TP
+.BI \-\-entry= addr
+Specify the jump back address. (0 means it's not jump back or preserve context)
+.TP
+.BI \-\-load\-preserve\-context
+Load the new kernel and preserve context of current kernel during kexec.
+.TP
+.BI \-\-load\-jump\-back\-helper
+Load a helper image to jump back to original kernel.
+.TP
+.BI \-\-reuseinitrd
+Reuse initrd from first boot.
+.TP
+.BI \-\-print-ckr-size
+Print crash kernel region size, if available.
+
+
+.SH SUPPORTED KERNEL FILE TYPES AND OPTIONS
+.B Beoboot-x86
+.RS
+.TP
+.B \-\-args\-elf
+Pass ELF boot notes.
+.TP
+.B \-\-args\-linux
+Pass Linux kernel style options.
+.TP
+.B \-\-real\-mode
+Use the kernel's real mode entry point.
+.RE
+.PP
+.B elf-x86
+.RS
+.TP
+.BI \-\-append= string
+Append
+.I string
+to the kernel command line.
+.TP
+.BI \-\-command\-line= string
+Set the kernel command line to
+.IR string .
+.TP
+.BI \-\-reuse-cmdline
+Use the command line from the running system. When a panic kernel is loaded, it
+strips the
+.I
+crashkernel
+parameter automatically. The
+.I BOOT_IMAGE
+parameter is also stripped.
+.TP
+.BI \-\-initrd= file
+Use
+.I file
+as the kernel's initial ramdisk.
+.TP
+.BI \-\-ramdisk= file
+Use
+.I file
+as the kernel's initial ramdisk.
+.RE
+.PP
+.B bzImage-x86
+.RS
+.TP
+.BI \-\-append= string
+Append
+.I string
+to the kernel command line.
+.TP
+.BI \-\-command\-line= string
+Set the kernel command line to
+.IR string .
+.TP
+.BI \-\-reuse-cmdline
+Use the command line from the running system. When a panic kernel is loaded, it
+strips the
+.I
+crashkernel
+parameter automatically. The
+.I BOOT_IMAGE
+parameter is also stripped.
+.TP
+.BI \-\-initrd= file
+Use
+.I file
+as the kernel's initial ramdisk.
+.TP
+.BI \-\-ramdisk= file
+Use
+.I file
+as the kernel's initial ramdisk.
+.TP
+.BI \-\-real-mode
+Use real-mode entry point.
+.RE
+.PP
+.B multiboot-x86
+.RS
+.TP
+.BI \-\-command\-line= string
+Set the kernel command line to
+.IR string .
+.TP
+.BI \-\-reuse-cmdline
+Use the command line from the running system. When a panic kernel is loaded, it
+strips the
+.I
+crashkernel
+parameter automatically. The
+.I BOOT_IMAGE
+parameter is also stripped.
+.TP
+.BI \-\-module= "mod arg1 arg2 ..."
+Load module
+.I mod
+with command-line arguments
+.I "arg1 arg2 ..."
+This parameter can be specified multiple times.
+.RE
+.PP
+.B multiboot2-x86
+.RS
+.TP
+.BI \-\-command\-line= string
+Set the kernel command line to
+.IR string .
+.TP
+.BI \-\-reuse-cmdline
+Use the command line from the running system. When a panic kernel is loaded, it
+strips the
+.I
+crashkernel
+parameter automatically. The
+.I BOOT_IMAGE
+parameter is also stripped.
+.TP
+.BI \-\-module= "mod arg1 arg2 ..."
+Load module
+.I mod
+with command-line arguments
+.I "arg1 arg2 ..."
+This parameter can be specified multiple times.
+.RE
+.PP
+.B elf-ppc64
+.RS
+.TP
+.BI \-\-reuse-cmdline
+Use the kernel command line from the running system.
+.TP
+.BI \-\-command\-line= string
+Set the kernel command line to
+.IR string.
+.TP
+.BI \-\-append= string
+Set the kernel command line to
+.IR string.
+.TP
+.BI \-\-ramdisk= file
+Use
+.IR file
+as the initial RAM disk.
+.TP
+.BI \-\-initrd= file
+Use
+.IR file
+as the initial RAM disk.
+.TP
+.BI \-\-devicetreeblob= file
+Specify device tree blob file. Not applicable while using --kexec-file-syscall.
+.TP
+.BI \-\-dtb= file
+Specify device tree blob file. Not applicable while using --kexec-file-syscall.
+.RE
+
+.SH ARCHITECTURE OPTIONS
+.TP
+.B \-\-console\-serial
+Enable the serial console.
+.TP
+.B \-\-console\-vga
+Enable the VGA console.
+.TP
+.B \-\-elf32\-core\-headers
+Prepare core headers in ELF32 format.
+.TP
+.B \-\-elf64\-core\-headers
+Prepare core headers in ELF64 format.
+.TP
+.B \-\-reset\-vga
+Attempt to reset a standard VGA device.
+.TP
+.BI \-\-serial= port
+Specify the serial
+.I port
+for debug output.
+.TP
+.BI \-\-serial\-baud= baud_rate
+Specify the
+.I baud rate
+of the serial port.
+.TP
+.BI \-\-dt\-no\-old\-root
+Do not reuse old kernel root=<device>
+param while creating flatten device tree.

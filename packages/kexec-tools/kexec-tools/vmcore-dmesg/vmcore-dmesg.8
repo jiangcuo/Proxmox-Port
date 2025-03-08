@@ -1,0 +1,42 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH VMCORE-DMESG 8 "Sep 21, 2020"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+vmcore-dmesg
+.SH SYNOPSIS
+.B vmcore-dmesg
+.RI " vmcore"
+.SH DESCRIPTION
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBvmcore-dmesg\fP extracts the dmesg from a vmcore and write it to
+standard out. \fBvmcore-dmesg\fP works against either
+\fB/proc/vmcore\fP in a crash dump capture context or a copy
+of \fB/proc/vmcore\fP that has been saved for later analysis. A
+single build of \fBvmcore-dmesg\fP should work against any linux
+vmcore written created on any architecture.
+
+.\"These programs follow the usual GNU command line syntax, with long
+.\"options starting with two dashes (`-').
+.\"A summary of options is included below.
+.\"For a complete description, see the Info files.
+.SH SEE ALSO
+kexec(8)
+.SH AUTHOR
+vmcore-dmesg was written by Eric Biederman.

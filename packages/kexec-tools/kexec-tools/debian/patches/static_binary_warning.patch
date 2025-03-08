@@ -1,0 +1,18 @@
+--- a/kexec_test/Makefile
++++ b/kexec_test/Makefile
+@@ -20,7 +20,7 @@
+ KEXEC_TEST_OBJS = $(call objify, $(KEXEC_TEST_SRCS))
+ KEXEC_TEST_DEPS = $(call depify, $(KEXEC_TEST_OBJS))
+ 
+-KEXEC_TEST = $(PKGLIBDIR)/kexec_test
++KEXEC_TEST = $(PKGLIBDIR)/kexec_test.static
+ 
+ clean += $(KEXEC_TEST_OBJS) $(KEXEC_TEST_DEPS) $(KEXEC_TEST)
+ 
+@@ -36,5 +36,6 @@
+ $(KEXEC_TEST): $(KEXEC_TEST_OBJS)
+ 	mkdir -p $(@D)
+ 	$(TARGET_LD) $(LDFLAGS) -o $@ $^
++	$(STRIP) $@
+ 
+ endif

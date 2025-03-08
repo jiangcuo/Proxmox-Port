@@ -1,0 +1,57 @@
+# Mesajele în limba română pentru pachetul kexec-tools.
+# Romanian translation of kexec-tools.
+# Copyright © 2023 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+#
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023.
+#
+# Cronologia traducerii fișierului „kexec-tools”:
+# Traducerea inițială, făcută de R-GC, pentru versiunea kexec-tools 1 2.0.25-3(2021-07-13).
+# Actualizare a traducerii pentru versiunea Y, făcută de X, Y(anul).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools 1 2.0.25-3\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2023-02-22 00:15+0100\n"
+"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
+"Language-Team: Romanian <debian-l10n-romanian@lists.debian.org>\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n==0 || (n!=1 && n%100>=1 && "
+"n%100<=19) ? 1 : 2);\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Citește fișierul de configurare GRUB pentru a încărca nucleul?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Dacă alegeți această opțiune, «kexec» va citi fișierul de configurare GRUB "
+"pentru a determina ce nucleu și opțiunile de încărcat pentru repornirea "
+"«kexec», spre deosebire de ceea ce este în „/etc/default/kexec”."
+
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Trebuie «kexec-tools» să gestioneze repornirile?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Dacă alegeți această opțiune, o repornire a sistemului va declanșa o "
+#~ "repornire într-un nucleu încărcat de «kexec» în loc să treacă prin "
+#~ "procesul complet de încărcare a sistemului."

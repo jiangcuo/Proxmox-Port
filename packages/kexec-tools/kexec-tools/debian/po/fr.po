@@ -1,0 +1,54 @@
+# Translation of kexec-tools debconf template to French
+# Copyright (C) 2016 Debian French l10n team <debian-l10n-french@lists.debian.org>
+# This file is distributed under the same license as the kexec-tools package.
+#
+# Translator:
+# Steve Petruzzello <dlist@bluewin.ch>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools_2.0.0-2\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2016-04-05 12:18+0200\n"
+"Last-Translator: Steve Petruzzello <dlist@bluewin.ch>\n"
+"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr ""
+"Faut-il lire le fichier de configuration de GRUB pour charger le noyau ?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Si vous choisissez cette option, kexec lira le fichier de configuration de "
+"GRUB pour déterminer le noyau et les options à charger pour un redémarrage "
+"via kexec, contrairement à ce qui se trouve dans le fichier « /etc/default/"
+"kexec »."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots (sysvinit only)?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr ""
+#~ "Faut-il gérer les redémarrages avec kexec-tools (seulement pour "
+#~ "sysvinit) ?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Si vous choisissez cette option, le système redémarrera avec un noyau "
+#~ "chargé par kexec plutôt que par le programme d'amorçage habituel. "

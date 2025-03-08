@@ -1,0 +1,24 @@
+Source: kexec-tools
+Section: admin
+Homepage: https://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git/
+Priority: optional
+Maintainer: Khalid Aziz <khalid@debian.org>
+Build-Depends: debhelper (>= 10.0.0),  debhelper-compat (= 13), gnu-efi (>=3.0a-4)[ia64], libz-dev[arm64 ia64], po-debconf, libxen-dev[amd64 arm64]
+Standards-Version: 4.5.1.0
+Rules-Requires-Root: no
+
+Package: kexec-tools
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}, debconf, dpkg (>= 1.15.7.2)
+Conflicts: molly-guard (<< 0.8.4~), bfh-container (<< 20211009-22~), progress-linux-container (<< 20221002-11~)
+Description: tools to support fast kexec reboots
+ This package provides tools to load a kernel into memory and then
+ "reboot" directly into that kernel using the kexec system call,
+ bypassing the normal boot process.
+
+Package: kexec-tools-udeb
+Section: debian-installer
+Architecture: linux-any
+XC-Package-Type: udeb
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: tools to support fast kexec reboots (udeb)

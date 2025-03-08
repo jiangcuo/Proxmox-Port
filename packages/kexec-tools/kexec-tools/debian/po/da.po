@@ -1,0 +1,49 @@
+# Danish translation kexec-tools.
+# Copyright (C) 2016 kexec-tools & nedenstående oversættere.
+# This file is distributed under the same license as the kexec-tools package.
+# Joe Hansen <joedalton2@yahoo.dk>, 2010, 2011, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2016-07-09 05:26+0100\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org> \n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Læs GRUB-konfigurationsfil for at indlæse kernen?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Hvis du vælger denne indstilling, vil kexec læse GRUB-konfigurationsfilen "
+"for at bestemme hvilken kerne og hvilke indstillinger at indlæse for kexec-"
+"genstart, til forskel fra hvad der er i /etc/default/kexec."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots (sysvinit only)?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr "Skal kexec-tools håndtere genstarter (kun sysvinit)?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Hvis du vælger denne indstilling, vil en systemgenstart udløse en "
+#~ "genstart med en kerne indlæst af kexec i stedet for at gå igennem den "
+#~ "fulde proces med systemopstart."

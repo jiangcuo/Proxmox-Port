@@ -1,0 +1,660 @@
+  Draft Net Boot Image Proposal 0.3
+  Jamie Honan and Gero Kuhlmann, gero@minix.han.de
+  June 15, 1997
+
+  This is the specification of the "tagged image" format
+  ______________________________________________________________________
+
+  Table of Contents
+
+
+  1. Note
+
+  2. Preamble - the why
+
+  3. The target
+
+  4. Net Boot Process Description.
+
+  5. Image Format with Initial Magic Number.
+
+  6. Boot prom entry points.
+
+  7. Example of a boot image.
+
+  8. Terms
+
+  9. References
+
+
+
+  ______________________________________________________________________
+
+  11..  NNoottee
+
+
+  In order to provide more functionality to the boot rom code I changed
+  Jamie's draft a little bit. All my changes are preceded and followed
+  by ((ggkk)).
+
+
+
+  Gero Kuhlmann
+
+
+  22..  PPrreeaammbbllee -- tthhee wwhhyy
+
+
+  Whilst researching what other boot proms do (at least those
+  implementing TCP/IP protocols) it is clear that each 'does their own
+  thing' in terms of what they expect in a boot image.
+
+
+
+  If we could all agree on working toward an open standard, O/S
+  suppliers and boot rom suppliers can build their products to this
+  norm, and be confident that they will work with each other.
+
+
+
+  This is a description of how I will implement the boot rom for Linux.
+  I  believe it to be flexible enough for any OS that will be loaded
+  when a PC boots from a network in the TCP/IP environment.
+
+
+
+
+  It would be good if this could be turned into some form of standard.
+
+
+
+  This is very much a first draft. I am inviting comment.
+
+
+
+  The ideas presented here should be independant of any implementation.
+  In the end, where there is a conflict between the final of this draft,
+  and an implementation, this description should prevail.
+
+
+
+  The terms I use are defined at the end.
+
+
+
+  ((ggkk))IMPORTANT NOTE: The scope of this document starts at the point
+  where the net boot process gains control from the BIOS, to where the
+  booted image reaches a state from which there is no return to the net
+  boot program possible.((ggkk))
+
+
+  33..  TThhee ttaarrggeett
+
+
+  The target is to have a PC retrieve a boot image from a network in the
+  TCP/IP environment.
+
+
+
+  ((ggkk))The boot may take place from a network adaptor rom, from a boot
+  floppy.((ggkk))
+
+
+  44..  NNeett BBoooott PPrroocceessss DDeessccrriippttiioonn..
+
+
+  ((ggkk))The net boot process is started as a result of the PC boot
+  process. The net boot program can reside on a rom, e.g. on an adaptor
+  card, or in ram as a result of reading off disk.((ggkk))
+
+
+
+  The boot process may execute in any mode (e.g. 8086, 80386) it
+  desires.  When it jumps to the start location in the boot image, it
+  must be in 8086 mode and be capable of going into any mode supported
+  by the underlying processor.
+
+
+
+  The image cannot be loaded into address spaces below 10000h, or
+  between A0000h through FFFFFh, or between 98000h through 9FFFFh.
+  ((ggkk))Only when the image is not going to return to the boot process,
+  all the memory is available to it once it has been started, so it can
+  relocate parts of itself to these areas.((ggkk))
+
+
+
+  The boot process must be capable of loading the image into all other
+  memory locations. Specifically, where the machine supports this, this
+  means memory over 100000h.
+
+
+
+  The net boot process must execute the bootp protocol, followed by the
+  tftp protocol, as defined in the relevant rfc's.
+
+
+
+  The file name used in the tftp protocol must be that given by the
+  bootp record.
+
+
+
+  If less than 512 bytes are loaded, the net boot process attempts to
+  display on the screen any ascii data at the start of the image. The
+  net boot process then exits in the normal manner. For a boot prom,
+  this will allow normal disk booting. ((ggkk))Reference to DOS deleted.((ggkk))
+
+
+
+  When the first 512 bytes have been loaded, the boot process checks for
+  an initial magic number, which is defined later. If this number is
+  present, the net process continues loading under the control of the
+  image format. The image, which is described later, tells the net boot
+  process where to put this record and all subsequent data.
+
+
+
+  If no initial magic number is present the net boot process checks for
+  a second magic number at offset 510. If the magic number 510 = 55h,
+  511 = AAh, then the net process continues. If this second magic number
+  is not present, then the net boot process terminates the tftp
+  protocol, displays an error message and exits in the normal manner.
+
+
+
+  If no initial magic number is present and the second one is, the net
+  boot process relocates the 512 bytes to location 7c00h. The net boot
+  process continues to load any further image data to 10000h up. This
+  data can overwrite the first 512 boot bytes. If the image reaches
+  98000h, then any further data is continued to be loaded above 100000h.
+  When all the data has been loaded, the net boot process jumps to
+  location 0:7c00.
+
+
+
+  ((ggkk))When the net boot program calls the image, it places 2 far
+  pointers onto the stack, in standard intel order (e.g.  segment:offset
+  representation).  The first far pointer which immediately follows the
+  return address on the stack, points to the loaded boot image header.
+  The second far pointer which is placed above the first one, shows to
+  the memory area where the net boot process saved the bootp reply.
+
+
+
+  If the boot image is flagged as being returnable to the boot process,
+  the boot program has to provide the boot image with interrupt vector
+  78h. It's an interface to services provided by the net boot program
+  (see below for further description).
+
+
+
+  If the boot image is not flagged as being returnable to the boot
+  process, before the boot image is called, the boot program has to set
+  the system into a state in which it was before the net boot process
+  has started.((ggkk))
+
+
+
+  55..  IImmaaggee FFoorrmmaatt wwiitthh IInniittiiaall MMaaggiicc NNuummbbeerr..
+
+
+  The first 512 bytes of the image file contain the image header, and
+  image loading information records. This contains all the information
+  needed by the net boot process as to where data is to be loaded.
+
+  The magic number (in time-honoured tradition (well why not?)) is:
+
+
+  ______________________________________________________________________
+          0 = 36h
+          1 = 13h
+          2 = 03h
+          3 = 1Bh
+  ______________________________________________________________________
+
+
+
+  Apart from the two magic numbers, all words and double words are in PC
+  native endian.
+
+
+
+  Including the initial magic number the header record is:
+
+
+  ______________________________________________________________________
+          +---------------------+
+          |                     |
+          | Initial Magic No.   |  4 bytes
+          +---------------------+
+          |                     |
+          | Flags and length    |  double word
+          +---------------------+
+          |                     |
+          | Location Address    |  double word in ds:bx format
+          +---------------------+
+          |                     |
+          | Execute Address     |  double word in cs:ip format
+          +---------------------+
+  ______________________________________________________________________
+
+
+
+  The Location address is where to place the 512 bytes. The net boot
+  process does this before loading the rest of the image. The location
+  address cannot be one of the reserved locations mentioned above, but
+  must be an address lower than 100000h.
+
+
+
+  The rest of the image must not overwrite these initial 512 bytes,
+  placed at the required location. The writing of data by the net boot
+  process into these 512 bytes is deprecated. These 512 bytes must be
+  available for the image to interogate once it is loaded and running.
+
+
+
+  The execute address is the location in cs:ip of the initial
+  instruction once the full image has been loaded. This must be lower
+  than 100000h, since the initial instructions will be executed in 8086
+  mode. When the jump (actaully a far call) is made to the boot image,
+  the stack contains a far return address, with a far pointer parameter
+  above that, pointing to the location of this header.
+
+  The flags and length field is broken up in the following way:
+
+
+
+  Bits 0 to 3 (lowest 4 bits) define the length of the non vendor header
+  in double words. Currently the value is 4.
+
+
+
+  Bits 4 to 7 define the length required by the vendor extra information
+  in double words. A value of zero indicates no extra vendor
+  information.
+
+
+
+  ((ggkk))Bit 8 is set if the boot image can return to the net boot process
+  after execution. If this bit is not set the boot image does never
+  return to the net boot process, and the net boot program has to set
+  the system into a clean state before calling the boot image.
+
+
+
+  Bits 9 to 31 are reserved for future use and must be set to zero.((ggkk))
+
+
+
+  After this header, and any vendor header, come the image loading
+  information records. These specify where data is to be loaded, how
+  long it is, and communicates to the loaded image what sort of data it
+  is.
+
+
+
+  The format of each image loading information record is :
+
+
+
+  ______________________________________________________________________
+            +---------------------+
+            | Flags, tags and     |  double word
+            | lengths             |
+            +---------------------+
+            |                     |
+            | Load Address        |  double word
+            +---------------------+
+            |                     |
+            | Image Length        |  double word
+            +---------------------+
+            |                     |
+            | Memory Length       |  double word
+            +---------------------+
+  ______________________________________________________________________
+
+
+
+  Each image loading information record follows the previous, or the
+  header.
+
+
+
+  The memory length, image length and load address fields are unsigned
+  32 numbers. They do not have the segment:offset format used by the
+  8086.
+
+
+
+  The flags, tags and lengths field is broken up as follows:
+
+
+
+  Bits 0 to 3 (lowest 4 bits) are the length of the non vendor part of
+  this header in double words. Currently this value is 4.
+
+
+
+  Bits 4 to 7 indicate the length of any vendor information, in double
+  words.
+
+
+
+  Bits 8 to 15 are for vendor's tags. The vendor tag is a private number
+  that the loaded image can use to determine what sort of image is at
+  this particular location.
+
+
+
+  Bits 16 to 23 are for future expansion and should be set to zero.
+
+
+
+  Bits 24 to 31 are for flags, which are defined later.
+
+
+
+  Vendors may place further information after this information record,
+  and before the next. Each information record may have a different
+  vendor length.
+
+
+
+  There are two restrictions on vendor information.
+
+
+
+  One is that the header and all information records that the net boot
+  process is to use fall within the first 512 bytes.
+
+
+
+  The second restriction is that the net boot process must ignore all
+  vendor additions. The net boot process may not overwrite vendor
+  supplied information, or other undefined data in the initial 512
+  bytes.
+
+
+
+  The flags are used to modify the load address field, and to indicate
+  that this is the last information record that the net boot process
+  should use.
+
+
+
+  Bit 24 works in conjunction with bit 25 to specify the meaning of the
+  load address.
+
+
+
+
+
+
+
+
+  ______________________________________________________________________
+            B24    B25
+
+             0     0    load address is an absolute 32 number
+
+             1     0    add the load address to the location one past the last byte
+                        of the memory area required by the last image loaded.
+                        If the first image, then add to 512 plus the location
+                        where the 512 bytes were placed
+
+             0     1    subtract the load address from the one past the
+                        last writeable location in memory. Thus 1 would
+                        be the last location one could write in memory.
+
+             1     1    load address is subtracted from the start of
+                        the last image loaded. If the first image, then
+                        subtract from the start of where the 512 bytes were
+                        placed
+  ______________________________________________________________________
+
+
+
+  (For convenience bit 24 is byte 0 of the flag field)
+
+
+
+  Bit 26 is the end marker for the net boot process. It is set when this
+  is the last information record the net boot process should look at.
+  More records may be present, but the net boot process will not look at
+  them. (Vendors can continue information records out past the 512
+  boundary for private use in this manner).
+
+
+
+  The image length tells the net boot process how many bytes are to be
+  loaded.  Zero is a valid value. This can be used to mark memory areas
+  such as shared memory for interprocessor communication, flash eproms,
+  data in eproms.
+
+
+
+  The image length can also be different from the memory length. This
+  allows decompression programs to fluff up the kernel image. It also
+  allows a file system to be larger then the loaded file system image.
+
+
+
+  Bits 27 through 31 are not defined as yet and must be set to zero
+  until they are.
+
+
+  66..  BBoooott pprroomm eennttrryy ppooiinnttss..
+
+
+  ((ggkk))As mentioned above the net boot process has to provide interrupt
+  78h as an entry point in case, the returnable flag (bit 9 of the flags
+  field in the image header) of the boot image has been set.  When
+  calling this interface interrupt, the caller has to load the AH
+  register with a value indicating the type of operation requested:
+
+
+
+
+
+
+
+  ______________________________________________________________________
+         00h  -  Installation check
+                 Input:  none
+                 Output: AX  -  returns the value 474Bh
+                         BX  -  flags indicating what further services are
+                                provided by the net boot program:
+                                 Bit 0 - packet driver interface (see below)
+                                 Bits 1 to 15 are unused and have to be zero
+
+         01h  -  Cleanup and terminate the boot process services. This will
+                 also remove the services provided by interrupt 87h.
+                 Input:  none
+                 Output: none
+  ______________________________________________________________________
+
+
+
+
+
+  Further functions are not yet defined. These functions are only
+  available to boot images which have the first magic number at the
+  beginning of the image header, and have the returnable flag set in the
+  flags field.
+
+
+
+  In order to provide compatibility with net boot programs written to
+  match an earlier version of this document, the loaded image should
+  check for the existence of interrupt 78h by looking at it's vector. If
+  that's 0:0, or if it does not return a proper magic ID after calling
+  the installation check function, the boot image has to assume that the
+  net boot program does not support this services interrupt.
+
+
+
+  If the bit 0 of register BX of function 00h is set, the boot program
+  has to provide a packet driver <http://www.crynwr.com> interface at
+  interrupt 79h as described in the packet driver interface standard,
+  version 1.09, published by FTP Software, Inc., which is not repeated
+  here. It serves as an interface to the system's network card. It is
+  important to note that the net boot process has to provide a clean
+  packet driver interface without any handles being defined when the
+  boot image gets started. It is expected that the boot image sets up
+  it's own TCP/IP or other network's stack on top of this packet driver
+  interface.  When the boot image returns to the net boot process, it
+  has to return a clean packet driver interface as well, without any
+  handles being defined.((ggkk))
+
+
+  77..  EExxaammppllee ooff aa bboooott iimmaaggee..
+
+
+  Here is an example of how the boot image would look for Linux:
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ______________________________________________________________________
+            0x1B031336,  /* magic number */
+            0x4,         /* length of header is 16 bytes, no vendor info */
+            0x90000000,  /* location in ds:bx format */
+            0x90000200,  /* execute address in cs:ip format */
+
+                         /* 2048 setup.S bytes */
+            0x4,         /* flags, not end, absolute address, 16 bytes this
+                            record, no vendor info */
+            0x90200,     /* load address - note format */
+            0x800,       /* 4 8 512 byte blocks for linux */
+            0x800,
+
+                         /* kernel image */
+            0x4,         /* flags, not end, absolute address, 16 bytes this
+                            record, no vendor info */
+            0x10000,     /* load address - note format */
+            0x80000,     /* 512K (this could be shorter */
+            0x80000,
+
+                         /* ramdisk for root file system */
+            0x04000004,  /* flags = last, absolute address, 16 bytes this
+                            record, no vendor info *//
+            0x100000,    /* load address - in extended memory */
+            0x80000,     /* 512K for instance */
+            0x80000,
+
+                         /* Then follows linux specific information */
+  ______________________________________________________________________
+
+
+
+
+  88..  TTeerrmmss
+
+
+  When I say 'the net boot process', I mean the act of loading the image
+  into memory, setting up any tables, up until the jump to the required
+  location in the image.
+
+
+
+  The net booting program executes the net boot process. The net boot
+  program may be a rom, but not neccassarily. It is a set of
+  instructions and data residing on the booting machine.
+
+
+
+  The image, or boot image,  consists of the data loaded by the net boot
+  process.
+
+
+
+  When I say 'the PC boot process', I mean the general PC rom bios boot
+  process, the setting up of hardware, the scanning for adaptor roms,
+  the execution of adaptor roms, the loading in of the initial boot
+  track. The PC boot process will include the net boot process, if one
+  is present.
+
+
+
+  When I say client, I mean the PC booting up.
+
+
+
+
+  When I say 'image host', I mean the host where the boot image is
+  comming from.  This may not have the same architecture as the client.
+
+
+
+  The bootp protocol is defined in RFC951 and RFC1084. The tftp protocol
+  is defined in RFC783. These are available on many sites.  See Comer
+  1991 for details on how to obtain them.
+
+
+
+  A bootp server is the machine that answers the bootp request. It is
+  not neccessarily the image host.
+
+
+
+  "Can" and "may" means doesn't have to, but is allowed to and might.
+  "Must" means just that. "Cannot" means must not.
+
+
+  99..  RReeffeerreenncceess
+
+
+  Comer, D.E. 1991, Internetworking with TCP/IP Vol I: Principles,
+  Protocols, and Architecture Second Edition, Prentice Hall, Englewood
+  Cliffs, N.J., 1991
+
+
+
+  Stevens, W.R 1990, Unix Network Programming, Prentice Hall, Englewood
+  Cliffs, N.J., 1990
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

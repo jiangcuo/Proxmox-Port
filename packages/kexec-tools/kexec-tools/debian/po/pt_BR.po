@@ -1,0 +1,51 @@
+# Debconf translations for kexec-tools.
+# Copyright (C) 2016 THE kexec-tools'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kexec-tools package.
+# Adriano Rafael Gomes <adrianorg@debian.org>, 2016-2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kexec-tools 1:2.0.12-1\n"
+"Report-Msgid-Bugs-To: kexec-tools@packages.debian.org\n"
+"POT-Creation-Date: 2023-10-04 10:16-0600\n"
+"PO-Revision-Date: 2017-01-11 15:34-0200\n"
+"Last-Translator: Adriano Rafael Gomes <adrianorg@debian.org>\n"
+"Language-Team: Brazilian Portuguese <debian-l10n-portuguese@lists.debian."
+"org>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid "Read GRUB configuration file to load the kernel?"
+msgstr "Ler o arquivo de configuração do GRUB para carregar o kernel?"
+
+#. Type: boolean
+#. Description
+#: ../kexec-tools.templates:2001
+msgid ""
+"If you choose this option, kexec will read the GRUB configuration file to "
+"determine which kernel and options to load for kexec reboot, as opposed to "
+"what is in /etc/default/kexec."
+msgstr ""
+"Se você escolher essa opção, o kexec lerá o arquivo de configuração do GRUB "
+"para determinar qual kernel e quais opções carregar para a reinicialização "
+"via kexec, em oposição ao que estiver em /etc/default/kexec."
+
+#, fuzzy
+#~| msgid "Should kexec-tools handle reboots (sysvinit only)?"
+#~ msgid "Should kexec-tools handle reboots?"
+#~ msgstr ""
+#~ "O kexec-tools deve controlar as reinicializações (somente para sysvinit)?"
+
+#~ msgid ""
+#~ "If you choose this option, a system reboot will trigger a restart into a "
+#~ "kernel loaded by kexec instead of going through the full system boot "
+#~ "loader process."
+#~ msgstr ""
+#~ "Se você escolher essa opção, uma reinicialização do sistema provocará um "
+#~ "reinício em um kernel carregado pelo kexec, ao invés de passar por todo o "
+#~ "processo do carregador de inicialização do sistema."

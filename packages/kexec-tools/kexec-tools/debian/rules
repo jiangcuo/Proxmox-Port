@@ -1,0 +1,93 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+BUILD_DATE = $(shell dpkg-parsechangelog -S Date | LC_ALL=C date -u +'%d %B %Y' -f -)
+export BUILD_DATE
+
+ifneq (,$(filter parallel=%,$(subst $(COMMA), ,$(DEB_BUILD_OPTIONS))))
+	NJOBS := -j $(subst parallel=,,$(filter parallel=%,$(subst $(COMMA), ,$(DEB_BUILD_OPTIONS))))
+endif
+
+#export DH_VERBOSE = 1
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+CFLAGS = -Wall -g
+
+%:
+	dh $@
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	dh_update_autotools_config
+	dh_autoreconf
+	CPPFLAGS="$(shell dpkg-buildflags --get CPPFLAGS)" CFLAGS="$(shell dpkg-buildflags --get CFLAGS)" LDFLAGS="$(shell dpkg-buildflags --get LDFLAGS)" dh_auto_configure -- --prefix=/usr --exec-prefix=/usr --sbindir=/usr/sbin --mandir=/usr/share/man --datadir=/usr/share
+	touch configure-stamp
+
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+	$(MAKE) $(NJOBS)
+	touch build-stamp
+
+clean: configure-stamp
+	dh_testdir
+	dh_testroot
+	rm -f configure-stamp build-stamp
+	rm -fr tmp-source
+
+	# Add here commands to clean up after the build process.
+	$(MAKE) dist-clean
+
+	dh_autoreconf_clean
+	dh_clean
+	debconf-updatepo
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/kexec-tools
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	[ ! -f $(CURDIR)/debian/kexec-tools/usr/lib/kexec-tools-testing/kexec_test.static ] || strip $(CURDIR)/debian/kexec-tools/usr/lib/kexec-tools-testing/kexec_test.static
+endif
+
+	install -D -m 0755 debian/kexec-tools/usr/sbin/kexec debian/kexec-tools-udeb/usr/sbin/kexec
+
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_installdebconf
+	dh_installexamples
+	dh_installsystemd
+	dh_lintian
+	dh_install
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build build-arch clean binary-indep binary-arch binary install configure

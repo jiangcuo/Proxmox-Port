@@ -1,0 +1,171 @@
+Description: Add scripts to support kexec rebots with systemd
+	systemd supports kexec reboots natively. To perform kexec
+	reboot, one can rely upon systemctl loading the kexec kernel
+	image or one must load a kexec kernel image before reboot.
+	systemctl supports loading kexec image only on systems that
+	support boot loader spec. This patch adds a script that can
+	determine the right kernel to load and load it in memory ready
+	for kexec.
+Author: Khalid Aziz <khalid@debian.org>
+Origin: other, Debian addition
+Bug: https://bugs.debian.org
+Last-Update: 2023-09-28 
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -182,10 +182,11 @@
+ 
+ MAN_PAGES:=$(KEXEC_MANPAGE) $(VMCORE_DMESG_MANPAGE)
+ MAN_PAGES+=$(MANDIR)/man8/coldreboot.8
++MAN_PAGES+=$(MANDIR)/man8/kexec-load-kernel.8
+ BINARIES_i386:=$(KEXEC_TEST)
+ BINARIES_x86_64:=$(KEXEC_TEST)
+ BINARIES:=$(KEXEC) $(VMCORE_DMESG) $(BINARIES_$(ARCH))
+-SCRIPTS:=$(SBINDIR)/coldreboot
++SCRIPTS:=$(SBINDIR)/coldreboot $(SBINDIR)/kexec-load-kernel
+ 
+ UNINSTALL_KDUMP = $(sbindir)/kdump
+ UNINSTALL_KDUMP_MANPAGE = $(mandir)/man8/kdump.8
+--- a/kexec/Makefile
++++ b/kexec/Makefile
+@@ -107,6 +107,8 @@
+ KEXEC_MANPAGE = $(MANDIR)/man8/kexec.8
+ KEXEC_COLDREBOOT=$(SBINDIR)/coldreboot
+ KEXEC_COLDREBOOT_MANPAGE=$(MANDIR)/man8/coldreboot.8
++KEXEC_LOADKERNEL=$(SBINDIR)/kexec-load-kernel
++KEXEC_LOADKERNEL_MANPAGE=$(MANDIR)/man8/kexec-load-kernel.8
+ 
+ -include $(KEXEC_DEPS)
+ 
+@@ -131,6 +133,15 @@
+ 	@$(MKDIR) -p     $(MANDIR)/man8
+ 	cp kexec/coldreboot.8 $(KEXEC_COLDREBOOT_MANPAGE)
+ 
++$(KEXEC_LOADKERNEL): kexec/kexec-load-kernel
++	@$(MKDIR) -p     $(@D)
++	cp kexec/kexec-load-kernel $(KEXEC_LOADKERNEL)
++	/bin/chmod 755 $(KEXEC_LOADKERNEL)
++
++$(KEXEC_LOADKERNEL_MANPAGE): kexec/kexec-load-kernel.8
++	@$(MKDIR) -p     $(MANDIR)/man8
++	cp kexec/kexec-load-kernel.8 $(KEXEC_LOADKERNEL_MANPAGE)
++
+ echo::
+ 	@echo "KEXEC_SRCS $(KEXEC_SRCS)"
+ 	@echo "KEXEC_DEPS $(KEXEC_DEPS)"
+--- /dev/null
++++ b/kexec/kexec-load-kernel
+@@ -0,0 +1,90 @@
++#! /bin/sh
++
++PATH=/sbin:/bin:/usr/sbin:/usr/bin
++NOKEXECFILE=/no-kexec-reboot
++
++. /lib/lsb/init-functions
++
++test -r /etc/default/kexec && . /etc/default/kexec
++if [ -d /etc/default/kexec.d ] ; then
++	for snippet in $(run-parts --list /etc/default/kexec.d) ; do
++		. "$snippet"
++	done
++fi
++
++process_grub_entry() {
++	initrd_image=
++	while read command args; do
++		if [ "$command" = "linux" ]; then
++			echo "$args" | while read kernel append; do
++			echo KERNEL_IMAGE=\"${prefix}${kernel}\"
++			echo APPEND=\"${append}\"
++			done
++		elif [ "$command" = "initrd" ]; then
++			initrd_image=${prefix}${args}
++		fi
++	done
++	echo INITRD=\"$initrd_image\"
++}
++
++get_grub_kernel() {
++	test -f /boot/grub/grub.cfg || return
++	local prefix
++	mountpoint -q /boot && prefix=/boot || prefix=
++	data=$(cat /boot/grub/grub.cfg)
++
++	default=$(echo "$data" | awk '/set default/ {print $2}' | cut -d'"' -f2 | tail -1)
++	if [ "$default" = '${saved_entry}' ]; then
++		default=$(sed -ne 's/^saved_entry=//p' /boot/grub/grubenv)
++	fi
++	if [ -z "$default" ]; then
++		default=0
++	fi
++	start_offset=$((default + 1))
++	end_offset=$((default + 2))
++
++	# grub entries start with "menuentry" commands.  Get the line
++	# numbers that surround the first entry
++	offsets=$(echo "$data" | grep -n '^[[:space:]]*menuentry[[:space:]]' | cut -d: -f1)
++	begin=$(echo "$offsets" | tail -n+$start_offset | head -n1)
++	end=$(echo "$offsets" | tail -n+$end_offset | head -n1)
++
++	# If this is the last entry, we need to read to the end of the file
++	# or to the end of boot entry section
++	if [ -z "$end" ]; then
++		numlines=$(echo "$data" | tail --lines=+$begin | grep -n "^### END" | head -1 | cut -d: -f1)
++		end=$((begin + numlines - 1))
++	fi
++
++	length=$((end - begin))
++	entry=$(echo "$data" | tail -n+$begin | head -n$length)
++	eval $(echo "$entry" | process_grub_entry)
++}
++
++load_kernel () {
++	test -x /sbin/kexec || exit 0
++	test "x`cat /sys/kernel/kexec_loaded`y" = "x1y" && exit 0
++
++	if [ -f $NOKEXECFILE ]
++	then
++		/bin/rm -f $NOKEXECFILE
++		exit 0
++	fi
++
++	test "$USE_GRUB_CONFIG" = "true" && get_grub_kernel
++
++	REAL_APPEND="$APPEND"
++
++	test -z "$REAL_APPEND" && REAL_APPEND="`cat /proc/cmdline`"
++	echo "Loading new kernel image into memory"
++	if [ -z "$INITRD" ]
++	then
++		/sbin/kexec -l "$KERNEL_IMAGE" --append="$REAL_APPEND"
++	else
++		/sbin/kexec -l "$KERNEL_IMAGE" --initrd="$INITRD" --append="$REAL_APPEND"
++	fi
++	echo "kexec kernel loaded"
++}
++
++load_kernel
++exit 0
+--- /dev/null
++++ b/kexec/kexec-load-kernel.8
+@@ -0,0 +1,19 @@
++.\" Process this file with
++.\" groff -man -Tascii kexec-load-kernel.8
++.\"
++.TH kexec 8 "April 2006" Linux "User Manuals"
++.SH NAME
++kexec-load-kernel \- Load the default grub kernel into kexec buffer
++.SH SYNOPSIS
++.B /sbin/kexec-load-kernel
++
++.SH DESCRIPTION
++.B kexec-load-kernel
++parses grub configuration file to determine the default grub kernel and
++loads it in kexec buffer if kexec reboot is enabled.
++
++.SH NOTES
++.PP
++.B kexec-load-kernel
++is run just before a kexec reboot to load the new kernel in memory. The
++subsequent call to kexec will result in this kernel to be kexec'd.

@@ -1,0 +1,11 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -255,7 +255,7 @@ clean:
+ distclean: dist-clean
+ 
+ dist-clean: clean
+-	$(RM) -f config.log config.status config.cache Makefile include/config.h
++	$(RM) -f config.log config.status config.cache Makefile include/config.h include/stamp-h*
+ 	$(RM) -f include/config.h.in configure $(SPEC)
+ 	$(RM) -rf autom4te.cache
+ 

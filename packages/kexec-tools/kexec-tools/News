@@ -1,0 +1,73 @@
+* 2.0
+  - In purgatory added -fno-zero-initialized-in-bss to prevent issues with
+    recent versions of gcc
+  - Add an option to configure to disable zlib support
+  - Add mismatched architecture support
+  - Updated the x86 architecture help
+  - Updated the x86_64 architecture help
+  - Fixed bzImage support
+  - Added support for finding either the highest or lowest usable window.
+  - Change the version number to 2.0 to reflect the major change in
+    the code base.  1.99 was effectively the release canidate.
+* 1.99
+  - Rearchitect so the code is maintainable.
+  - Add multiboot support
+  - Add ia64 support
+  - Add beoboot image support
+  - Create generic elf loader code.
+  - Created the relocated shared object purgatory to hold
+    the code that runs between kernels.
+  - Added a configure script
+  - Added an rpm target
+  - Added kexec on panic support
+  - Initial stab at adding documentation
+  - Added loader support for ET_DYN objects
+* 1.98
+  - Add mysteriously dropped changes to make x86_64 work
+  - Update the distclean target to remove *.orig and *~ files
+* 1.97 
+  - Add support for cross compiling x86_64
+* 1.96
+  - add x86_64 support
+  - add support for linux style arguments to the elf32-x86 loader
+  - disable clearing of cr4 on x86
+* 1.95
+  - add kexec-zImage-ppc64.c source file
+  - GameCube/PPC32 sync'ed to 1.94
+  - use syscall() to call sys_kexec_load() and reboot()
+  - add kexec-syscall.h, remove kexec-syscall.c
+  - makefiles know about ARCH-es
+  - add noifdown kexec option (Albert Herranz)
+* 1.94
+  - revert a bad 1.92 change (not setting optind & opterr for subsequent
+    calls to getopt_long())
+* 1.93
+  - restored "shutdown" functionality;
+  - more help/usage text clarification;
+  - add GPLv2 license to source files (with permission from Eric Biederman)
+* 1.92
+  - my_kexec(): call kexec() only one time;
+  - add "unload" option;
+  - fix some compiler warnings about "<var> might be used uninitialized";
+  - commented out shutdown capability since it was unreachable;
+* 1.91
+  - fix "-t" option: strcmp() was inverted (Albert Herranz)
+  - check specified kernel image file for file type (Albert Herranz)
+* 1.9
+  - change reboot function to return type long (was int)
+  - use kexec reserved syscall numbers (in Linux 2.6.6-mm3)
+* 1.8
+  - Fixed bug where ramdisk wasn't loaded when specified
+  - Memory information is now read from /proc/iomem.
+    Information that is not needed is ignored.
+* 1.7
+  - Update to new tentative syscall number....
+* 1.6
+  - Redo all of the command line arguments.
+  - Use the 32-bit kernel entry point.
+  - Work around a failure to clear %cr4.
+* 1.5
+  - Port to a new kernel interface (Hopefully the final one).
+  - Start working on setting up legacy hardware
+  - Add --load and --exec options so the parts can be done at different times.
+###

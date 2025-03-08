@@ -1,0 +1,664 @@
+<HTML>
+
+<HEAD>
+<TITLE>Multiboot Standard</TITLE>
+</HEAD>
+
+<BODY>
+
+<CENTER><H1>Multiboot Standard</H1></CENTER>
+<CENTER><H3>Version 0.6</H3></CENTER>
+
+<HR>
+
+<H2>Contents</H2>
+
+<UL>
+<LI> <A HREF="#motivation">Motivation</A>
+<LI> <A HREF="#terminology">Terminology</A>
+<LI> <A HREF="#scope">Scope and Requirements</A>
+<LI> <A HREF="#details">Details</A>
+<LI> <A HREF="#author">Authors</A>
+<LI> <B>NOTE: The following items are not part of the standards document,
+but are included for prospective OS and bootloader writers.</B>
+<LI> <A HREF="#notes">Notes on PCs</A>
+<LI> <A HREF="#example_os">Example OS Code</A>
+<LI> <A HREF="#example_boot">Example Bootloader Code</A>
+</UL>
+
+<HR>
+
+<H2><A NAME="motivation">Motivation</A></H2>
+
+Every OS ever created tends to have its own boot loader.  Installing a new
+OS on a machine generally involves installing a whole new set of boot
+mechanisms, each with completely different install-time and boot-time user
+interfaces.   Getting multiple operating systems to coexist reliably on one
+machine through typical "chaining" mechanisms can be a nightmare.  There is
+little or no choice of boot loaders for a particular operating system - if
+the one that comes with the OS doesn't do exactly what you want, or doesn't
+work on your machine, you're screwed.<P>
+
+While we may not be able to fix this problem in existing commercial
+operating systems, it shouldn't be too difficult for a few people in the
+free OS communities to put their heads together and solve this problem for
+the popular free operating systems.  That's what this standard aims for.
+Basically, it specifies an interface between a boot loader and a operating
+system, such that any complying boot loader should be able to load any
+complying operating system.  This standard does NOT specify how boot
+loaders should work - only how they must interface with the OS being
+loaded.<P>
+
+<HR>
+
+<H2><A NAME="terminology">Terminology</A></H2>
+
+Throughout this document, the term "boot loader" means whatever program or
+set of programs loads the image of the final operating system to be run on
+the machine.  The boot loader may itself consist of several stages, but
+that is an implementation detail not relevant to this standard.  Only the
+"final" stage of the boot loader - the stage that eventually transfers
+control to the OS - needs to follow the rules specified in this document
+in order to be "MultiBoot compliant"; earlier boot loader stages can be
+designed in whatever way is most convenient.<P>
+
+The term "OS image" is used to refer to the initial binary image that the
+boot loader loads into memory and transfers control to to start the OS.
+The OS image is typically an executable containing the OS kernel.<P>
+
+The term "boot module" refers to other auxiliary files that the boot loader
+loads into memory along with the OS image, but does not interpret in any
+way other than passing their locations to the OS when it is invoked.<P>
+
+<HR>
+
+<H2><A NAME="scope">Scope and Requirements</A></H2>
+
+<H3>Architectures</H3>
+
+This standard is primarily targetted at PC's, since they are the most
+common and have the largest variety of OS's and boot loaders.  However, to
+the extent that certain other architectures may need a boot standard and do
+not have one already, a variation of this standard, stripped of the
+x86-specific details, could be adopted for them as well.<P>
+
+<H3>Operating systems</H3>
+
+This standard is targetted toward free 32-bit operating systems that can be
+fairly easily modified to support the standard without going through lots of
+bureaucratic rigmarole.  The particular free OS's that this standard is
+being primarily designed for are Linux, FreeBSD, NetBSD, Mach, and VSTa.
+It is hoped that other emerging free OS's will adopt it from the start, and
+thus immediately be able to take advantage of existing boot loaders.  It
+would be nice if commercial operating system vendors eventually adopted
+this standard as well, but that's probably a pipe dream.<P>
+
+<H3>Boot sources</H3>
+
+It should be possible to write compliant boot loaders that
+load the OS image from a variety of sources, including floppy disk, hard
+disk, and across a network.<P>
+
+Disk-based boot loaders may use a variety of techniques to find the
+relevant OS image and boot module data on disk, such as by interpretation
+of specific file systems (e.g. the BSD/Mach boot loader), using
+precalculated "block lists" (e.g. LILO), loading from a special "boot
+partition" (e.g. OS/2), or even loading from within another operating
+system (e.g. the VSTa boot code, which loads from DOS).  Similarly,
+network-based boot loaders could use a variety of network hardware and
+protocols.<P>
+
+It is hoped that boot loaders will be created that support multiple loading
+mechanisms, increasing their portability, robustness, and
+user-friendliness.<P>
+
+<H3>Boot-time configuration</H3>
+
+It is often necessary for one reason or another for the user to be able to
+provide some configuration information to the OS dynamically at boot time.
+While this standard should not dictate how this configuration information
+is obtained by the boot loader, it should provide a standard means for the
+boot loader to pass such information to the OS.<P>
+
+<H3>Convenience to the OS</H3>
+
+OS images should be easy to generate.  Ideally, an OS image should simply
+be an ordinary 32-bit executable file in whatever file format the OS
+normally uses.  It should be possible to 'nm' or disassemble OS images just
+like normal executables.  Specialized tools should not be needed to create
+OS images in a "special" file format.  If this means shifting some work
+from the OS to the boot loader, that is probably appropriate, because all
+the memory consumed by the boot loader will typically be made available
+again after the boot process is created, whereas every bit of code in the
+OS image typically has to remain in memory forever.  The OS should not have
+to worry about getting into 32-bit mode initially, because mode switching
+code generally needs to be in the boot loader anyway in order to load OS
+data above the 1MB boundary, and forcing the OS to do this makes creation
+of OS images much more difficult.<P>
+
+Unfortunately, there is a horrendous variety of executable file formats
+even among free Unix-like PC-based OS's - generally a different format for
+each OS.  Most of the relevant free OS's use some variant of a.out format,
+but some are moving to ELF.  It is highly desirable for boot loaders not to
+have to be able to interpret all the different types of executable file
+formats in existence in order to load the OS image - otherwise the boot
+loader effectively becomes OS-specific again.<P>
+
+This standard adopts a compromise solution to this problem.
+MultiBoot compliant boot images always either (a) are in ELF format, or (b)
+contain a "magic MultiBoot header", described below, which allows the boot
+loader to load the image without having to understand numerous a.out
+variants or other executable formats.  This magic header does not need
+to be at the very beginning of the executable file, so kernel images can
+still conform to the local a.out format variant in addition to being
+MultiBoot compliant.<P>
+
+<H3>Boot modules</H3>
+
+Many modern operating system kernels, such as those of VSTa and Mach, do
+not by themselves contain enough mechanism to get the system fully
+operational: they require the presence of additional software modules at
+boot time in order to access devices, mount file systems, etc.  While these
+additional modules could be embedded in the main OS image along with the
+kernel itself, and the resulting image be split apart manually by the OS
+when it receives control, it is often more flexible, more space-efficient,
+and more convenient to the OS and user if the boot loader can load these
+additional modules independently in the first place.<P>
+
+Thus, this standard should provide a standard method for a boot loader to
+indicate to the OS what auxiliary boot modules were loaded, and where they
+can be found.  Boot loaders don't have to support multiple boot modules,
+but they are strongly encouraged to, because some OS's will be unable to
+boot without them.<P>
+
+<HR>
+
+<H2><A NAME="details">Details</H2>
+
+There are three main aspects of the boot-loader/OS image interface this
+standard must specify:<P>
+
+<UL>
+<LI>The format of the OS image as seen by the boot loader.
+<LI>The state of the machine when the boot loader starts the OS.
+<LI>The format of the information passed by the boot loader to the OS.
+</UL>
+
+<H3>OS Image Format</H3>
+
+An OS image is generally just an ordinary 32-bit executable file in the
+standard format for that particular OS, except that it may be linked at a
+non-default load address to avoid loading on top of the PC's I/O region
+or other reserved areas, and of course it can't use shared libraries or
+other fancy features.  Initially, only images in a.out format are
+supported; ELF support will probably later be specified in the standard.<P>
+
+Unfortunately, the exact meaning of the text, data, bss, and entry fields
+of a.out headers tends to vary widely between different executable flavors,
+and it is sometimes very difficult to distinguish one flavor from another
+(e.g. Linux ZMAGIC executables and Mach ZMAGIC executables).  Furthermore,
+there is no simple, reliable way of determining at what address in memory
+the text segment is supposed to start.  Therefore, this standard requires
+that an additional header, known as a 'multiboot_header', appear somewhere
+near the beginning of the executable file.  In general it should come "as
+early as possible", and is typically embedded in the beginning of the text
+segment after the "real" executable header.  It _must_ be contained
+completely within the first 8192 bytes of the executable file, and must be
+longword (32-bit) aligned.  These rules allow the boot loader to find and
+synchronize with the text segment in the a.out file without knowing
+beforehand the details of the a.out variant.  The layout of the header is
+as follows:<P>
+
+<pre>
+	+-------------------+
+0	| magic: 0x1BADB002 |	(required)
+4	| flags		    |	(required)
+8	| checksum	    |	(required)
+	+-------------------+
+8	| header_addr	    |	(present if flags[16] is set)
+12	| load_addr	    |	(present if flags[16] is set)
+16	| load_end_addr	    |	(present if flags[16] is set)
+20	| bss_end_addr	    |	(present if flags[16] is set)
+24	| entry_addr	    |	(present if flags[16] is set)
+	+-------------------+
+</pre>
+
+All fields are in little-endian byte order, of course.  The first field is
+the magic number identifying the header, which must be the hex value
+0x1BADB002.<P>
+
+The flags field specifies features that the OS image requests or requires
+of the boot loader.  Bits 0-15 indicate requirements; if the boot loader
+sees any of these bits set but doesn't understand the flag or can't fulfill
+the requirements it indicates for some reason, it must notify the user and
+fail to load the OS image.  Bits 16-31 indicate optional features; if any
+bits in this range are set but the boot loader doesn't understand them, it
+can simply ignore them and proceed as usual.  Naturally, all
+as-yet-undefined bits in the flags word must be set to zero in OS
+images.  This way, the flags fields serves for version control as well as
+simple feature selection.<P>
+
+If bit 0 in the flags word is set, then all boot modules loaded along with
+the OS must be aligned on page (4KB) boundaries.  Some OS's expect to be
+able to map the pages containing boot modules directly into a paged address
+space during startup, and thus need the boot modules to be page-aligned.<P>
+
+If bit 1 in the flags word is set, then information on available memory
+via at least the 'mem_*' fields of the multiboot_info structure defined
+below must be included.  If the bootloader is capable of passing a memory
+map (the 'mmap_*' fields) and one exists, then it must be included as
+well.<P>
+
+If bit 16 in the flags word is set, then the fields at offsets 8-24 in the
+multiboot_header are valid, and the boot loader should use them instead of
+the fields in the actual executable header to calculate where to load the
+OS image.  This information does not need to be provided if the kernel
+image is in ELF format, but it should be provided if the images is in a.out
+format or in some other format.  Compliant boot loaders must be able to
+load images that either are in ELF format or contain the load address
+information embedded in the multiboot_header; they may also directly
+support other executable formats, such as particular a.out variants, but
+are not required to.<P>
+
+All of the address fields enabled by flag bit 16 are physical addresses.
+The meaning of each is as follows:<P>
+
+<UL>
+<LI><B>header_addr</B> -- Contains the address corresponding to the
+beginning of the multiboot_header - the physical memory location at which
+the magic value is supposed to be loaded.  This field serves to "synchronize"
+the mapping between OS image offsets and physical memory addresses.
+<LI><B>load_addr</B> -- Contains the physical address of the beginning
+of the text segment.  The offset in the OS image file at which to start
+loading is defined by the offset at which the header was found, minus
+(header_addr - load_addr).  load_addr must be less than or equal to
+header_addr.
+<LI><B>load_end_addr</B> -- Contains the physical address of the end of the
+data segment.  (load_end_addr - load_addr) specifies how much data to load.
+This implies that the text and data segments must be consecutive in the
+OS image; this is true for existing a.out executable formats.
+<LI><B>bss_end_addr</B> -- Contains the physical address of the end of
+the bss segment.  The boot loader initializes this area to zero, and
+reserves the memory it occupies to avoid placing boot modules and other
+data relevant to the OS in that area.
+<LI><B>entry</B> -- The physical address to which the boot loader should
+jump in order to start running the OS.
+</UL>
+
+The checksum is a 32-bit unsigned value which, when added to
+the other required fields, must have a 32-bit unsigned sum of zero.<P>
+
+<H3>Machine State</H3>
+
+When the boot loader invokes the 32-bit operating system,
+the machine must have the following state:<P>
+
+<UL>
+<LI>CS must be a 32-bit read/execute code segment with an offset of 0
+and a limit of 0xffffffff.
+<LI>DS, ES, FS, GS, and SS must be a 32-bit read/write data segment with
+an offset of 0 and a limit of 0xffffffff.
+<LI>The address 20 line must be usable for standard linear 32-bit
+addressing of memory (in standard PC hardware, it is wired to
+0 at bootup, forcing addresses in the 1-2 MB range to be mapped to the
+0-1 MB range, 3-4 is mapped to 2-3, etc.).
+<LI>Paging must be turned off.
+<LI>The processor interrupt flag must be turned off.
+<LI>EAX must contain the magic value 0x2BADB002; the presence of this value
+indicates to the OS that it was loaded by a MultiBoot-compliant boot
+loader (e.g. as opposed to another type of boot loader that the OS can
+also be loaded from).
+<LI>EBX must contain the 32-bit physical address of the multiboot_info
+structure provided by the boot loader (see below).
+</UL>
+
+All other processor registers and flag bits are undefined.  This includes,
+in particular:<P>
+
+<UL>
+<LI>ESP: the 32-bit OS must create its own stack as soon as it needs one.
+<LI>GDTR: Even though the segment registers are set up as described above,
+the GDTR may be invalid, so the OS must not load any segment registers
+(even just reloading the same values!) until it sets up its own GDT.
+<LI>IDTR: The OS must leave interrupts disabled until it sets up its own IDT.
+</UL>
+
+However, other machine state should be left by the boot loader in "normal
+working order", i.e. as initialized by the BIOS (or DOS, if that's what
+the boot loader runs from).  In other words, the OS should be able to make
+BIOS calls and such after being loaded, as long as it does not overwrite
+the BIOS data structures before doing so.  Also, the boot loader must leave
+the PIC programmed with the normal BIOS/DOS values, even if it changed them
+during the switch to 32-bit mode.<P>
+
+<H3>Boot Information Format</H3>
+
+Upon entry to the OS, the EBX register contains the physical address of
+a 'multiboot_info' data structure, through which the boot loader
+communicates vital information to the OS.  The OS can use or ignore any
+parts of the structure as it chooses; all information passed by the boot
+loader is advisory only.<P>
+
+The multiboot_info structure and its related substructures may be placed
+anywhere in memory by the boot loader (with the exception of the memory
+reserved for the kernel and boot modules, of course).  It is the OS's
+responsibility to avoid overwriting this memory until it is done using it.<P>
+
+The format of the multiboot_info structure (as defined so far) follows:<P>
+
+<pre>
+	+-------------------+
+0	| flags		    |	(required)
+	+-------------------+
+4	| mem_lower	    |	(present if flags[0] is set)
+8	| mem_upper	    |	(present if flags[0] is set)
+	+-------------------+
+12	| boot_device	    |	(present if flags[1] is set)
+	+-------------------+
+16	| cmdline	    |	(present if flags[2] is set)
+	+-------------------+
+20	| mods_count	    |	(present if flags[3] is set)
+24	| mods_addr	    |	(present if flags[3] is set)
+	+-------------------+
+28 - 40 | syms		    |   (present if flags[4] or flags[5] is set)
+	+-------------------+
+44	| mmap_length	    |	(present if flags[6] is set)
+48	| mmap_addr	    |	(present if flags[6] is set)
+	+-------------------+
+</pre>
+
+The first longword indicates the presence and validity of other fields in
+the multiboot_info structure.  All as-yet-undefined bits must be set to
+zero by the boot loader.   Any set bits that the OS does not understand
+should be ignored.  Thus, the flags field also functions as a version
+indicator, allowing the multiboot_info structure to be expanded in the
+future without breaking anything.<P>
+
+If bit 0 in the multiboot_info.flags word is set, then the 'mem_*' fields
+are valid.  'mem_lower' and 'mem_upper' indicate the amount of lower and upper
+memory, respectively, in kilobytes.  Lower memory starts at address 0, and
+upper memory starts at address 1 megabyte.  The maximum possible
+value for lower memory is 640 kilobytes.  The value returned for upper
+memory is maximally the address of the first upper memory hole minus
+1 megabyte.  It is not guaranteed to be this value.<P>
+
+If bit 1 in the multiboot_info.flags word is set, then the 'boot_device'
+field is valid, and indicates which BIOS disk device the boot loader loaded
+the OS from.  If the OS was not loaded from a BIOS disk, then this field
+must not be present (bit 3 must be clear).  The OS may use this field as a
+hint for determining its own "root" device, but is not required to.  The
+boot_device field is layed out in four one-byte subfields as follows:<P>
+
+<pre>
+	+-------+-------+-------+-------+
+	| drive | part1 | part2 | part3 |
+	+-------+-------+-------+-------+
+</pre>
+
+The first byte contains the BIOS drive number as understood by the BIOS
+INT 0x13 low-level disk interface: e.g. 0x00 for the first floppy disk or
+0x80 for the first hard disk.<P>
+
+The three remaining bytes specify the boot partition.  'part1' specifies
+the "top-level" partition number, 'part2' specifies a "sub-partition" in
+the top-level partition, etc.  Partition numbers always start from zero.
+Unused partition bytes must be set to 0xFF.  For example, if the disk is
+partitioned using a simple one-level DOS partitioning scheme, then 'part1'
+contains the DOS partition number, and 'part2' and 'part3' are both zero.
+As another example, if a disk is partitioned first into DOS partitions, and
+then one of those DOS partitions is subdivided into several BSD partitions
+using BSD's "disklabel" strategy, then 'part1' contains the DOS partition
+number, 'part2' contains the BSD sub-partition within that DOS partition,
+and 'part3' is 0xFF.<P>
+
+DOS extended partitions are indicated as partition numbers starting from 4
+and increasing, rather than as nested sub-partitions, even though the 
+underlying disk layout of extended partitions is hierarchical in nature.
+For example, if the boot loader boots from the second extended partition
+on a disk partitioned in conventional DOS style, then 'part1' will be 5,
+and 'part2' and 'part3' will both be 0xFF.<P>
+
+If bit 2 of the flags longword is set, the 'cmdline' field is valid, and 
+contains the physical address of the the command line to be passed to the
+kernel.  The command line is a normal C-style null-terminated string.<P>
+
+If bit 3 of the flags is set, then the 'mods' fields indicate to the kernel
+what boot modules were loaded along with the kernel image, and where they
+can be found.  'mods_count' contains the number of modules loaded;
+'mods_addr' contains the physical address of the first module structure.
+'mods_count' may be zero, indicating no boot modules were loaded, even if
+bit 1 of 'flags' is set.  Each module structure is formatted as follows:<P>
+
+<pre>
+	+-------------------+
+0	| mod_start	    |
+4	| mod_end	    |
+	+-------------------+
+8	| string	    |
+	+-------------------+
+12	| reserved (0)	    |
+	+-------------------+
+</pre>
+
+The first two fields contain the start and end addresses of the boot module
+itself.  The 'string' field provides an arbitrary string to be associated
+with that particular boot module; it is a null-terminated ASCII string,
+just like the kernel command line.  The 'string' field may be 0 if there is
+no string associated with the module.  Typically the string might be a
+command line (e.g. if the OS treats boot modules as executable programs),
+or a pathname (e.g. if the OS treats boot modules as files in a file
+system), but its exact use is specific to the OS.  The 'reserved' field
+must be set to 0 by the boot loader and ignored by the OS.<P>
+
+NOTE:  Bits 4 & 5 are mutually exclusive.<P>
+
+If bit 4 in the multiboot_info.flags word is set, then the following
+fields in the multiboot_info structure starting at byte 28 are valid:<P>
+
+<pre>
+	+-------------------+
+28	| tabsize	    |
+32	| strsize	    |
+36	| addr		    |
+40	| reserved (0)	    |
+	+-------------------+
+</pre>
+
+These indicate where the symbol table from an a.out kernel image can be
+found.  'addr' is the physical address of the size (4-byte unsigned
+long) of an array of a.out-format 'nlist' structures, followed immediately
+by the array itself, then the size (4-byte unsigned long) of a set of
+null-terminated ASCII strings (plus sizeof(unsigned long) in this case),
+and finally the set of strings itself.  'tabsize' is equal to it's size
+parameter (found at the beginning of the symbol section), and 'strsize'
+is equal to it's size parameter (found at the beginning of the string section)
+of the following string table to which the symbol table refers.   Note that
+'tabsize' may be 0, indicating no symbols, even if bit 4 in the flags
+word is set.<P>
+
+If bit 5 in the multiboot_info.flags word is set, then the following
+fields in the multiboot_info structure starting at byte 28 are valid:<P>
+
+<pre>
+	+-------------------+
+28	| num		    |
+32	| size		    |
+36	| addr		    |
+40	| shndx		    |
+	+-------------------+
+</pre>
+
+These indicate where the section header table from an ELF kernel is, the
+size of each entry, number of entries, and the string table used as the
+index of names.  They correspond to the 'shdr_*' entries ('shdr_num', etc.)
+in the Executable and Linkable Format (ELF) specification in the program
+header.  All sections are loaded, and the physical address fields
+of the elf section header then refer to where the sections are in memory
+(refer to the i386 ELF documentation for details as to how to read the
+section header(s)).  Note that 'shdr_num' may be 0, indicating no symbols,
+even if bit 5 in the flags word is set.<P>
+
+If bit 6 in the multiboot_info.flags word is set, then the 'mmap_*' fields
+are valid, and indicate the address and length of a buffer containing a
+memory map of the machine provided by the BIOS.  'mmap_addr' is the address,
+and 'mmap_length' is the total size of the buffer.  The buffer consists of
+one or more of the following size/structure pairs ('size' is really used
+for skipping to the next pair):<P>
+
+<pre>
+	+-------------------+
+-4	| size		    |
+	+-------------------+
+0	| BaseAddrLow	    |
+4	| BaseAddrHigh	    |
+8	| LengthLow	    |
+12	| LengthHigh	    |
+16	| Type		    |
+	+-------------------+
+</pre>
+
+where 'size' is the size of the associated structure in bytes, which can
+be greater than the minimum of 20 bytes.  'BaseAddrLow' is the lower 32
+bits of the starting address, and 'BaseAddrHigh' is the upper 32 bits,
+for a total of a 64-bit starting address.  'LengthLow' is the lower 32 bits
+of the size of the memory region in bytes, and 'LengthHigh' is the upper 32
+bits, for a total of a 64-bit length.  'Type' is the variety of address
+range represented, where a value of 1 indicates available RAM, and all
+other values currently indicated a reserved area.<P>
+
+The map provided is guaranteed to list all standard RAM that should
+be available for normal use.<P>
+
+<HR>
+
+<H2><A NAME="author">Authors</A></H2>
+
+<pre>
+Bryan Ford
+Computer Systems Laboratory
+University of Utah
+Salt Lake City, UT 84112
+(801) 581-4280
+baford@cs.utah.edu
+
+Erich Stefan Boleyn
+924 S.W. 16th Ave, #202
+Portland, OR, USA  97205
+(503) 226-0741
+erich@uruk.org
+</pre>
+
+We would also like to thank the many other people have provided comments,
+ideas, information, and other forms of support for our work.<P>
+
+<H3>Revision History</H3>
+
+<pre>
+Version 0.6   3/29/96  (a few wording changes, header checksum, and
+                        clarification of machine state passed to the OS)
+Version 0.5   2/23/96  (name change)
+Version 0.4   2/1/96   (major changes plus HTMLification)
+Version 0.3   12/23/95
+Version 0.2   10/22/95
+Version 0.1   6/26/95
+</pre>
+
+<HR>
+
+<H2><A NAME="notes">Notes on PCs</A></H2>
+
+In reference to bit 0 of the multiboot_info.flags parameter,
+if the bootloader
+in question uses older BIOS interfaces, or the newest ones are not
+available (see description about bit 6), then a maximum of either
+15 or 63 megabytes of memory may be reported.  It is HIGHLY recommended
+that bootloaders perform a thorough memory probe.<P>
+
+In reference to bit 1 of the multiboot_info.flags parameter, it is
+recognized that determination of which BIOS drive maps to which
+OS-level device-driver is non-trivial, at best.  Many kludges have
+been made to various OSes instead of solving this problem, most of
+them breaking under many conditions.  To encourage the use of
+general-purpose solutions to this problem, here are 2
+<A HREF=bios_mapping.txt>BIOS Device Mapping Techniques</A>.<P>
+
+In reference to bit 6 of the multiboot_info.flags parameter, it is
+important to note that the data structure used there
+(starting with 'BaseAddrLow') is the data returned by the
+<A HREF=mem64mb.html>INT 15h, AX=E820h
+- Query System Address Map</A> call.  More information
+on reserved memory regions is defined on that web page.
+The interface here is meant to allow a bootloader to
+work unmodified with any reasonable extensions of the BIOS interface,
+passing along any extra data to be interpreted by the OS as desired.<P>
+
+<HR>
+
+<H2><A NAME="example_os">Example OS Code</A> (from Bryan Ford)</H2>
+
+EDITOR'S NOTE:  These examples are relevant to the Proposal version 0.5,
+which is basically identical except for the multiboot OS header, which was
+missing the checksum.  A patch to bring Mach4 UK22 up to version 0.6 is
+available in the GRUB FTP area mentioned in the
+<A HREF="#example_boot">Example Bootloader Code</A> section below.<P>
+
+The Mach 4 distribution, available by anonymous FTP from
+flux.cs.utah.edu:/flux, contains a C header file that defines the
+MultiBoot data structures described above; anyone is welcome to rip it
+out and use it for other boot loaders and OS's:<P>
+
+<pre>
+        mach4-i386/include/mach/machine/multiboot.h
+</pre>
+
+This distribution also contains code implementing a "Linux boot adaptor",
+which collects a MultiBoot-compliant OS image and an optional set of boot
+modules, compresses them, and packages them into a single traditional Linux
+boot image that can be loaded from LILO or other Linux boot loaders.  There
+is also a corresponding "BSD boot adaptor" which can be used to wrap a
+MultiBoot kernel and set of modules and produce an image that can be loaded
+from the FreeBSD and NetBSD boot loaders.  All of this code can be used as-is
+or as a basis for other boot loaders.  These are the directories of primary
+relevance:<P>
+
+<pre>
+        mach4-i386/boot
+        mach4-i386/boot/bsd
+        mach4-i386/boot/linux
+</pre>
+
+The Mach kernel itself in this distribution contains code that demonstrates
+how to create a compliant OS.  The following files are of primary
+relevance:<P>
+
+<pre>
+        mach4-i386/kernel/i386at/boothdr.S
+        mach4-i386/kernel/i386at/model_dep.c
+</pre>
+
+Finally, I have created patches against the Linux 1.2.2 and FreeBSD 2.0
+kernels, in order to make them compliant with this proposed standard.
+These patches are available in kahlua.cs.utah.edu:/private/boot.<P>
+
+<HR>
+
+<H2><A NAME"example_boot">Example Bootloader Code</A> (from Erich Boleyn)</H2>
+
+The <A HREF=http://www.uruk.org/grub/>GRUB</A> bootloader project
+will be fully
+Multiboot-compliant, supporting all required and optional
+features present in this standard.<P>
+
+A final release has not been made, but both the GRUB beta release
+(which is quite stable) and a patch for Multiboot version 0.6 for
+Mach4 UK22 are available in the GRUB
+<A HREF=ftp://ftp.uruk.org/public/grub/>public release</A>
+area.<P>
+
+<HR>
+
+<A HREF=mailto:erich@uruk.org><I>erich@uruk.org</I></A><P>
+
+</BODY>
+</HTML>
+

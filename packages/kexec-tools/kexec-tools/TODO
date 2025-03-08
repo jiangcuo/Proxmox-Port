@@ -1,0 +1,11 @@
+- x86 handle x86 vmlinux parameter header allocation issues.
+  There is a bug where it can get stomped but the current code
+  does not allow us much flexibility in what we do with it.
+- Restore enough state that DOS/arbitrary BIOS calls can be run on some
+  platforms.  Currently disk-related calls are quite likely to blow up.
+- x86 filling in other kernel parameters.
+- Merge reboot via kexec functionality into /sbin/reboot
+- Improve the documentation 
+- Add support for loading a boot sector
+- Autobuilding of initramfs
+###

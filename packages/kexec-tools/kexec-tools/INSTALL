@@ -1,0 +1,77 @@
+Installation
+============
+
+
+Checkout from git
+-----------------
+
+If you use the tarball, you can just skip that section. If you checked out the
+kexec-tools from git repository, you have to build the Autoconf-generated
+file yourself with running
+
+    ./bootstrap
+
+You have to install "autoconf" for that. After that, you should have a file
+called "configure" in the top-level directory of kexec-tools, and you can
+continue with the next step.
+
+
+General
+-------
+
+You should check first if your favourite Linux distribution doesn't offer a
+package. If that package is recent enough, you should consider using that
+package instead.
+
+However, if you want to install kexec-tools from sources
+
+ (1) Run ./configure [--prefix=/usr/local] [options]...
+     e.g.
+
+        ./configure --prefix=/usr/local
+
+     For a full list of options run
+
+        ./configure --help
+
+ (2) Run make
+
+        make
+
+ (3) To install kexec-tools
+     After following the above instructions to build-kexec tools, run
+
+        make install
+
+
+Static compilation
+------------------
+
+To compile kexec-tools statically (i.e., independent of libraries that are
+present on the system), use
+
+    LDFLAGS=-static ./configure <options>
+
+instead.
+
+
+Cross compilation
+-----------------
+
+Because kexec is also used in the embedded world, cross-compilation is
+supported. You cannot only set "CC", "LD", "CCFLAGS" and "LDFLAGS" environment
+variables for the ./configure call as usual, you can also set
+
+    TARGET_CC       -- the C compiler used for files that should run on the
+                       target
+    TARGET_CCFLAGS  -- compilation flags for $TARGET_CC
+    TARGET_LD       -- linker used for files that should run on the
+                       target
+
+Because the build process also requires files that must be executed during the
+build, you also need a host compiler, only the target compiler is not enough.
+
+    BUILD_CC        -- the C compiler used for files that should run on the
+                       host (the system that builds the kexec-tools)
+    BUILD_CFLAGS    -- compilation flags for $BUILD_CC
+
