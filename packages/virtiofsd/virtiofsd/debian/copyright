@@ -1,0 +1,105 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: virtiofsd
+Upstream-Contact: The Virtiofs Project Developers
+Source: https://gitlab.com/virtio-fs/virtiofsd
+
+Files: *
+Copyright: 2019-2024 The Virtiofs Project Developers
+License: Apache-2.0 and BSD-3-Clause
+
+Files: src/descriptor_utils.rs
+Copyright: 2019 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/file_traits.rs
+Copyright: 2018 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/filesystem.rs
+Copyright: 2019 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/fuse.rs
+Copyright: 2019 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/lib.rs
+Copyright: 2019 Intel Corporation
+License: Apache-2.0 and BSD-3-Clause
+
+Files: src/macros.rs
+Copyright: 2022 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/main.rs
+Copyright: 2019 Intel Corporation. All Rights Reserved.
+License: Apache-2.0 and BSD-3-Clause
+
+Files: src/passthrough/file_handle.rs
+Copyright: 2021 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/passthrough/mod.rs
+Copyright: 2019 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/passthrough/stat.rs
+Copyright: 2021 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/read_dir.rs
+Copyright: 2020 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/sandbox.rs
+Copyright: 2020 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/seccomp.rs
+Copyright: 2020 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/server.rs
+Copyright: 2019 The Chromium OS Authors. All rights reserved.
+License: BSD-3-Clause
+
+Files: src/util.rs
+Copyright: 2022 Red Hat, Inc. All rights reserved.
+License: BSD-3-Clause
+
+Files: debian/*
+Copyright:
+ 2023-2024 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+ 2023 Fabian Grünbichler <debian@fabian.gruenbichler.email>
+ 2023 Michael Tokarev <mjt@tls.msk.ru>
+License: Apache-2.0 and BSD-3-Clause
+
+License: Apache-2.0
+ Debian systems provide the Apache 2.0 license in
+ /usr/share/common-licenses/Apache-2.0
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+ 1. Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer.
+ .
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ .
+ 3. Neither the name of the copyright holder nor the names of its contributors
+ may be used to endorse or promote products derived from this software without
+ specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

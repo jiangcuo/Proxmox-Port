@@ -1,0 +1,19 @@
+Test-Command: /usr/share/cargo/bin/cargo-auto-test virtiofsd 1.10.1 --all-targets --all-features
+Features: test-name=rust-virtiofsd:@
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test virtiofsd 1.10.1 --all-targets
+Features: test-name=librust-virtiofsd-dev:default
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test virtiofsd 1.10.1 --all-targets --no-default-features --features xen
+Features: test-name=librust-virtiofsd-dev:xen
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test virtiofsd 1.10.1 --all-targets --no-default-features
+Features: test-name=librust-virtiofsd-dev:
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable

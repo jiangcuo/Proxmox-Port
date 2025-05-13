@@ -1,0 +1,24 @@
+overlay = "."
+uploaders = ["Fabian Grünbichler <debian@fabian.gruenbichler.email>", "Michael Tokarev <mjt@tls.msk.ru>"]
+collapse_features = true
+
+[source]
+section = "otherosfs"
+build_depends = ["architecture-is-64-bit"]
+
+[packages.bin]
+section = "otherosfs"
+# we replace file in qemu-system-common:
+# /usr/share/qemu/vhost-user/50-qemu-virtiofsd.json
+extra_lines = [
+	"Breaks: qemu-system-common (<< 1:8.0),",
+	" pve-qemu-kvm (<< 8.0),",
+	"Replaces: qemu-system-common (<< 1:8.0),",
+	" pve-qemu-kvm (<< 8.0),",
+]
+description = """
+virtiofsd is a daemon for sharing host directories with a virtual machine or
+other guest using virtio-fs. It is designed to work with QEMU’s --device
+vhost-user-fs-pci but should work with any virtual machine monitor (VMM) that
+supports vhost-user.
+"""

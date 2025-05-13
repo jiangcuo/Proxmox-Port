@@ -1,0 +1,13 @@
+Index: virtiofsd/Cargo.toml
+===================================================================
+--- virtiofsd.orig/Cargo.toml
++++ virtiofsd/Cargo.toml
+@@ -35,7 +35,7 @@ version = "4"
+ features = ["derive"]
+ 
+ [dependencies.env_logger]
+-version = "0.8.4"
++version = "0.10"
+ 
+ [dependencies.futures]
+ version = "0.3"

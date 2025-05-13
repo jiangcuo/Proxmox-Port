@@ -1,0 +1,109 @@
+Source: rust-virtiofsd
+Section: otherosfs
+Priority: optional
+Build-Depends: debhelper (>= 12),
+ dh-cargo (>= 25),
+ cargo:native,
+ rustc:native,
+ libstd-rust-dev,
+ librust-bitflags-1+default-dev (>= 1.2-~~),
+ librust-capng-0.2+default-dev (>= 0.2.2-~~),
+ librust-clap-4+default-dev,
+ librust-clap-4+derive-dev,
+ librust-env-logger-0.10+default-dev,
+ librust-futures-0.3+default-dev,
+ librust-futures-0.3+thread-pool-dev,
+ librust-libc-0.2+default-dev (>= 0.2.139-~~),
+ librust-libseccomp-sys-0.2+default-dev,
+ librust-log-0.4+default-dev,
+ librust-syslog-6+default-dev,
+ librust-vhost-0.10+default-dev,
+ librust-vhost-user-backend-0.13+default-dev (>= 0.13.1-~~),
+ librust-virtio-bindings-0.2+default-dev (>= 0.2.1-~~),
+ librust-virtio-bindings-0.2+virtio-v5-0-0-dev (>= 0.2.1-~~),
+ librust-virtio-queue-0.11+default-dev,
+ librust-vm-memory-0.14+backend-atomic-dev,
+ librust-vm-memory-0.14+backend-mmap-dev,
+ librust-vm-memory-0.14+default-dev,
+ librust-vmm-sys-util-0.12+default-dev (>= 0.12.1-~~),
+ architecture-is-64-bit
+Maintainer: Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+Uploaders:
+ Fabian Grünbichler <debian@fabian.gruenbichler.email>,
+ Michael Tokarev <mjt@tls.msk.ru>
+Standards-Version: 4.6.1
+Vcs-Git: https://salsa.debian.org/rust-team/debcargo-conf.git [src/virtiofsd]
+Vcs-Browser: https://salsa.debian.org/rust-team/debcargo-conf/tree/master/src/virtiofsd
+Homepage: https://virtio-fs.gitlab.io/
+X-Cargo-Crate: virtiofsd
+Rules-Requires-Root: no
+
+Package: librust-virtiofsd-dev
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ librust-bitflags-1+default-dev (>= 1.2-~~),
+ librust-capng-0.2+default-dev (>= 0.2.2-~~),
+ librust-clap-4+default-dev,
+ librust-clap-4+derive-dev,
+ librust-env-logger-0.10+default-dev,
+ librust-futures-0.3+default-dev,
+ librust-futures-0.3+thread-pool-dev,
+ librust-libc-0.2+default-dev (>= 0.2.139-~~),
+ librust-libseccomp-sys-0.2+default-dev,
+ librust-log-0.4+default-dev,
+ librust-syslog-6+default-dev,
+ librust-vhost-0.10+default-dev,
+ librust-vhost-0.10+xen-dev,
+ librust-vhost-user-backend-0.13+default-dev (>= 0.13.1-~~),
+ librust-vhost-user-backend-0.13+xen-dev (>= 0.13.1-~~),
+ librust-virtio-bindings-0.2+default-dev (>= 0.2.1-~~),
+ librust-virtio-bindings-0.2+virtio-v5-0-0-dev (>= 0.2.1-~~),
+ librust-virtio-queue-0.11+default-dev,
+ librust-vm-memory-0.14+backend-atomic-dev,
+ librust-vm-memory-0.14+backend-mmap-dev,
+ librust-vm-memory-0.14+default-dev,
+ librust-vm-memory-0.14+xen-dev,
+ librust-vmm-sys-util-0.12+default-dev (>= 0.12.1-~~)
+Provides:
+ librust-virtiofsd+default-dev (= ${binary:Version}),
+ librust-virtiofsd+xen-dev (= ${binary:Version}),
+ librust-virtiofsd-1-dev (= ${binary:Version}),
+ librust-virtiofsd-1+default-dev (= ${binary:Version}),
+ librust-virtiofsd-1+xen-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10+default-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10+xen-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10.1-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10.1+default-dev (= ${binary:Version}),
+ librust-virtiofsd-1.10.1+xen-dev (= ${binary:Version})
+Description: Virtio-fs vhost-user device daemon - Rust source code
+ This package contains the source for the Rust virtiofsd crate, packaged by
+ debcargo for use with cargo and dh-cargo.
+
+Package: virtiofsd
+Architecture: any
+Multi-Arch: allowed
+Section: otherosfs
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ ${cargo:Depends}
+Recommends:
+ ${cargo:Recommends}
+Suggests:
+ ${cargo:Suggests}
+Provides:
+ ${cargo:Provides}
+Built-Using: ${cargo:Built-Using}
+XB-X-Cargo-Built-Using: ${cargo:X-Cargo-Built-Using}
+Breaks: qemu-system-common (<< 1:8.0),
+ pve-qemu-kvm (<< 8.0),
+Replaces: qemu-system-common (<< 1:8.0),
+ pve-qemu-kvm (<< 8.0),
+Description: Virtio-fs vhost-user device daemon
+ virtiofsd is a daemon for sharing host directories with a virtual machine or
+ other guest using virtio-fs. It is designed to work with QEMU’s --device
+ vhost-user-fs-pci but should work with any virtual machine monitor (VMM) that
+ supports vhost-user.

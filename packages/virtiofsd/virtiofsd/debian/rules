@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --buildsystem cargo
+
+override_dh_dwz:
+	# Don't do anything. fails because of the
+	# https://github.com/rust-lang/rust/issues/66118
+
+execute_after_dh_auto_install:
+# debcargo-install always puts binaries into $prefix/bin/,
+# while we need our daemon in $prefix/libexec/.
+	mkdir -p debian/virtiofsd/usr/libexec
+	mv debian/virtiofsd/usr/bin/virtiofsd debian/virtiofsd/usr/libexec/
+	rmdir debian/virtiofsd/usr/bin
+# qemu-7.2 (bookworm) compat symlink, remove for trixie+1
+	dh_link -pvirtiofsd usr/libexec/virtiofsd usr/lib/qemu/virtiofsd
+# PVE 7.x (bullseye) compat symlink
+	dh_link -pvirtiofsd usr/libexec/virtiofsd usr/lib/kvm/virtiofsd
+
+override_dh_auto_test:
+	dh_auto_test -- test --all

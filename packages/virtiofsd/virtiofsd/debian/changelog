@@ -1,0 +1,129 @@
+rust-virtiofsd (1.10.1-1~bpo12+pve1) proxmox-rust; urgency=medium
+
+  * Rebuild for Debian Bookworm / Proxmox
+
+ -- Proxmox Support Team <support@proxmox.com>  Fri, 05 Jul 2024 11:54:19 +0200
+
+rust-virtiofsd (1.10.1-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.10.1 from crates.io using debcargo 2.6.0
+    (Closes: #1072325)
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Sun, 02 Jun 2024 13:35:56 +0300
+
+rust-virtiofsd (1.10.0-1) unstable; urgency=medium
+
+  * Team upload.
+  * Package virtiofsd 1.10.0 from crates.io using debcargo 2.6.1
+  * Adjust virtiofsd.install for renamed json file.
+  * Set collapse_features = true
+
+ -- Peter Michael Green <plugwash@debian.org>  Mon, 22 Jan 2024 00:40:56 +0000
+
+rust-virtiofsd (1.8.0-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.8.0 from crates.io using debcargo 2.6.0
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Sat, 07 Oct 2023 10:49:05 +0300
+
+rust-virtiofsd (1.7.2-1~bpo12+pve1) proxmox-rust; urgency=medium
+
+  * Rebuild for Debian Bookworm / Proxmox
+  * Cherry-pick fix for --syslog and seccomp
+
+ -- Proxmox Support Team <support@proxmox.com>  Thu, 05 Oct 2023 11:29:21 +0200
+
+rust-virtiofsd (1.7.2-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.7.2 from crates.io using debcargo 2.6.0
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Wed, 13 Sep 2023 09:49:30 +0300
+
+rust-virtiofsd (1.7.0-3) unstable; urgency=medium
+
+  * update relax-env-logger-deps.diff to use 0.10 version
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Mon, 21 Aug 2023 22:08:46 +0300
+
+rust-virtiofsd (1.7.0-2) unstable; urgency=medium
+
+  * restrict to 64bit: Build-Depend: architecture-is-64-bit
+    https://gitlab.com/virtio-fs/virtiofsd/-/issues/114
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Wed, 09 Aug 2023 19:36:13 +0300
+
+rust-virtiofsd (1.7.0-1~bpo12+pve1) proxmox-rust; urgency=medium
+
+  * Rebuild for Debian Bookworm / Proxmox
+
+ -- Proxmox Support Team <support@proxmox.com>  Thu, 20 Jul 2023 09:21:44 +0200
+
+rust-virtiofsd (1.7.0-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.7.0 from crates.io using debcargo 2.6.0
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Tue, 18 Jul 2023 17:38:24 +0300
+
+rust-virtiofsd (1.6.1-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.6.1 from crates.io using debcargo 2.6.0
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Tue, 13 Jun 2023 11:50:48 +0300
+
+rust-virtiofsd (1.6.0-4~bpo12+pve1) proxmox-rust; urgency=medium
+
+  * Rebuild for Debian Bookworm / Proxmox
+
+ -- Proxmox Support Team <support@proxmox.com>  Fri, 12 May 2023 10:09:59 +0200
+
+rust-virtiofsd (1.6.0-4) unstable; urgency=medium
+
+  * stop diverting files from qemu-system-common, use Breaks+Replaces instead
+    (and remove installed diversion in postinst)
+  * provide compat symlink from /usr/lib/qemu/virtiofsd for old qemu
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Tue, 09 May 2023 12:36:35 +0300
+
+rust-virtiofsd (1.6.0-3) unstable; urgency=medium
+
+  * drop architecture restrictions now once vmm-sys-util is not
+    restricted
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Sat, 06 May 2023 14:01:42 +0300
+
+rust-virtiofsd (1.6.0-2) unstable; urgency=medium
+
+  * enable more 64bit architectures: s390x & sparc64
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Fri, 28 Apr 2023 18:58:45 +0300
+
+rust-virtiofsd (1.6.0-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.6.0 from crates.io using debcargo 2.6.0
+    (Closes: #1034865)
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Fri, 28 Apr 2023 08:44:47 +0300
+
+rust-virtiofsd (1.5.1-3) unstable; urgency=medium
+
+  * restrict Architecture: to the same list as vmm-sys-util
+  * add myself to Uploaders
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Fri, 28 Apr 2023 08:20:53 +0300
+
+rust-virtiofsd (1.5.1-2) unstable; urgency=medium
+
+  * Team upload.
+  * Instead of Breaking/Replacing qemu-system-common <8.0, add dpkg diversion
+    for /usr/share/qemu/vhost-user/50-qemu-virtiofsd.json.
+    To be removed in bookworm+2 when qemu is definitely >=8.0
+    (bookworm has 7.2).
+
+ -- Michael Tokarev <mjt@tls.msk.ru>  Fri, 14 Apr 2023 22:46:04 +0300
+
+rust-virtiofsd (1.5.1-1) unstable; urgency=medium
+
+  * Package virtiofsd 1.5.1 from crates.io using debcargo 2.6.0
+  * Initial package (Closes: #1007152)
+
+ -- Fabian Grünbichler <debian@fabian.gruenbichler.email>  Fri, 14 Apr 2023 21:43:22 +0300

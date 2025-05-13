@@ -1,0 +1,4 @@
+version=4
+opts=filenamemangle=s/.*\/(.*)\/download/virtiofsd-$1\.tar\.gz/g,\
+uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|pre|dev|beta|alpha)\d*)$/$1~$2/ \
+https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=crates.io/virtiofsd .*/crates/virtiofsd/@ANY_VERSION@/download

@@ -1,0 +1,14 @@
+#! /bin/sh
+set -e
+
+case "$1" in
+  configure )
+# we used to temporarily ship diversion in early version.
+# Right now we breaks+replaces old qemu files, so the diversion is useless.
+# Remove this removal before trixie.
+    if dpkg --compare-versions "$2" lt-nl 1.6.0-4~; then
+	dpkg-divert --package virtiofsd --no-rename --remove \
+	    /usr/share/qemu/vhost-user/50-qemu-virtiofsd.json
+    fi
+    ;;
+esac
