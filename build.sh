@@ -59,7 +59,7 @@ dockerbuild(){
 	if [ -n "$BUILDERNAME"  ];then
 		docker run -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm $BUILDERNAME || errlog "builderror"
 	else
-		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder || errlog "builderror"
+		docker run -it -e DEB_BUILD_OPTIONS=$DEB_OPT  -e PKGDIR=$SH_PATH/packages/$PKGNAME/$PKGNAME  -v $SH_PATH/:$SH_PATH --name $PKGNAME --rm pvebuilder bash|| errlog "builderror"
 	fi
 }
 
@@ -103,8 +103,6 @@ upload_pkg(){
 }
 
 update_submodues(){
-	rm $SH_PATH/packages/$PKGNAME/$PKGNAME/ -rf
-	mkdir $SH_PATH/packages/$PKGNAME/$PKGNAME/
 	# qemu is currently using Zeex/subhook, but Zeex/subhook is corrupted
 	SKIP_SUBMODULE_PKG=("pve-qemu" "proxmox-backup-restore-image")
 	for name in "${SKIP_SUBMODULE_PKG[@]}"; do
