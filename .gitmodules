@@ -236,3 +236,6 @@
 [submodule "packages/spice-protocol/spice-protocol"]
 	path = packages/spice-protocol/spice-protocol
 	url = https://gitea.lierfang.com/pxcloud/spice-protocol-pxvdi
+[submodule "packages/spice/spice"]
+	path = packages/spice/spice
+	url = https://github.com/jiangcuo/spice
