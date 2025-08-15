@@ -1,0 +1,251 @@
+diff --git a/src/PVE/ProcFSTools.pm b/src/PVE/ProcFSTools.pm
+index b67211e..a8ffb4e 100644
+--- a/src/PVE/ProcFSTools.pm
++++ b/src/PVE/ProcFSTools.pm
+@@ -10,7 +10,8 @@ use POSIX;
+ use Socket qw(PF_INET PF_INET6 SOCK_DGRAM IPPROTO_IP);
+ use Time::HiRes qw (gettimeofday);
+ 
+-use PVE::Tools;
++use PVE::Tools qw(get_host_arch);
++use JSON;
+ 
+ use constant IFF_UP => 1;
+ use constant IFNAMSIZ => 16;
+@@ -56,7 +57,21 @@ sub read_cpuinfo {
+             $idhash->{$cpuid} = $1 if defined($idhash->{$cpuid});
+         }
+     }
+-
++    my $arch = get_host_arch();
++    my $hardinfo = '/run/pve/query-machine-info';
++
++    if ($arch eq 'aarch64'  && $res->{model} eq 'unknown' && -e $hardinfo){
++	$hardinfo = IO::File->new ($hardinfo, "r");
++	return if !$hardinfo;
++	my $data = do { local $/; <$hardinfo> };
++	$data = decode_json($data);
++	foreach my $item (@$data) {
++		if (exists $item->{cpu}) {
++			$res->{model} = $item->{cpu};
++		}
++	}
++	$hardinfo->close;
++    }
+     # Hardware Virtual Machine (Intel VT / AMD-V)
+     $res->{hvm} = $res->{flags} =~ m/\s(vmx|svm)\s/;
+ 
+diff --git a/src/PVE/SysFSTools.pm b/src/PVE/SysFSTools.pm
+index a00fbcb..55a5451 100644
+--- a/src/PVE/SysFSTools.pm
++++ b/src/PVE/SysFSTools.pm
+@@ -4,6 +4,8 @@ use strict;
+ use warnings;
+ 
+ use IO::File;
++use File::Basename;
++use Cwd 'realpath';
+ 
+ use PVE::Tools qw(file_read_firstline dir_glob_foreach);
+ 
+@@ -95,6 +97,7 @@ sub lspci {
+             my $vendor = file_read_firstline("$devdir/vendor");
+             my $device = file_read_firstline("$devdir/device");
+             my $class = file_read_firstline("$devdir/class");
++            my $driver_inuse = basename(realpath("$devdir/driver"));
+ 
+             my $res = {
+                 id => $id,
+@@ -138,6 +141,7 @@ sub lspci {
+                 $res->{subsystem_device} = $sub_device if defined($sub_device);
+                 $res->{subsystem_vendor_name} = $sub_vendor_name if defined($sub_vendor_name);
+                 $res->{subsystem_device_name} = $sub_device_name if defined($sub_device_name);
++                $res->{driver_inuse} = $driver_inuse;
+             }
+ 
+             push @$devices, $res;
+@@ -475,4 +479,66 @@ sub scan_usb {
+     return $devlist;
+ }
+ 
++sub pcitool {
++    my ($pciid,$options,$driver) = @_;
++
++    my $basedir = "$pcisysfs/devices/$pciid";
++
++    die "Cannot find $pciid device!\n" if ! -d $basedir;
++
++    if ( $options eq 'bind' ){
++        if (!defined $driver) {
++            $driver = 'vfio-pci';
++        }
++        if (! -d "/sys/bus/pci/drivers/$driver") {
++        system("/bin/modprobe $driver >/dev/null 2>/dev/null");
++        }
++        die "Cannot find $driver module!\n" if ! -d "/sys/bus/pci/drivers/$driver";
++        die "Cannot bind $driver when device is bind\n" if -d "/sys/bus/pci/device/$pciid/driver";
++        file_write("/sys/bus/pci/drivers/$driver/bind", $pciid);
++    } elsif ( $options eq 'unbind' ){
++        file_write("$basedir/driver/unbind", $pciid);
++    } elsif ( $options eq 'reset' ){
++        file_write("$basedir/remove","1");
++        if ( -f "/sys/bus/pci/device/$pciid/reset" ){
++            file_write("/sys/bus/pci/device/$pciid/reset","1");
++        }else{
++            file_write("/sys/bus/pci/rescan","1");
++        }
++    }
++}
++
++sub pciprobe {
++    my ($pciid,$blacklist,$driver,$clean) = @_;
++
++    $blacklist = 0 if ! defined $blacklist; 
++
++    my $basedir = "/etc/modules-load.d/";
++    my $blacklistdir = "/etc/modprobe.d/";
++
++    die "OS ERROR!\n" if ! -d $basedir;
++    die "OS ERROR!\n" if ! -d $blacklistdir;
++
++    if (defined $clean && $clean ){
++        system("rm -rf $blacklistdir/$pciid*.conf");
++        system("rm -rf $basedir/$pciid*.conf");
++        return "ok";
++    }
++
++    if (! $blacklist ) {
++        if (! -d "/sys/bus/pci/drivers/$driver") {
++        system("/bin/modprobe $driver >/dev/null 2>/dev/null");
++        }
++        die "Cannot find $driver module!\n" if ! -d "/sys/bus/pci/drivers/$driver";
++        system("rm $basedir/$pciid.conf") if -f "$basedir/$pciid.conf";
++        my $str = "options vfio-pci ids=$pciid";
++        file_write("$basedir/$pciid.conf",$str);
++    } else {
++        system("rm $blacklistdir/$pciid-$driver-blacklist.conf") if -f "$blacklistdir/$pciid-$driver-blacklist.conf";
++        my $str = "blacklist $driver";
++        file_write("/etc/modprobe.d/$pciid-$driver-blacklist.conf",$str);
++    }
++
++}
++
+ 1;
+diff --git a/src/PVE/Syscall.pm b/src/PVE/Syscall.pm
+index 68e16fe..33f076d 100644
+--- a/src/PVE/Syscall.pm
++++ b/src/PVE/Syscall.pm
+@@ -17,7 +17,7 @@ BEGIN {
+         openat => &SYS_openat,
+         close => &SYS_close,
+         mkdirat => &SYS_mkdirat,
+-        mknod => &SYS_mknod,
++        mknod => &SYS_mknodat, # need mknodat for all platforms!
+         faccessat => &SYS_faccessat,
+         setresuid => &SYS_setresuid,
+         fallocate => &SYS_fallocate,
+diff --git a/src/PVE/Tools.pm b/src/PVE/Tools.pm
+index 948ef5e..fb69bb0 100644
+--- a/src/PVE/Tools.pm
++++ b/src/PVE/Tools.pm
+@@ -27,6 +27,8 @@ use Text::ParseWords;
+ use Time::HiRes qw(usleep gettimeofday tv_interval alarm);
+ use URI::Escape;
+ use base 'Exporter';
++use File::Basename;
++use Cwd 'realpath';
+ 
+ use PVE::Syscall;
+ 
+@@ -1817,7 +1819,14 @@ sub mkdirat($$$) {
+ 
+ sub mknod($$$) {
+     my ($filename, $mode, $dev) = @_;
+-    return syscall(PVE::Syscall::mknod, $filename, int($mode), int($dev)) == 0;
++    # Actually, we need mknodat syscall for all platforms!
++    # But we still use mknod name for compatibility.
++    my $dir = dirname($filename);
++    my $dirfd = syscall(&PVE::Syscall::SYS_openat, -100, $dir, 0);
++    die "Can't open dir: $!" if $dirfd < 0;
++    my $result =  syscall(PVE::Syscall::mknod, $dirfd, $filename, int($mode), int($dev)) == 0;
++    syscall(&PVE::Syscall::SYS_close, $dirfd);
++    return $result;
+ }
+ 
+ sub fchownat($$$$$) {
+@@ -2250,4 +2259,75 @@ sub is_deeply {
+     return 1;
+ }
+ 
++sub decode_punycode {
++    my $input = shift;
++    
++    return $input unless $input =~ /^xn--/;
++    
++    # remove xn-- prefix
++    $input =~ s/^xn--//;
++
++    my $n = 0x80;
++    my $i = 0;
++    my $bias = 72;
++    my @output;
++    
++    if ($input =~ /^(.*?)-(.*)$/) {
++        my $basic = $1;
++        $input = $2;
++        @output = split //, $basic;
++    }
++    
++    my $pos = 0;
++    while ($pos < length($input)) {
++        my $oldi = $i;
++        my $w = 1;
++        
++        for (my $k = 36;; $k += 36) {
++            last if $pos >= length($input);
++            my $digit = ord(substr($input, $pos++, 1));
++            
++            if ($digit >= ord('a') && $digit <= ord('z')) {
++                $digit = $digit - ord('a');
++            } elsif ($digit >= ord('A') && $digit <= ord('Z')) {
++                $digit = $digit - ord('A');
++            } elsif ($digit >= ord('0') && $digit <= ord('9')) {
++                $digit = $digit - ord('0') + 26;
++            } else {
++                die "Invalid punycode input";
++            }
++            
++            $i += $digit * $w;
++            my $t = ($k <= $bias) ? 1 : (($k >= $bias + 26) ? 26 : ($k - $bias));
++            last if $digit < $t;
++            $w *= (36 - $t);
++        }
++        
++        $bias = adapt($i - $oldi, scalar(@output) + 1, $oldi == 0);
++        $n += int($i / (scalar(@output) + 1));
++        $i %= (scalar(@output) + 1);
++        
++        splice(@output, $i, 0, chr($n));
++        $i++;
++    }
++    
++    return join('', @output);
++}
++
++sub adapt {
++    my ($delta, $numpoints, $firsttime) = @_;
++    $delta = $firsttime ? $delta / 700 : $delta / 2;
++    $delta += int($delta / $numpoints);
++    
++    my $k = 0;
++    while ($delta > 455) {
++        $delta = int($delta / 35);
++        $k += 36;
++    }
++    
++    return $k + int(36 * $delta / ($delta + 38));
++}
++
++
++
+ 1;

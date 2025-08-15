@@ -1,5 +1,1 @@
-patches/001-add-for-port.patch
-patches/002-add-cpuname-parse-on-arm64.patch
-patches/003-fix-mknod-issue.patch
-patches/004-add-pxvirt-pciprobe-and-pcitool-and-show-driver-in-lspci.patch
-patches/changelog/001-add-changlog.patch
+patches/0000-Add-pxvirt-patch.patch
