@@ -33,7 +33,7 @@
 	url = https://git.proxmox.com/git/proxmox-mini-journalreader.git
 [submodule "packages/pve-cluster/pve-cluster"]
 	path = packages/pve-cluster/pve-cluster
-	url = https://git.proxmox.com/git/pve-cluster.git
+	url = https://github.com/jiangcuo/pve-cluster.git
 [submodule "packages/proxmox-i18n/proxmox-i18n"]
 	path = packages/proxmox-i18n/proxmox-i18n
 	url = https://git.proxmox.com/git/proxmox-i18n
