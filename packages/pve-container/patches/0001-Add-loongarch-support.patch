@@ -1,50 +1,35 @@
-From 6c3157c3324c5e47cb0a8c3df0aaa59b753a2f2f Mon Sep 17 00:00:00 2001
+From b177ce84f9c0c7198a3db8eee28a1b1f83425ddc Mon Sep 17 00:00:00 2001
 From: jiangcuo <jiangcuo@bingsin.com>
 Date: Thu, 5 Dec 2024 11:31:29 +0800
-Subject: [PATCH] Add loongarch support
+Subject: [PATCH 1/6] Add loongarch support
 
 ---
- src/PVE/LXC/Config.pm       |  2 +-
- src/PVE/LXC/Setup.pm        | 11 ----------
+ src/PVE/LXC/Config.pm       | 10 ++++-----
  src/PVE/LXC/Setup/Plugin.pm | 44 ++++++++++++++++++++++++++++++++++++-
- src/PVE/LXC/Tools.pm        |  1 +
- 4 files changed, 45 insertions(+), 13 deletions(-)
+ src/PVE/LXC/Tools.pm        | 11 +++++-----
+ 3 files changed, 54 insertions(+), 11 deletions(-)
 
 diff --git a/src/PVE/LXC/Config.pm b/src/PVE/LXC/Config.pm
-index 5cc37f7..0452d4a 100644
+index 7bdb8b9..0b12587 100644
 --- a/src/PVE/LXC/Config.pm
 +++ b/src/PVE/LXC/Config.pm
-@@ -473,7 +473,7 @@ my $confdesc = {
-     arch => {
- 	optional => 1,
- 	type => 'string',
--	enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64'],
-+	enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64', 'loongarch64'],
- 	description => "OS architecture type.",
- 	default => 'amd64',
+@@ -507,11 +507,11 @@ my $confdesc = {
+         default => 0,
      },
-diff --git a/src/PVE/LXC/Setup.pm b/src/PVE/LXC/Setup.pm
-index dc58990..78272be 100644
---- a/src/PVE/LXC/Setup.pm
-+++ b/src/PVE/LXC/Setup.pm
-@@ -141,17 +141,6 @@ sub new {
-     if (!defined($conf->{arch})) {
- 	my $arch = eval { $self->protected_call(sub { $plugin->detect_architecture() }) };
- 
--	if (my $err = $@) {
--	    warn "Architecture detection failed: $err" if $err;
--	}
--
--	if (!defined($arch)) {
--	    $arch = 'amd64';
--	    print "Falling back to $arch.\nUse `pct set VMID --arch ARCH` to change.\n";
--	} else {
--	    print "Detected container architecture: $arch\n";
--	}
--
- 	$conf->{arch} = $arch;
-     }
- 
+     arch => {
+-        optional => 1,
+-        type => 'string',
+-        enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64'],
+-        description => "OS architecture type.",
+-        default => 'amd64',
++	optional => 1,
++	type => 'string',
++	enum => ['amd64', 'i386', 'arm64', 'armhf', 'riscv32', 'riscv64', 'loongarch64'],
++	description => "OS architecture type.",
++	default => 'amd64',
+     },
+     ostype => {
+         optional => 1,
 diff --git a/src/PVE/LXC/Setup/Plugin.pm b/src/PVE/LXC/Setup/Plugin.pm
 index b9d9c2d..f413d91 100644
 --- a/src/PVE/LXC/Setup/Plugin.pm
@@ -108,14 +93,27 @@ index b9d9c2d..f413d91 100644
  
  # hooks
 diff --git a/src/PVE/LXC/Tools.pm b/src/PVE/LXC/Tools.pm
-index 3380c62..a9aa942 100644
+index 40dd270..ee4ae5a 100644
 --- a/src/PVE/LXC/Tools.pm
 +++ b/src/PVE/LXC/Tools.pm
-@@ -179,6 +179,7 @@ sub detect_elf_architecture {
- 	0x28 => 'armhf',
- 	0xb7 => 'arm64',
- 	0xf3 => 'riscv',
+@@ -174,11 +174,12 @@ sub detect_elf_architecture {
+     # see https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+ 
+     my $supported_elf_machine = {
+-        0x03 => 'i386',
+-        0x3e => 'amd64',
+-        0x28 => 'armhf',
+-        0xb7 => 'arm64',
+-        0xf3 => 'riscv',
++	0x03 => 'i386',
++	0x3e => 'amd64',
++	0x28 => 'armhf',
++	0xb7 => 'arm64',
++	0xf3 => 'riscv',
 +	0x2 => 'loongarch64',
      };
  
      my $detect_arch = sub {
+-- 
+2.39.5
+

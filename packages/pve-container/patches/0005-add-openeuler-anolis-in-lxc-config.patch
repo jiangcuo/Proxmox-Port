@@ -1,0 +1,34 @@
+From a6fc1c64d9a4ed0b773d0ae21e854614099e74bf Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Thu, 5 Dec 2024 18:55:13 +0800
+Subject: [PATCH 5/6] add openeuler anolis in lxc config
+
+---
+ src/PVE/LXC/Config.pm | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/PVE/LXC/Config.pm b/src/PVE/LXC/Config.pm
+index 0b12587..f02b1f6 100644
+--- a/src/PVE/LXC/Config.pm
++++ b/src/PVE/LXC/Config.pm
+@@ -514,13 +514,10 @@ my $confdesc = {
+ 	default => 'amd64',
+     },
+     ostype => {
+-        optional => 1,
+-        type => 'string',
+-        enum => [
+-            qw(debian devuan ubuntu centos fedora opensuse archlinux alpine gentoo nixos unmanaged)
+-        ],
+-        description =>
+-            "OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.",
++	optional => 1,
++	type => 'string',
++	enum => [qw(debian devuan ubuntu centos fedora opensuse archlinux alpine gentoo nixos openeuler anolis unmanaged)],
++	description => "OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.",
+     },
+     console => {
+         optional => 1,
+-- 
+2.39.5
+

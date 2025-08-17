@@ -1,0 +1,25 @@
+From 91e647009d1e9c27d88bd84b9664448e1d9f80b2 Mon Sep 17 00:00:00 2001
+From: jiangcuo <jiangcuo@bingsin.com>
+Date: Thu, 5 Dec 2024 12:21:23 +0800
+Subject: [PATCH 3/6] set unknown ostype to unmanaged
+
+---
+ src/PVE/LXC/Setup.pm | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/PVE/LXC/Setup.pm b/src/PVE/LXC/Setup.pm
+index c3ada9d..47ce400 100644
+--- a/src/PVE/LXC/Setup.pm
++++ b/src/PVE/LXC/Setup.pm
+@@ -89,8 +89,6 @@ my $autodetect_type = sub {
+         return "nixos";
+     } elsif (-f "$rootdir/etc/openEuler-release") {
+         return "openeuler";
+-    } elsif (-f "$rootdir/etc/os-release") {
+-        die "unable to detect OS distribution\n";
+     } else {
+         warn
+             "/etc/os-release file not found and autodetection failed, falling back to 'unmanaged'\n";
+-- 
+2.39.5
+

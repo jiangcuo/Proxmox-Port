@@ -1,17 +1,17 @@
-From a5fec2b01a76ae3ba33704f9f8037c332bd30966 Mon Sep 17 00:00:00 2001
+From f5c3a304c2c0e1689d7ab0314e4de5d4191ad75b Mon Sep 17 00:00:00 2001
 From: jiangcuo <jiangcuo@bingsin.com>
 Date: Thu, 5 Dec 2024 12:17:37 +0800
-Subject: [PATCH] add anolis
+Subject: [PATCH 2/6] add anolis
 
 ---
- src/PVE/LXC/Setup.pm        |  2 ++
+ src/PVE/LXC/Setup.pm        | 12 +++++++-----
  src/PVE/LXC/Setup/Anolis.pm | 34 ++++++++++++++++++++++++++++++++++
  src/PVE/LXC/Setup/Makefile  |  1 +
- 3 files changed, 37 insertions(+)
+ 3 files changed, 42 insertions(+), 5 deletions(-)
  create mode 100644 src/PVE/LXC/Setup/Anolis.pm
 
 diff --git a/src/PVE/LXC/Setup.pm b/src/PVE/LXC/Setup.pm
-index 78272be..98398f8 100644
+index 87330c4..c3ada9d 100644
 --- a/src/PVE/LXC/Setup.pm
 +++ b/src/PVE/LXC/Setup.pm
 @@ -10,6 +10,7 @@ use PVE::Tools;
@@ -22,14 +22,24 @@ index 78272be..98398f8 100644
  use PVE::LXC::Setup::CentOS;
  use PVE::LXC::Setup::Debian;
  use PVE::LXC::Setup::Devuan;
-@@ -24,6 +25,7 @@ use PVE::LXC::Setup::Unmanaged;
+@@ -24,11 +25,12 @@ use PVE::LXC::Setup::Unmanaged;
  my $plugins = {
-     alpine    => 'PVE::LXC::Setup::Alpine',
+     alpine => 'PVE::LXC::Setup::Alpine',
      archlinux => 'PVE::LXC::Setup::ArchLinux',
+-    centos => 'PVE::LXC::Setup::CentOS',
+-    debian => 'PVE::LXC::Setup::Debian',
+-    devuan => 'PVE::LXC::Setup::Devuan',
+-    fedora => 'PVE::LXC::Setup::Fedora',
+-    gentoo => 'PVE::LXC::Setup::Gentoo',
 +    anolis    => 'PVE::LXC::Setup::Anolis',
-     centos    => 'PVE::LXC::Setup::CentOS',
-     debian    => 'PVE::LXC::Setup::Debian',
-     devuan    => 'PVE::LXC::Setup::Devuan',
++    centos    => 'PVE::LXC::Setup::CentOS',
++    debian    => 'PVE::LXC::Setup::Debian',
++    devuan    => 'PVE::LXC::Setup::Devuan',
++    fedora    => 'PVE::LXC::Setup::Fedora',
++    gentoo    => 'PVE::LXC::Setup::Gentoo',
+     openeuler => 'PVE::LXC::Setup::OpenEuler',
+     opensuse => 'PVE::LXC::Setup::SUSE',
+     ubuntu => 'PVE::LXC::Setup::Ubuntu',
 diff --git a/src/PVE/LXC/Setup/Anolis.pm b/src/PVE/LXC/Setup/Anolis.pm
 new file mode 100644
 index 0000000..7c482b5
@@ -82,3 +92,6 @@ index 688b547..9ff3de9 100644
  
  .PHONY: install
  install:
+-- 
+2.39.5
+
