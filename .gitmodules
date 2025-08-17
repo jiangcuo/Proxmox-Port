@@ -233,3 +233,6 @@
 [submodule "packages/pxvirt-spdk/pxvirt-spdk"]
 	path = packages/pxvirt-spdk/pxvirt-spdk
 	url = https://github.com/jiangcuo/pxvirt-spdk
+[submodule "packages/proxmox-biome/proxmox-biome"]
+	path = packages/proxmox-biome/proxmox-biome
+	url = https://git.proxmox.com/git/proxmox-biome.git

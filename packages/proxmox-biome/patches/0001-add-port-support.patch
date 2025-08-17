@@ -1,0 +1,13 @@
+diff --git a/debian/control b/debian/control
+index bcfa86d0..83d2d6b4 100644
+--- a/debian/control
++++ b/debian/control
+@@ -7,7 +7,7 @@ Homepage: https://biomejs.dev/
+ Standards-Version: 4.7.0.0
+ 
+ Package: proxmox-biome
+-Architecture: amd64
++Architecture: any
+ Depends: ${misc:Depends}, ${shlibs:Depends},
+ Description: Biome offers JS formatter and linter, usable via CLI and LSP.
+  Biome is a performant toolchain for web projects, it aims to provide developer
