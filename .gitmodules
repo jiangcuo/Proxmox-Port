@@ -208,7 +208,7 @@
 	url = https://git.proxmox.com/git/proxmox-websocket-tunnel.git
 [submodule "packages/pve-firmware/pve-firmware"]
 	path = packages/pve-firmware/pve-firmware
-	url = https://git.proxmox.com/git/pve-firmware.git
+	url = https://github.com/jiangcuo/pve-firmware.git
 [submodule "packages/libseccomp/libseccomp"]
 	path = packages/libseccomp/libseccomp
 	url = https://salsa.debian.org/debian/libseccomp.git
