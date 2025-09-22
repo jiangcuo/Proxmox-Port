@@ -18,7 +18,7 @@
 	url = https://github.com/jiangcuo/pve-installer
 [submodule "packages/pve-container/pve-container"]
 	path = packages/pve-container/pve-container
-	url = https://git.proxmox.com/git/pve-container.git
+	url = https://github.com/jiangcuo/pve-container
 [submodule "packages/proxmox-archive-keyring/proxmox-archive-keyring"]
 	path = packages/proxmox-archive-keyring/proxmox-archive-keyring
 	url = https://git.proxmox.com/git/proxmox-archive-keyring.git
