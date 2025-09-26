@@ -242,3 +242,6 @@
 [submodule "packages/markupsafe/markupsafe"]
 	path = packages/markupsafe/markupsafe
 	url = https://salsa.debian.org/python-team/packages/markupsafe.git
+[submodule "packages/spice0.15/spice0.15"]
+	path = packages/spice0.15/spice0.15
+	url = https://github.com/jiangcuo/spice.git
