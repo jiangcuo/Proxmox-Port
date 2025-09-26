@@ -245,3 +245,6 @@
 [submodule "packages/spice0.15/spice0.15"]
 	path = packages/spice0.15/spice0.15
 	url = https://github.com/jiangcuo/spice.git
+[submodule "packages/valgrind/valgrind"]
+	path = packages/valgrind/valgrind
+	url = https://github.com/jiangcuo/valgrind-loongarch64.git
