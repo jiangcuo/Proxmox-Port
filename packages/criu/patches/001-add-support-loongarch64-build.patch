@@ -1,0 +1,49 @@
+diff --git a/debian/control b/debian/control
+index a4534af90..1a49664bb 100644
+--- a/debian/control
++++ b/debian/control
+@@ -31,7 +31,7 @@ Rules-Requires-Root: no
+ Testsuite: autopkgtest-pkg-python
+ 
+ Package: criu
+-Architecture: amd64 arm64 ppc64el riscv64 s390x
++Architecture: amd64 arm64 ppc64el riscv64 s390x loong64
+ Depends:
+  ${misc:Depends},
+  ${shlibs:Depends},
+@@ -58,7 +58,7 @@ Description: checkpoint and restore in userspace
+ 
+ Package: libcriu2
+ Section: libs
+-Architecture: amd64 arm64 ppc64el riscv64 s390x
++Architecture: amd64 arm64 ppc64el riscv64 s390x loong64
+ Multi-Arch: same
+ Depends:
+  ${misc:Depends},
+@@ -80,7 +80,7 @@ Description: checkpoint and restore in userspace (library)
+ 
+ Package: libcriu-dev
+ Section: libdevel
+-Architecture: amd64 arm64 ppc64el riscv64 s390x
++Architecture: amd64 arm64 ppc64el riscv64 s390x loong64
+ Depends:
+  libcriu2 (= ${binary:Version}),
+  libprotobuf-c-dev,
+@@ -125,7 +125,7 @@ Description: checkpoint and restore in userspace (Python bindings)
+ 
+ Package: libcompel1
+ Section: libs
+-Architecture: amd64 arm64 ppc64el riscv64 s390x
++Architecture: amd64 arm64 ppc64el riscv64 s390x loong64
+ Multi-Arch: same
+ Depends:
+  ${misc:Depends},
+@@ -144,7 +144,7 @@ Description: execute arbitrary code in the context of a foreign process (library
+ 
+ Package: libcompel-dev
+ Section: libdevel
+-Architecture: amd64 arm64 ppc64el riscv64 s390x
++Architecture: amd64 arm64 ppc64el riscv64 s390x loong64
+ Depends:
+  libcompel1 (= ${binary:Version}),
+  ${misc:Depends},

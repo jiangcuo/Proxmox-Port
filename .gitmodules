@@ -248,3 +248,6 @@
 [submodule "packages/valgrind/valgrind"]
 	path = packages/valgrind/valgrind
 	url = https://github.com/jiangcuo/valgrind-loongarch64.git
+[submodule "packages/criu/criu"]
+	path = packages/criu/criu
+	url = https://salsa.debian.org/debian/criu.git

@@ -1,0 +1,2 @@
+patches/001-add-support-loongarch64-build.patch
+patches/002-criu-dump-and-restore-cpu-affinity-of-each-thread.patch
