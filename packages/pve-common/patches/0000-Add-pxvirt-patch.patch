@@ -132,20 +132,21 @@ index a00fbcb..55a5451 100644
 +
  1;
 diff --git a/src/PVE/Syscall.pm b/src/PVE/Syscall.pm
-index 68e16fe..33f076d 100644
+index 68e16fe..34c2d9e 100644
 --- a/src/PVE/Syscall.pm
 +++ b/src/PVE/Syscall.pm
-@@ -17,7 +17,7 @@ BEGIN {
+@@ -17,7 +17,8 @@ BEGIN {
          openat => &SYS_openat,
          close => &SYS_close,
          mkdirat => &SYS_mkdirat,
 -        mknod => &SYS_mknod,
 +        mknod => &SYS_mknodat, # need mknodat for all platforms!
++        mknodat => &SYS_mknodat,
          faccessat => &SYS_faccessat,
          setresuid => &SYS_setresuid,
          fallocate => &SYS_fallocate,
 diff --git a/src/PVE/Tools.pm b/src/PVE/Tools.pm
-index 948ef5e..fb69bb0 100644
+index 948ef5e..77e623c 100644
 --- a/src/PVE/Tools.pm
 +++ b/src/PVE/Tools.pm
 @@ -27,6 +27,8 @@ use Text::ParseWords;
@@ -157,23 +158,26 @@ index 948ef5e..fb69bb0 100644
  
  use PVE::Syscall;
  
-@@ -1817,7 +1819,14 @@ sub mkdirat($$$) {
+@@ -1815,9 +1817,17 @@ sub mkdirat($$$) {
+     return syscall(PVE::Syscall::mkdirat, int($dirfd), $name, int($mode)) == 0;
+ }
  
++sub mknodat($$$$) {
++    my ($dirfd, $filename, $mode, $dev) = @_;
++    return syscall(PVE::Syscall::mknodat, int($dirfd), $filename, int($mode), int($dev)) == 0;
++}
++
++
  sub mknod($$$) {
      my ($filename, $mode, $dev) = @_;
 -    return syscall(PVE::Syscall::mknod, $filename, int($mode), int($dev)) == 0;
 +    # Actually, we need mknodat syscall for all platforms!
 +    # But we still use mknod name for compatibility.
-+    my $dir = dirname($filename);
-+    my $dirfd = syscall(&PVE::Syscall::SYS_openat, -100, $dir, 0);
-+    die "Can't open dir: $!" if $dirfd < 0;
-+    my $result =  syscall(PVE::Syscall::mknod, $dirfd, $filename, int($mode), int($dev)) == 0;
-+    syscall(&PVE::Syscall::SYS_close, $dirfd);
-+    return $result;
++    return mknodat(AT_FDCWD, $filename, $mode, $dev);
  }
  
  sub fchownat($$$$$) {
-@@ -2250,4 +2259,75 @@ sub is_deeply {
+@@ -2250,4 +2260,75 @@ sub is_deeply {
      return 1;
  }
  
