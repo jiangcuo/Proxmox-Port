@@ -39,7 +39,7 @@
 	url = https://git.proxmox.com/git/proxmox-i18n
 [submodule "packages/proxmox-widget-toolkit/proxmox-widget-toolkit"]
 	path = packages/proxmox-widget-toolkit/proxmox-widget-toolkit
-	url = https://github.com/proxmox/proxmox-widget-toolkit.git
+	url = https://github.com/jiangcuo/proxmox-widget-toolkit
 [submodule "packages/pve-http-server/pve-http-server"]
 	path = packages/pve-http-server/pve-http-server
 	url = https://git.proxmox.com/git/pve-http-server
