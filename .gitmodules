@@ -177,7 +177,7 @@
         url = https://github.com/jiangcuo/pve-lxc-syscalld.git
 [submodule "packages/pve-edk2-firmware/pve-edk2-firmware"]
 	path = packages/pve-edk2-firmware/pve-edk2-firmware
-	url = https://gitea.lierfang.com/pxcloud/pve-edk2-firmware.git
+	url = https://github.com/jiangcuo/pve-edk2-firmware.git
 	branch = pxvirt
 [submodule "packages/pixman/pixman"]
 	path = packages/pixman/pixman
