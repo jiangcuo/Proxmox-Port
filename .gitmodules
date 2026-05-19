@@ -245,3 +245,6 @@
 [submodule "packages/proxmox-network-interface-pinning/proxmox-network-interface-pinning"]
 	path = packages/proxmox-network-interface-pinning/proxmox-network-interface-pinning
 	url = https://git.proxmox.com/git/proxmox-network-interface-pinning.git
+[submodule "packages/apparmor/apparmor"]
+	path = packages/apparmor/apparmor
+	url = https://git.proxmox.com/git/apparmor.git
