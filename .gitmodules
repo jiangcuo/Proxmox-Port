@@ -248,3 +248,6 @@
 [submodule "packages/apparmor/apparmor"]
 	path = packages/apparmor/apparmor
 	url = https://git.proxmox.com/git/apparmor.git
+[submodule "packages/ceph-20/ceph-20"]
+	path = packages/ceph-20/ceph-20
+	url = https://git.proxmox.com/git/ceph.git
